@@ -1,6 +1,6 @@
 package com.sjl.enable.config;
 
-import com.sjl.enable.scan.SjlBtaisScanner;
+import com.sjl.enable.scan.SjlExploreScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
@@ -22,9 +20,10 @@ import java.util.Set;
 /**
  * @author: jianlei
  * @date: 2020/8/25
- * @description: SjlBatisConfig
+ * @description: SjlBatisConfig 弃用之前是仿照mybatis注入bean 结果失败 现在依照spring处理逻辑走的
  */
 @Slf4j
+@Deprecated
 public class SjlBatisConfig implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
 
     private String basePackage;
@@ -48,7 +47,7 @@ public class SjlBatisConfig implements BeanDefinitionRegistryPostProcessor, Init
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-        SjlBtaisScanner scanner=new SjlBtaisScanner(registry);
+        SjlExploreScanner scanner=new SjlExploreScanner(registry);
        // scanner.setAnnotationClass(annotationClass);
         scanner.registerFilters();
         final Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(this.basePackage);

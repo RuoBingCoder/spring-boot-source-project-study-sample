@@ -17,9 +17,10 @@ import java.util.Set;
  * @author: jianlei
  * @date: 2020/8/25
  * @description: SjlBtaisScanner
+ *
  */
 @Slf4j
-public class SjlBtaisScanner extends ClassPathBeanDefinitionScanner {
+public class SjlExploreScanner extends ClassPathBeanDefinitionScanner {
     private String basePackage;
     private String beanName;
     private Class<? extends Annotation> annotationClass;
@@ -48,14 +49,14 @@ public class SjlBtaisScanner extends ClassPathBeanDefinitionScanner {
         this.annotationClass = annotationClass;
     }
 
-    public SjlBtaisScanner(BeanDefinitionRegistry registry) {
+    public SjlExploreScanner(BeanDefinitionRegistry registry) {
         super(registry);
     }
 
     @Override
     public int scan(String... basePackages) {
         final int scan = super.scan(basePackages);
-        log.info("==========SjlBtaisScanner beagin scanner count is:{}================",scan);
+        log.info("==========SjlExploreScanner begin scanner count is:{}================",scan);
         return super.scan(basePackages);
     }
 

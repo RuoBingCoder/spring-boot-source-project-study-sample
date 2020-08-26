@@ -1,8 +1,6 @@
 package com.sjl.enable.annotation;
 
-import lombok.Builder;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
@@ -15,8 +13,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(SjlSannerRegistry.class)
-public @interface SjlSanner {
+@Import(SjlScannerRegistry.class)
+public @interface SjlScanner {
 
     Class<?>[] basePackagesClasses() default {} ;
 
