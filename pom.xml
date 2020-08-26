@@ -17,6 +17,7 @@
     </parent>
     <modules>
         <module>enable-auto-config-boot</module>
+        <module>co.sjl.com.service.loader</module>
     </modules>
     <dependencies>
         <dependency>
