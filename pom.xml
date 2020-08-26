@@ -17,7 +17,7 @@
     </parent>
     <modules>
         <module>enable-auto-config-boot</module>
-        <module>co.sjl.com.service.loader</module>
+        <module>spi-serviceloader-sample</module>
     </modules>
     <dependencies>
         <dependency>
