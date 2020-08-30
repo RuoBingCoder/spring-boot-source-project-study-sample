@@ -18,6 +18,7 @@
     <modules>
         <module>enable-auto-config-boot</module>
         <module>spi-serviceloader-sample</module>
+        <module>zookeeper-curator-framework</module>
     </modules>
     <dependencies>
         <dependency>

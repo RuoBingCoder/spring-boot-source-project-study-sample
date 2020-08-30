@@ -11,5 +11,12 @@
 
     <artifactId>spi-serviceloader-sample</artifactId>
 
-
+    <!--高性能反射工具包-->
+    <dependencies>
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>reflectasm</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+    </dependencies>
 </project>
