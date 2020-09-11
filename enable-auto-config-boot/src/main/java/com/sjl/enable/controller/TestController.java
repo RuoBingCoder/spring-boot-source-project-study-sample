@@ -1,10 +1,14 @@
 package com.sjl.enable.controller;
 
+import com.sjl.enable.annotation.SjlScanner;
 import com.sjl.enable.service.HelloService;
+import com.sjl.enable.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 /**
  * @author: jianlei
@@ -25,4 +29,6 @@ public class TestController {
         return helloService.say();
 
     }
+
+
 }

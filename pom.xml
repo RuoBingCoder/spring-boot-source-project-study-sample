@@ -12,13 +12,15 @@
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.6.RELEASE</version>
+        <version>2.2.6.RELEASE</version>
         <!-- lookup parent from repository -->
     </parent>
     <modules>
         <module>enable-auto-config-boot</module>
         <module>spi-serviceloader-sample</module>
         <module>zookeeper-curator-framework</module>
+        <module>bean-life-cycle</module>
+        <module>spring-xml-config-parse-sample</module>
     </modules>
     <dependencies>
         <dependency>

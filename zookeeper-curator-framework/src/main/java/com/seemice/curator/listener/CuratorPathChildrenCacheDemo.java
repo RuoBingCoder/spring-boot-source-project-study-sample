@@ -5,6 +5,9 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.zookeeper.CreateMode;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author: JianLei
  * @date: 2020/8/30 1:18 下午
@@ -20,14 +23,24 @@ public class CuratorPathChildrenCacheDemo {
 
       PathChildrenCache pathChildrenCache = new PathChildrenCache(client,parentPath,true);
       pathChildrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
-      pathChildrenCache.getListenable().addListener((client1, event) -> System.out.println("事件类型："  + event.getType() + "；操作节点：" + event.getData().getPath()));
+      pathChildrenCache.getListenable().addListener((client1, event) -> System.out.println("事件类型："  + event.getType() + "；操作节点：" + event.getData().getPath()+"更新后的值是:"+ new String(event.getData().getData())));
 
       String path = "/p1/c1";
-      client.create().withMode(CreateMode.PERSISTENT).forPath(path);
-      Thread.sleep(1000); // 此处需留意，如果没有线程睡眠则无法触发监听事件
-      client.delete().forPath(path);
+//      client.create().withMode(CreateMode.PERSISTENT).forPath(path,"127.0.0.1".getBytes());
 
-      Thread.sleep(15000);
+      Thread.sleep(1000); // 此处需留意，如果没有线程睡眠则无法触发监听事件
+      if (client.checkExists().forPath(path)!=null){
+          List<String> ip = client.getChildren().forPath(path);
+          if (!ip.contains("127.0.0.2")){
+              client.setData().forPath(path,"127.0.0.2".getBytes());
+          }
+      }
+//      client.create().withMode(CreateMode.PERSISTENT).forPath(path,"127.0.0.2".getBytes());
+
+      Thread.sleep(1000); // 此处需留意，如果没有线程睡眠则无法触发监听事件
+//      client.delete().forPath(path);
+//
+//      Thread.sleep(15000);
 
   }
   }
