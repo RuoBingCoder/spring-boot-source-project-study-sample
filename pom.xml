@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
-    <artifactId>spring-boot-source-analyze</artifactId>
+    <groupId>com.sjl</groupId>
+    <artifactId>spring-boot-sample</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <parent>
@@ -16,16 +16,39 @@
         <!-- lookup parent from repository -->
     </parent>
     <modules>
-        <module>enable-auto-config-boot</module>
+        <module>autowired-inject-spring-boot-sample</module>
+        <module>enable-auto-config-spring-boot-sample</module>
         <module>spi-serviceloader-sample</module>
-        <module>zookeeper-curator-framework</module>
-        <module>bean-life-cycle</module>
-        <module>spring-xml-config-parse-sample</module>
+        <module>zookeeper-curator-framework-spring-boot-sample</module>
+        <module>spring-bean-life-cycle-sample</module>
+        <module>custom-spring-boot-starter-sample</module>
+        <module>rocketmq-producers-spring-boot-sample</module>
+        <module>rocketmq-consumer-spring-boot-sample</module>
+        <module>spring-boot-common</module>
+        <module>custom-spring-xml-spring-boot-sample</module>
+        <module>custom-aop-spring-boot-sample</module>
     </modules>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.72</version>
         </dependency>
     </dependencies>
     <dependencyManagement>
