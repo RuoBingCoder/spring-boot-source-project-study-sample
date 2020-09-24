@@ -2,6 +2,10 @@ package com.sjl.boot.autowired.inject.sample.controller;
 
 import com.sjl.boot.autowired.inject.sample.annotation.MyAutowired;
 import com.sjl.boot.autowired.inject.sample.service.AutowiredService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.EmbeddedValueResolver;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +20,7 @@ public class TestController {
 
     @MyAutowired(group = "101",version = "1.0.0")
     private AutowiredService autowiredService;
+
 
     @GetMapping(value = "/auto", name = "true")
     @ResponseBody
