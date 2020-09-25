@@ -7,9 +7,9 @@
         <groupId>com.sjl</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>rocketmq-producers-spring-boot-sample</artifactId>
+    <artifactId>custom-aop-spring-boot-sample</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>rocketmq-producers-spring-boot-sample</name>
+    <name>custom-aop-spring-boot-sample</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
@@ -32,11 +32,6 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.sjl</groupId>
-            <artifactId>spring-boot-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

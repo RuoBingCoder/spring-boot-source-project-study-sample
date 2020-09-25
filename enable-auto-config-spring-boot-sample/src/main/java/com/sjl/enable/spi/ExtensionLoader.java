@@ -53,7 +53,7 @@ public class ExtensionLoader<T> {
     return type.isAnnotationPresent(SPI.class);
   }
 
-  public T getExtension(String name) throws InstantiationException, IllegalAccessException {
+  public T getExtension(String name) {
     if (StringUtils.isEmpty(name)) {
       throw new IllegalArgumentException("Extension name == null");
     }

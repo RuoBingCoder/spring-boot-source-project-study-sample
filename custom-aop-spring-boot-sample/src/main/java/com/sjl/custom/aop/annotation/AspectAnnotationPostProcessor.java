@@ -34,6 +34,7 @@ public class AspectAnnotationPostProcessor implements BeanPostProcessor, Disposa
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
+    //1、解析Aspect类  2、获取容器bean 进行匹配 3、创建代理
     // 获取controller字段
     parseMyAutowired(bean);
     //解析增强类和增强方法

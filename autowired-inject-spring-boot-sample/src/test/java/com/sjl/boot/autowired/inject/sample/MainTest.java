@@ -1,6 +1,9 @@
 package com.sjl.boot.autowired.inject.sample;
 
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.util.StringUtils;
+
+import java.util.TimeZone;
 
 /**
  * @author: JianLei
@@ -14,5 +17,8 @@ public class MainTest {
       CronTrigger cronTrig=new CronTrigger("5 * * * * *");
       String expression = cronTrig.getExpression();
     System.out.println(expression);
+
+      TimeZone timeZone = StringUtils.parseTimeZoneString("0 22 * * 1-5");
+    System.out.println(timeZone.toString());
   }
 }

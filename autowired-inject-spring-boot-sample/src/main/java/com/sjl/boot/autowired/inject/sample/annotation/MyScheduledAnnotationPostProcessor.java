@@ -1,16 +1,22 @@
 package com.sjl.boot.autowired.inject.sample.annotation;
 
+import com.alibaba.fastjson.JSONObject;
 import com.sjl.boot.autowired.inject.sample.bean.CronScheduled;
 import com.sjl.boot.autowired.inject.sample.utils.ThreadPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.EmbeddedValueResolver;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.util.StringValueResolver;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,7 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 @Slf4j
-public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor {
+public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
+
+  private EmbeddedValueResolver embeddedValueResolver;
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
@@ -63,5 +71,16 @@ public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor {
       }
     }
     return methodSetMap;
+  }
+
+  /**
+   * 解析字符串
+   * @param resolver
+   */
+  @Override
+  public void setEmbeddedValueResolver(StringValueResolver resolver) {
+    this.embeddedValueResolver= (EmbeddedValueResolver) resolver;
+    String result = resolver.resolveStringValue("你好${app.name}, 计算#{3*8}");
+    System.out.println("解析的字符串为---"+result);
   }
 }

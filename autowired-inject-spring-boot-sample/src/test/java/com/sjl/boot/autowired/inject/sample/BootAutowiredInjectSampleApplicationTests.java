@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 @SpringBootTest
-class BootAutowiredInjectSampleApplicationTests {
+class BootAutowiredInjectSampleApplicationTests  {
   @Resource
   private DefaultListableBeanFactory beanFactory;
   @Test
