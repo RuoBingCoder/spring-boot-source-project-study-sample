@@ -9,8 +9,8 @@ import java.lang.reflect.Method;
  */
 
 public abstract class AbstractAspectAdvice implements Advice {
-    private Method aspectMethod;
-    private Object aspectTarget;
+    private final Method aspectMethod;
+    private final Object aspectTarget;
     public AbstractAspectAdvice(Method aspectMethod, Object aspectTarget) {
         this.aspectMethod = aspectMethod;
         this.aspectTarget = aspectTarget;
@@ -21,13 +21,12 @@ public abstract class AbstractAspectAdvice implements Advice {
      * @param joinPoint
      * @param returnValue
      * @param tx
-     * @return
      * @throws Throwable
      */
-    public Object invokeAdviceMethod(JoinPoint joinPoint, Object returnValue, Throwable tx) throws Throwable{
+    public void invokeAdviceMethod(JoinPoint joinPoint, Object returnValue, Throwable tx) throws Throwable{
         Class<?> [] paramTypes = this.aspectMethod.getParameterTypes();
-        if(null == paramTypes || paramTypes.length == 0){
-            return this.aspectMethod.invoke(aspectTarget);
+        if(paramTypes.length == 0){
+            this.aspectMethod.invoke(aspectTarget);
         }else{
             Object [] args = new Object[paramTypes.length];
             for (int i = 0; i < paramTypes.length; i ++) {
@@ -39,7 +38,7 @@ public abstract class AbstractAspectAdvice implements Advice {
                     args[i] = returnValue;
                 }
             }
-            return this.aspectMethod.invoke(aspectTarget,args);
+            this.aspectMethod.invoke(aspectTarget, args);
         }
     }
 

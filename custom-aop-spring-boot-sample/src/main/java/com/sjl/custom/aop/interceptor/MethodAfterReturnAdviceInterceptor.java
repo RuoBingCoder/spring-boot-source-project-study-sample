@@ -24,11 +24,11 @@ public class MethodAfterReturnAdviceInterceptor extends AbstractAspectAdvice
   public Object invoke(MethodInvocation invocation) throws Throwable {
     Object result = invocation.proceed();
     joinPoint = invocation;
-    afterReturning(result, invocation.getMethod(), invocation.getArguments(), invocation.getThis());
+    afterReturning(result);
     return result;
   }
 
-  public void afterReturning(Object returnValue, Method method, Object[] args, Object obj) throws Throwable {
+  public void afterReturning(Object returnValue) throws Throwable {
     super.invokeAdviceMethod(joinPoint,returnValue,null);
   }
 }

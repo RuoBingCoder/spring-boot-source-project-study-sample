@@ -18,9 +18,8 @@ public class MethodBeforeAdviceInterceptor extends AbstractAspectAdvice implemen
         super(aspectMethod, aspectTarget);
     }
 
-    private void before(Method method,Object[] args,Object target) throws Throwable{
+    private void before() throws Throwable{
         //传送了给织入参数
-        //method.invoke(target);
         super.invokeAdviceMethod(this.joinPoint,null,null);
 
     }
@@ -28,7 +27,7 @@ public class MethodBeforeAdviceInterceptor extends AbstractAspectAdvice implemen
     public Object invoke(MethodInvocation mi) throws Throwable {
         //从被织入的代码中才能拿到，JoinPoint
         this.joinPoint = mi;
-        before(mi.getMethod(), mi.getArguments(), mi.getThis());
+        before();
         return mi.proceed();
     }
 }

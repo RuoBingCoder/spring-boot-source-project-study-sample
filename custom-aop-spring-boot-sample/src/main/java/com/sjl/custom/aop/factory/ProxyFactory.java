@@ -11,7 +11,7 @@ import java.lang.reflect.Proxy;
  * @description:
  */
 public class ProxyFactory {
-  private AdvisedSupport support;
+  private final AdvisedSupport support;
 
   public ProxyFactory(AdvisedSupport support) {
     this.support = support;
