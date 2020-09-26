@@ -10,6 +10,7 @@ import java.util.List;
  * @description:
  */
 @Data
+@Deprecated
 public class AspectHolder<T> {
 
     private Class<?> clazz;

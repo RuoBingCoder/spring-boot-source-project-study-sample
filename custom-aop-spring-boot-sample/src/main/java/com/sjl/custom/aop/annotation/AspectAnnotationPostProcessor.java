@@ -1,15 +1,15 @@
 package com.sjl.custom.aop.annotation;
 
-import com.sjl.custom.aop.bean.AopBeanDefinition;
-import com.sjl.custom.aop.bean.AspectHolder;
-import com.sjl.custom.aop.exception.AopException;
+import com.sjl.custom.aop.definition.AopBeanDefinition;
+import com.sjl.custom.aop.bean.AopConfig;
 import com.sjl.custom.aop.factory.ProxyFactory;
-import com.sjl.custom.aop.service.HelloService;
+import com.sjl.custom.aop.support.AdvisedSupport;
+import com.sjl.custom.aop.utils.SpringBeanUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -20,113 +20,71 @@ import java.util.*;
 /**
  * @author: JianLei
  * @date: 2020/9/22 3:14 下午
- * @description:
- * 1、
+ * @description: 1、
  */
 @Component
 @Slf4j
-public class AspectAnnotationPostProcessor implements BeanPostProcessor, DisposableBean {
+@DependsOn("springBeanUtil")
+public class AspectAnnotationPostProcessor implements BeanPostProcessor {
 
-  private static final Map<Class<?>, List<AopBeanDefinition>> CACHE_ASPECT_BEAN_DEFINITION = new HashMap<>();
+  private static final List<AopBeanDefinition> AOP_BEAN_DEFINITIONS = new ArrayList<>();
 
-  public static final Set<Object> PROXY_CLASS_SET=new LinkedHashSet<>();
   @SneakyThrows
   @Override
-  public Object postProcessBeforeInitialization(Object bean, String beanName)
-      throws BeansException {
-    //1、解析Aspect类  2、获取容器bean 进行匹配 3、创建代理
-    // 获取controller字段
-    parseMyAutowired(bean);
-    //解析增强类和增强方法
-    List<AopBeanDefinition> aopBeanDefinitions = parseAspectBean(bean);
-    if (CollectionUtils.isEmpty(aopBeanDefinitions) && !CACHE_ASPECT_BEAN_DEFINITION.isEmpty()) {
-      boolean isNeedProxyBean = isNeedProxyBean(bean);
-      if (isNeedProxyBean) {
-        createProxy();
-      }
+  public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    parseAspectBean(bean);
+    if (!CollectionUtils.isEmpty(AOP_BEAN_DEFINITIONS)) {
+      matchProxyClassAndCreateProxy();
     }
     return bean;
   }
 
-  private void parseMyAutowired(Object bean) {
-    for (Field field : bean.getClass().getDeclaredFields()) {
-      if (field.isAnnotationPresent(MyAutowired.class)){
-          PROXY_CLASS_SET.add(bean);
-      }
-    }
-  }
-
   /**
-   * @param bean
-   * @return
+   * 匹配代理方法,并添加拦截器
+   *
+   * @date 2020/9/25 pm 6:21
    */
-  private boolean isNeedProxyBean(
-          Object bean) {
-    checkPointcut();
-    for (Map.Entry<Class<?>, List<AopBeanDefinition>> classListEntry :
-        AspectAnnotationPostProcessor.CACHE_ASPECT_BEAN_DEFINITION.entrySet()) {
-      // 简单处理
-      for (AopBeanDefinition b : classListEntry.getValue()) {
-        int i = bean.getClass().getName().lastIndexOf(".");
-
-        String expressionPackagePrefix = b.getExpression();
-        if (expressionPackagePrefix == null) {
-          continue;
-        }
-        log.info("expressionPackagePrefix is:{}", expressionPackagePrefix);
-        String classNamePrefix = bean.getClass().getName().substring(0, i);
-        int i1 = classNamePrefix.lastIndexOf(".");
-        // 主要用于做接口代理,需要判断接口名
-        String secondClassNamePrefix = bean.getClass().getName().substring(0, i1);
-        log.info("secondClassNamePrefix is:{}", secondClassNamePrefix);
-        // 判断bean是否是接口
-        if (expressionPackagePrefix.equals(secondClassNamePrefix)
-            && bean.getClass().getInterfaces().length > 0) {
-          b.setTargetClass(bean.getClass().getInterfaces()[0]);
-          b.setTarget(bean);
-          return true;
+  private void matchProxyClassAndCreateProxy()
+      throws IllegalAccessException, InstantiationException {
+    for (AopBeanDefinition definition : AspectAnnotationPostProcessor.AOP_BEAN_DEFINITIONS) {
+      for (Object serviceBean : SpringBeanUtil.getServicesBeans()) {
+        if (serviceBean.getClass().getInterfaces().length > 0) {
+          AdvisedSupport advisedSupport = instantiationAopConfig(definition, serviceBean);
+          createProxy(advisedSupport);
         }
       }
     }
-    return false;
   }
 
-  private void checkPointcut() {
-    for (Map.Entry<Class<?>, List<AopBeanDefinition>> classListEntry :
-        AspectAnnotationPostProcessor.CACHE_ASPECT_BEAN_DEFINITION.entrySet()) {
-      classListEntry
-          .getValue()
-          .forEach(
-              a -> {
-                if (("".equals(a.getExpression()) && !"".equals(a.getBefore()))
-                    || ("".equals(a.getExpression()) && !"".equals(a.getAfter()))) {
-                  throw new AopException(
-                      "@Pointcut value is null and @Before value is not null || @After value is not null");
-                }
-              });
-    }
+  private AdvisedSupport instantiationAopConfig(AopBeanDefinition definition, Object bean)
+      throws InstantiationException, IllegalAccessException {
+    AopConfig config = new AopConfig();
+    config.setPointCut(definition.getPointcut());
+    config.setAspectClass(definition.getAspectClass());
+    config.setAspectBefore(definition.getBeforeMethodName());
+    config.setAspectAfter(definition.getAfterMethodName());
+    AdvisedSupport support = new AdvisedSupport(config);
+    support.setTarget(bean);
+    support.setTargetClass(bean.getClass().getInterfaces()[0]);
+    support.parse();
+    return support;
   }
+
   /**
    * 创建代理
    *
+   * @param advisedSupport
    */
-  private void createProxy() throws IllegalAccessException {
-    for (Map.Entry<Class<?>, List<AopBeanDefinition>> classListEntry :
-        AspectAnnotationPostProcessor.CACHE_ASPECT_BEAN_DEFINITION.entrySet()) {
-      AspectHolder<AopBeanDefinition> holder = new AspectHolder<>();
-      holder.setClazz(classListEntry.getKey());
-      holder.setConfigAttribute(classListEntry.getValue());
-      for (Object obj : PROXY_CLASS_SET) {
-        for (Field field : obj.getClass().getDeclaredFields()) {
-          field.setAccessible(true);
-          for (AopBeanDefinition aopBeanDefinition : holder.getConfigAttribute()) {
-            if (field.getType().equals(aopBeanDefinition.getTargetClass())) {
-              field.set(obj, new ProxyFactory(holder).crateProxy());
-            }
-          }
+  private void createProxy(AdvisedSupport advisedSupport) throws IllegalAccessException {
+
+    for (Object obj : SpringBeanUtil.getInjectBeans()) {
+      for (Field field : obj.getClass().getDeclaredFields()) {
+        field.setAccessible(true);
+        if (field.getType().equals(advisedSupport.getTargetClass())) {
+          field.set(obj, new ProxyFactory(advisedSupport).crateProxy());
         }
       }
-      }
+    }
   }
 
   /**
@@ -134,41 +92,29 @@ public class AspectAnnotationPostProcessor implements BeanPostProcessor, Disposa
    *
    * @param bean
    */
-  private List<AopBeanDefinition> parseAspectBean(Object bean) {
-    List<AopBeanDefinition> aopBeanDefinitions = new LinkedList<>();
-    if (bean.getClass().isAnnotationPresent(Aspect.class)) {
-      for (Method method : bean.getClass().getDeclaredMethods()) {
+  private void parseAspectBean(Object bean) {
+    synchronized (AOP_BEAN_DEFINITIONS) {
+      if (bean.getClass().isAnnotationPresent(Aspect.class)) {
         AopBeanDefinition aopBean = new AopBeanDefinition();
-        aopBean.setAspectClass(bean.getClass());
-        aopBean.setAspectTarget(bean);
-        if (method.isAnnotationPresent(Pointcut.class)) {
-          Pointcut pointcut = method.getAnnotation(Pointcut.class);
-          String aopPackage = pointcut.value();
-          aopBean.setExpression(aopPackage);
-        } else if (method.isAnnotationPresent(Before.class)) {
-          Before before = method.getAnnotation(Before.class);
-          aopBean.setBefore(before.value());
-          aopBean.setBeforeMethodName(method.getName());
-        } else if (method.isAnnotationPresent(After.class)) {
-          After after = method.getAnnotation(After.class);
-          aopBean.setAfter(after.value());
-          aopBean.setAfterMethodName(method.getName());
+        for (Method method : bean.getClass().getDeclaredMethods()) {
+          aopBean.setAspectClass(bean.getClass());
+          aopBean.setAspectTarget(bean);
+          if (method.isAnnotationPresent(Pointcut.class)) {
+            Pointcut pointcut = method.getAnnotation(Pointcut.class);
+            String aopPackage = pointcut.value();
+            aopBean.setPointcut(aopPackage);
+          } else if (method.isAnnotationPresent(Before.class)) {
+            Before before = method.getAnnotation(Before.class);
+            aopBean.setBefore(before.value());
+            aopBean.setBeforeMethodName(method.getName());
+          } else if (method.isAnnotationPresent(After.class)) {
+            After after = method.getAnnotation(After.class);
+            aopBean.setAfter(after.value());
+            aopBean.setAfterMethodName(method.getName());
+          }
         }
-        aopBeanDefinitions.add(aopBean);
+        AOP_BEAN_DEFINITIONS.add(aopBean);
       }
-      CACHE_ASPECT_BEAN_DEFINITION.put(bean.getClass(), aopBeanDefinitions);
     }
-    return aopBeanDefinitions;
-  }
-
-  public static void main(String[] args) throws IllegalAccessException, InstantiationException {
-    Class<HelloService> helloServiceClass = HelloService.class;
-    System.out.println(helloServiceClass.newInstance());
-  }
-
-  @Override
-  public void destroy() throws Exception {
-    PROXY_CLASS_SET.clear();
-    CACHE_ASPECT_BEAN_DEFINITION.clear();
   }
 }

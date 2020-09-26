@@ -20,8 +20,9 @@ public class AopController {
 
   @GetMapping("/hello")
   public String hello() {
-//    helloService.sayHello("这是测试");
-    helloService.list(1,10,"张三");
+    //    helloService.sayHello("这是测试");
+    System.out.println("======================");
+    String list = helloService.list(1, 10, "张三");
     return "success";
   }
 }

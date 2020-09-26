@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * @date: 2020/9/22 7:22 下午
  * @description:
  */
-@Component
+@Component("com.sjl.custom.aop.service.impl.HelloServiceImpl")
 public class HelloServiceImpl implements HelloService {
     @Override
     public void sayHello(String params) {

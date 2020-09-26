@@ -1,8 +1,7 @@
 package com.sjl.custom.aop.factory;
 
-import com.sjl.custom.aop.bean.AopBeanDefinition;
-import com.sjl.custom.aop.bean.AspectHolder;
 import com.sjl.custom.aop.proxy.JdkProxy;
+import com.sjl.custom.aop.support.AdvisedSupport;
 
 import java.lang.reflect.Proxy;
 
@@ -12,14 +11,16 @@ import java.lang.reflect.Proxy;
  * @description:
  */
 public class ProxyFactory {
-  private  AspectHolder<AopBeanDefinition> holder;
+  private AdvisedSupport support;
 
-  public ProxyFactory(AspectHolder<AopBeanDefinition> holder) {
-    this.holder = holder;
+  public ProxyFactory(AdvisedSupport support) {
+    this.support = support;
   }
+
   public  <T> T crateProxy() {
     return (T)
         Proxy.newProxyInstance(
-                holder.getConfigAttribute().get(0).getTarget().getClass().getClassLoader(), new Class[] {this.holder.getConfigAttribute().get(0).getTargetClass()}, new JdkProxy(holder));
+                support.getTarget().getClass().getClassLoader(), new Class[] {this.support.getTargetClass()}, new JdkProxy(support));
   }
+
 }

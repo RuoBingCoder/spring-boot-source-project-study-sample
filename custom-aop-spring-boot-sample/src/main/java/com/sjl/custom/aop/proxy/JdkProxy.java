@@ -1,14 +1,11 @@
 package com.sjl.custom.aop.proxy;
 
-import com.alibaba.fastjson.JSONObject;
-import com.sjl.custom.aop.aspect.LogAspect;
-import com.sjl.custom.aop.bean.AopBeanDefinition;
-import com.sjl.custom.aop.bean.AspectHolder;
-import com.sjl.custom.aop.bean.JoinPoint;
+import com.sjl.custom.aop.aspect.MethodInvocation;
+import com.sjl.custom.aop.support.AdvisedSupport;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author: JianLei
@@ -17,41 +14,21 @@ import java.lang.reflect.Method;
  */
 public class JdkProxy implements InvocationHandler {
 
-  private AspectHolder<AopBeanDefinition> holder;
+  private AdvisedSupport advised;
 
-  public JdkProxy(AspectHolder<AopBeanDefinition> holder) {
-    this.holder = holder;
+  public JdkProxy(AdvisedSupport advised) {
+    this.advised = advised;
   }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     //调用before方法
-    handleBefore(holder, method, args);
-    return method.invoke(holder.getConfigAttribute().get(0).getTarget(), args);
+    List<Object> advice = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, advised.getTargetClass());
+    MethodInvocation invocation=new MethodInvocation(proxy,method,this.advised.getTarget(),args,advice,this.advised.getTargetClass());
+   //执行调用链
+    return invocation.proceed();
   }
 
-  private void handleBefore(AspectHolder<AopBeanDefinition> holder, Method method, Object[] args)
-          throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
-    for (AopBeanDefinition abd : holder.getConfigAttribute()) {
-      if (abd.getBeforeMethodName()==null||"".equals(abd.getBeforeMethodName())){
-        continue;
-      }
-      Method method1 =
-          holder.getClazz().getMethod(abd.getBeforeMethodName(),JoinPoint.class);
-      Class<?>[] parameterTypes = method1.getParameterTypes();
-      Object[] aspectArgs = new Object[parameterTypes.length];
-      for (int i = 0; i < parameterTypes.length; i++) {
-        if (parameterTypes[i].equals(JoinPoint.class)) {
-          JoinPoint joinPoint = new JoinPoint();
-          joinPoint.setClazz(method.getDeclaringClass());
-          joinPoint.setMethodName(method.getName());
-          joinPoint.setParams(JSONObject.toJSONString(args));
-          aspectArgs[i] = joinPoint;
-          method1.invoke(holder.getConfigAttribute().get(0).getAspectTarget(), aspectArgs);
-        }
-      }
-    }
-  }
 
 }
