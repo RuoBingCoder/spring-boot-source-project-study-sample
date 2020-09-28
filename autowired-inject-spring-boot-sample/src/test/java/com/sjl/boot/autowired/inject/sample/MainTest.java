@@ -18,7 +18,9 @@ public class MainTest {
       String expression = cronTrig.getExpression();
     System.out.println(expression);
 
-      TimeZone timeZone = StringUtils.parseTimeZoneString("0 22 * * 1-5");
-    System.out.println(timeZone.toString());
+
+
+          String str="HelloWord";
+    System.out.println(str.toLowerCase());
   }
 }

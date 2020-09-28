@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author: JianLei
  * @date: 2020/9/22 5:32 下午
- * @description:
+ * @description: aop日志打印
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

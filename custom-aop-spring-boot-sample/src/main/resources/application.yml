@@ -6,3 +6,4 @@ service:
 #配置依赖注入bean后缀
 match:
   controller: Controller
+

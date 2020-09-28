@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class JdkProxy implements InvocationHandler {
 
-  private AdvisedSupport advised;
+  private final AdvisedSupport advised;
 
   public JdkProxy(AdvisedSupport advised) {
     this.advised = advised;
@@ -24,7 +24,7 @@ public class JdkProxy implements InvocationHandler {
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     //调用before方法
     List<Object> advice = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, advised.getTargetClass());
-    MethodInvocation invocation=new MethodInvocation(proxy,method,this.advised.getTarget(),args,advice,this.advised.getTargetClass());
+    MethodInvocation invocation=new MethodInvocation(method,this.advised.getTarget(),args,advice);
    //执行调用链
     return invocation.proceed();
   }

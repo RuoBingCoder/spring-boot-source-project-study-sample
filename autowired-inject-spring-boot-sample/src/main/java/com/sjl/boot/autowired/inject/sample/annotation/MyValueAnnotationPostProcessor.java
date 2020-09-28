@@ -19,7 +19,7 @@ public class MyValueAnnotationPostProcessor implements BeanPostProcessor, Enviro
     @SneakyThrows
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        ReflectiveUtil.inject(bean,environment,MyValue.class);
+        ReflectiveUtil.inject(bean,null,environment,MyValue.class);
         return bean;
     }
 

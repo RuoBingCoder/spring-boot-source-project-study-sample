@@ -13,24 +13,27 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 public class ThreadPoolUtil {
-    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
-        private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
-        private final AtomicInteger threadNumber = new AtomicInteger(1);
+  private static ThreadFactory factoryName(String threadName) {
 
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = this.defaultFactory.newThread(r);
-            if (!thread.isDaemon()) {
-                thread.setDaemon(true);
-            }
+    return new ThreadFactory() {
+      private final ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+      private final AtomicInteger threadNumber = new AtomicInteger(1);
 
-            thread.setName("MyScheduled-" + this.threadNumber.getAndIncrement());
-            return thread;
+      @Override
+      public Thread newThread(Runnable r) {
+        Thread thread = this.defaultFactory.newThread(r);
+        if (!thread.isDaemon()) {
+          thread.setDaemon(true);
         }
+
+        thread.setName(threadName + this.threadNumber.getAndIncrement());
+        return thread;
+      }
     };
+    }
     public static void scheduledTask(CronScheduled cronScheduled){
         String[] s = cronScheduled.getCron().split(" ");
-        ScheduledExecutorService threadPoolExecutor= Executors.newScheduledThreadPool(4,THREAD_FACTORY);
+        ScheduledExecutorService threadPoolExecutor= Executors.newScheduledThreadPool(4,factoryName("MyScheduled-"));
         threadPoolExecutor.scheduleAtFixedRate(() -> {
             try {
                 cronScheduled.getMethod().invoke(cronScheduled.getBean());
@@ -38,5 +41,11 @@ public class ThreadPoolUtil {
                 e.printStackTrace();
             }
         },Long.parseLong(s[0]),Long.parseLong(s[1]), TimeUnit.SECONDS);
+    }
+
+
+    public static void executeTask(Runnable task){
+        ExecutorService executorService = Executors.newFixedThreadPool(4,factoryName("myAsync-Thread-"));
+        executorService.execute(task);
     }
 }

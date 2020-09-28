@@ -12,20 +12,16 @@ import java.util.List;
  */
 
 public class MethodInvocation implements JoinPoint{
-    private Object proxy;
-    private Method method;
-    private Object target;
-    private Object [] arguments;
-    private List<Object> interceptorsAndDynamicMethodMatchers;
-    private Class<?> targetClass;
+    private final Method method;
+    private final Object target;
+    private final Object [] arguments;
+    private final List<Object> interceptorsAndDynamicMethodMatchers;
 
-    public MethodInvocation(Object proxy, Method method, Object target, Object[] arguments, List<Object> interceptorsAndDynamicMethodMatchers, Class<?> targetClass) {
-        this.proxy = proxy;
+    public MethodInvocation(Method method, Object target, Object[] arguments, List<Object> interceptorsAndDynamicMethodMatchers) {
         this.method = method;
         this.target = target;
         this.arguments = arguments;
         this.interceptorsAndDynamicMethodMatchers = interceptorsAndDynamicMethodMatchers;
-        this.targetClass = targetClass;
     }
 //定义一个索引，从-1开始来记录当前拦截器执行的位置
     private int currentInterceptorIndex = -1;
