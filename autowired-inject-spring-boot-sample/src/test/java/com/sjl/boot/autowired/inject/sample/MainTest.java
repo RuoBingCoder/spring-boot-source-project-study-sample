@@ -22,5 +22,6 @@ public class MainTest {
 
           String str="HelloWord";
     System.out.println(str.toLowerCase());
+    
   }
 }

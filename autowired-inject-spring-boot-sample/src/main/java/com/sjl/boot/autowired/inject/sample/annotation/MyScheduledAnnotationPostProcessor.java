@@ -28,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
 
-  private EmbeddedValueResolver embeddedValueResolver;
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
@@ -79,7 +78,6 @@ public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor, Em
    */
   @Override
   public void setEmbeddedValueResolver(StringValueResolver resolver) {
-    this.embeddedValueResolver= (EmbeddedValueResolver) resolver;
     String result = resolver.resolveStringValue("你好${app.name}, 计算#{3*8}");
     System.out.println("解析的字符串为---"+result);
   }

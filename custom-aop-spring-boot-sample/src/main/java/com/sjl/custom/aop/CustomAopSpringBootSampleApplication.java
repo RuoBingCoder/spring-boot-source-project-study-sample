@@ -1,9 +1,10 @@
 package com.sjl.custom.aop;
 
+import org.apache.rocketmq.spring.autoconfigure.RocketMQAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = RocketMQAutoConfiguration.class)
 public class CustomAopSpringBootSampleApplication {
 
   public static void main(String[] args) {

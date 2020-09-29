@@ -81,7 +81,7 @@ public class AspectAnnotationPostProcessor implements BeanPostProcessor {
       for (Field field : obj.getClass().getDeclaredFields()) {
         field.setAccessible(true);
         if (field.getType().equals(advisedSupport.getTargetClass())) {
-          field.set(obj, new ProxyFactory(advisedSupport).crateProxy());
+          field.set(obj, ProxyFactory.getJDKProxy(advisedSupport));
         }
       }
     }

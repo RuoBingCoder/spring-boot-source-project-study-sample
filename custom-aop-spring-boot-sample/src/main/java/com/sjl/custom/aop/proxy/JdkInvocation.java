@@ -12,11 +12,11 @@ import java.util.List;
  * @date: 2020/9/22 3:30 下午
  * @description:
  */
-public class JdkProxy implements InvocationHandler {
+public class JdkInvocation implements InvocationHandler {
 
   private final AdvisedSupport advised;
 
-  public JdkProxy(AdvisedSupport advised) {
+  public JdkInvocation(AdvisedSupport advised) {
     this.advised = advised;
   }
 
