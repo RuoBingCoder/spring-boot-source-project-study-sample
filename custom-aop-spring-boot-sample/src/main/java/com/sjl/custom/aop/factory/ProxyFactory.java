@@ -8,6 +8,9 @@ import org.springframework.cglib.proxy.Enhancer;
 
 import java.lang.reflect.Proxy;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author: JianLei
@@ -16,21 +19,24 @@ import java.util.Objects;
  */
 public class ProxyFactory implements CustomProxy {
   private final AdvisedSupport support;
-  private static volatile ProxyFactory proxyFactory;
-  private static final Enhancer en=new Enhancer();
+  private static final AtomicReference<ProxyFactory> factory = new AtomicReference<>();
+  private static final Enhancer en = new Enhancer();
+
   public ProxyFactory(AdvisedSupport support) {
     this.support = support;
   }
 
   public static ProxyFactory getProxyFactory(AdvisedSupport support) {
-    if (proxyFactory == null) {
-      synchronized (ProxyFactory.class) {
-        if (proxyFactory == null) {
-          return new ProxyFactory(support);
-        }
+    for (; ; ) {
+      ProxyFactory proxyFactory = factory.get();
+      if (proxyFactory != null) {
+        return proxyFactory;
+      }
+      proxyFactory = new ProxyFactory(support);
+      if (factory.compareAndSet(null, proxyFactory)) {
+        return proxyFactory;
       }
     }
-    return null;
   }
 
   @Override
@@ -53,7 +59,18 @@ public class ProxyFactory implements CustomProxy {
     return (T) en.create();
   }
 
-  public static  <T> T getCGLIBProxy(Class<?> clazz) {
-   return Objects.requireNonNull(getProxyFactory(null)).createCGLIBProxy(clazz);
+  public static <T> T getCGLIBProxy(Class<?> clazz) {
+    return Objects.requireNonNull(getProxyFactory(null)).createCGLIBProxy(clazz);
+  }
+
+  public static void main(String[] args) {
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+    for (int i = 0; i < 10000; i++) {
+      executorService.execute(
+          () -> {
+            System.out.println(ProxyFactory.getProxyFactory(null));
+          });
+    }
+    executorService.shutdown();
   }
 }

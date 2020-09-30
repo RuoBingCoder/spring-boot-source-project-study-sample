@@ -14,6 +14,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class CglibProxyAnnotationInstancePostProcessor implements SmartInstantiationAwareBeanPostProcessor, PriorityOrdered {
 
+    /**
+     * bean实例化之前创建代理类
+     * @param beanClass
+     * @param beanName
+     * @return
+     * @throws BeansException
+     */
     @Override
     public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         if (beanClass.isAnnotationPresent(Cglib.class)){
@@ -21,12 +28,6 @@ public class CglibProxyAnnotationInstancePostProcessor implements SmartInstantia
         }
         return null;
     }
-
-    @Override
-    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
-        return false;
-    }
-
 
 
 
