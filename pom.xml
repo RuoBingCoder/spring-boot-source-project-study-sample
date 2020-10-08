@@ -27,6 +27,7 @@
         <module>spring-boot-common</module>
         <module>custom-spring-xml-spring-boot-sample</module>
         <module>custom-aop-spring-boot-sample</module>
+        <module>easy-tomcat-netty</module>
     </modules>
     <dependencies>
         <dependency>
@@ -57,6 +58,11 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.12</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.0.6</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
