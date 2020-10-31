@@ -29,7 +29,7 @@ public class InstantiationAwareBeanPostProcessorImpl
   @Override
   public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
     System.out.println(
-            Constant.count.incrementAndGet()+"、->---------[InstantiationAwareDemo  postProcessAfterInstantiation 执行! ]--------");
+            Constant.count.incrementAndGet()+"、->---------[InstantiationAwareDemo  postProcessAfterInstantiation 执行! ]--------"+beanName);
     //postProcessProperties 方法执行依赖于postProcessAfterInstantiation返回 true
     return true;
   }

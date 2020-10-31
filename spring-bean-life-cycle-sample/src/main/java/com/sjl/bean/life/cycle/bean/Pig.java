@@ -1,11 +1,15 @@
 package com.sjl.bean.life.cycle.bean;
 
+import cn.hutool.extra.spring.SpringUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.sjl.bean.life.cycle.constants.Constant;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Map;
 
 /**
  * @author: JianLei
@@ -21,6 +25,7 @@ import javax.annotation.PostConstruct;
  *     8、->[BeanPostDemo postProcess[After]Initialization 执行! ]
  */
 @Component
+//@DependsOn("springUtil")
 public class Pig implements InitializingBean, DisposableBean {
 
     private String name;
@@ -31,12 +36,22 @@ public class Pig implements InitializingBean, DisposableBean {
 
     }
 
+    static {
+        System.out.println("*************Pig static************************");
+        Cat cat = SpringUtil.getBean(Cat.class);
+//        Map<String, Cat> beansOfType = SpringUtil.getBeansOfType(Cat.class);
+        System.out.println("==>cat json is:"+JSONObject.toJSONString(cat));
+    }
+
     @PostConstruct
     public void testConstructor(){
     System.out.println(Constant.count.incrementAndGet()+"、->开始testConstructor");
     }
     public Pig() {
         System.out.println(Constant.count.incrementAndGet()+"、->开始执行Pig<无参>构造器");
+        Map<String, Cat> beansOfType = SpringUtil.getBeansOfType(Cat.class);
+        System.out.println("----->pig:"+JSONObject.toJSONString(beansOfType));
+
 
     }
 

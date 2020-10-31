@@ -53,12 +53,12 @@ public class EasyHandlerAdaptor {
     Map<String, List<String>> parameters = request.getParameters();
     // 实参列表
     Object[] paramValues = new Object[parameterTypes.length];
-    for (Map.Entry<String, List<String>> parm : parameters.entrySet()) {
+    for (Map.Entry<String, List<String>> param : parameters.entrySet()) {
       String value =
-          Arrays.toString(parm.getValue().toArray()).replaceAll("\\[", "").replace("]", "");
+          Arrays.toString(param.getValue().toArray()).replaceAll("\\[", "").replace("]", "");
       log.info("获取参数中value 转换为字符串为:{}", value);
-      if (paramsIndexMapping.containsKey(parm.getKey())) {
-        Integer index = paramsIndexMapping.get(parm.getKey());
+      if (paramsIndexMapping.containsKey(param.getKey())) {
+        Integer index = paramsIndexMapping.get(param.getKey());
         paramValues[index] = caseStringValue(value, parameterTypes[index]);
       }
       if (paramsIndexMapping.containsKey(EasyRequest.class.getName())) {
@@ -92,10 +92,7 @@ public class EasyHandlerAdaptor {
     } else if (Double.class == paramsType) {
       return Double.valueOf(value);
     } else {
-      if (value != null) {
-        return value;
-      }
-      return null;
+      return value;
     }
   }
 }

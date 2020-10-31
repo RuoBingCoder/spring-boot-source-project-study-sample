@@ -16,7 +16,9 @@ public class Cat {
     @Autowired
     private Pig pig;
 
-
+    static {
+        System.out.println("*************Cat static************************");
+    }
 
     public Pig getPig() {
         return pig;

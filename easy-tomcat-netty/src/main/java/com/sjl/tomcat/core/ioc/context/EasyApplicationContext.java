@@ -23,7 +23,7 @@ public class EasyApplicationContext extends AbsEasyApplicationContext implements
   private final String scannerPackageName;
 
 
-  public EasyApplicationContext(String scannerPackageName) throws IllegalAccessException, InstantiationException {
+  public EasyApplicationContext(String scannerPackageName) throws IllegalAccessException, InstantiationException, IOException {
     this.scannerPackageName = scannerPackageName;
     initContext();
   }
@@ -47,7 +47,7 @@ public class EasyApplicationContext extends AbsEasyApplicationContext implements
     return null;
   }
 
-  public void initContext() throws InstantiationException, IllegalAccessException {
+  public void initContext() throws InstantiationException, IllegalAccessException, IOException {
     log.info("开始扫描包包路径为:{}" ,scannerPackageName);
     // 扫描包
     Assert.notNull(scannerPackageName,"扫描包路径不能为空!");
@@ -70,6 +70,7 @@ public class EasyApplicationContext extends AbsEasyApplicationContext implements
             + "`----'     `--`---'                    \\  ' ;                                              `----'   `--`---'                      `----'                                     \n"
             + "                                        `--`                                                                                                                                 \n");
     log.info("===================easy ioc 容器初始化完成! 容器bean size is:{}=======================",beanFactory.size());
+    log.info("------------->>>>>>easy tomcat start port :{}<<<<<<<-------------",PropertiesUtil.getPort());
     // mvc
 
   }

@@ -28,6 +28,7 @@
         <module>custom-spring-xml-spring-boot-sample</module>
         <module>custom-aop-spring-boot-sample</module>
         <module>easy-tomcat-netty</module>
+        <module>netty-channelHandler-sample</module>
     </modules>
     <dependencies>
         <dependency>
@@ -49,7 +50,14 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.72</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -62,7 +70,17 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>5.0.6</version>
+                <version>5.4.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>4.1.50.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.72</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
