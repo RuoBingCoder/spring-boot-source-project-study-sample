@@ -29,6 +29,7 @@
         <module>custom-aop-spring-boot-sample</module>
         <module>easy-tomcat-netty</module>
         <module>netty-channelHandler-sample</module>
+        <module>spring-components-sample</module>
     </modules>
     <dependencies>
         <dependency>
@@ -59,6 +60,10 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -81,6 +86,11 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>1.2.72</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>29.0-jre</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
