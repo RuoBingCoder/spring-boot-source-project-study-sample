@@ -38,18 +38,13 @@ public class RocketmqProducersSpringBootSampleApplication {
       var destination = "greetings-topic";
 
       for (var name : "Tammie,Kimly,Josh,Rob,Mario,Mia".split(",")) {
-
-        var payload = new Greeting("Hello @ " + name + " @ " + now.toString());
-        var messagePostProcessor = new MessagePostProcessor() {
-
-          @Override
-          public Message<?> postProcessMessage(Message<?> message) {
-            var headerValue = Character.toString(name.toLowerCase().charAt(0));
+        Greeting payload = new Greeting("Hello @ " + name + " @ " + now.toString());
+        MessagePostProcessor messagePostProcessor = message-> {
+            String headerValue = Character.toString(name.toLowerCase().charAt(0));
             return MessageBuilder
                     .fromMessage(message)
                     .setHeader("letter", headerValue)
                     .build();
-          }
         };
         template.convertAndSend(destination, payload, messagePostProcessor);
       }
