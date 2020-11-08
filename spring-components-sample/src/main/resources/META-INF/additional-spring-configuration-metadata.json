@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "service.namespace",
+      "type": "java.lang.String",
+      "description": "Description for service.namespace."
+    },
+    {
+      "name": "match.controller",
+      "type": "java.lang.String",
+      "description": "Description for match.controller."
+    }
+
+  ] }

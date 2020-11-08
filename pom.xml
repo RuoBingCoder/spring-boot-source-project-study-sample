@@ -19,7 +19,6 @@
         <module>autowired-inject-spring-boot-sample</module>
         <module>enable-auto-config-spring-boot-sample</module>
         <module>spi-serviceloader-sample</module>
-        <module>zookeeper-curator-framework-spring-boot-sample</module>
         <module>spring-bean-life-cycle-sample</module>
         <module>custom-spring-boot-starter-sample</module>
         <module>rocketmq-producers-spring-boot-sample</module>
@@ -30,6 +29,7 @@
         <module>easy-tomcat-netty</module>
         <module>netty-channelHandler-sample</module>
         <module>spring-components-sample</module>
+        <module>zk-framework-sample</module>
     </modules>
     <dependencies>
         <dependency>

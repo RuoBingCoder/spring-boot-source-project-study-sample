@@ -1,2 +1,39 @@
 server:
-  port: 8820
+  port: 8821
+
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: pIAzKrQ4ssD1tAxvFxqipRmDeKqq2TGqWP8vt4Awj7lk6Z5YjpWUhGAVd3vMT0X8idkuMyktbsykUlcFnepnpA==
+      url: jdbc:mysql://39.108.137.115:3306/test?serverTimezone=UTC&useSSL=false
+      initial-size: 5
+      max-active: 20  #最多可以连接20个数据库
+      #      max-evictable-idle-time-millis: 40000
+      max-open-prepared-statements: -1
+      max-wait: -1   #表示无限制
+      #      min-evictable-idle-time-millis: 300000
+      min-idle: 5
+      pool-prepared-statements: false
+      time-between-eviction-runs-millis: 60000
+      filter:
+        config:
+          enabled: true
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALl+uGnrTVpFFkm6oCZShN6OWynRzFM591wlS6t3Q7WxTuaMImp+pL37gSGbHNXRqk6AzGGQSm2ADAIuTo0ZacsCAwEAAQ==
+      #      这两个参数很关键，是否配置了代理
+      test-on-borrow: true
+      test-while-idle: true
+
+mybatis:
+  check-config-location: false
+  mapper-locations: classpath*:/mappers/*.xml
+  type-aliases-package: com.sjl.spring.components.transaction.pojo
+
+
+#配置代理接口全限定名即ioc中 beanDefinitionName
+service:
+  namespace: com.sjl.spring.components.transaction.service
+#配置依赖注入bean后缀
+match:
+  controller: Controller

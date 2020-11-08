@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sjl.spring.components.transaction.dao.HeroMapper">
+  <resultMap id="BaseResultMap" type="com.sjl.spring.components.transaction.pojo.Hero">
+    <!--@mbg.generated-->
+    <!--@Table `hero`-->
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="money" jdbcType="INTEGER" property="money" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    `id`, `NAME`, `type`, `money`, `create_time`
+  </sql>
+  <insert id="insert" parameterType="com.sjl.spring.components.transaction.pojo.Hero">
+    <!--@mbg.generated-->
+    insert into `hero` (`id`, `NAME`, `type`, 
+      `money`, `create_time`)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{money,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sjl.spring.components.transaction.pojo.Hero">
+    <!--@mbg.generated-->
+    insert into `hero`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        `id`,
+      </if>
+      <if test="name != null and name != ''">
+        `NAME`,
+      </if>
+      <if test="type != null and type != ''">
+        `type`,
+      </if>
+      <if test="money != null">
+        `money`,
+      </if>
+      <if test="createTime != null">
+        `create_time`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null and name != ''">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null and type != ''">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null">
+        #{money,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>
