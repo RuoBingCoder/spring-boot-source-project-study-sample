@@ -2,6 +2,7 @@ package com.sjl.spring.components.utils;
 
 import com.sjl.spring.components.exception.BeansNotFoundException;
 import com.sjl.spring.components.transaction.custom.annotation.EasyAutowired;
+import com.sjl.spring.components.transaction.custom.annotation.EasyTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -14,6 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -76,13 +78,28 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
                         Objects.requireNonNull(environment.getProperty(SERVICE_NAME_SPACE)))) {
                     //一旦getBean 则不会走后置处理器
                     bean = applicationContext.getBean(beanDefinitionName);
-                    SERVICE_BEANS_SET.add(bean);
+                    if (isNeedProxy(bean)) {
+                        SERVICE_BEANS_SET.add(bean);
+                    }
                 }
             } catch (Exception e) {
                 log.error("getMyAutowiredBeansSet error:", e);
                 throw new RuntimeException("getMyAutowiredBeansSet error");
             }
         }
+    }
+
+    private boolean isNeedProxy(Object bean) {
+        Method[] methods = bean.getClass().getDeclaredMethods();
+        for (Method method : methods) {
+            if (!method.isSynthetic()) {
+                method.setAccessible(true);
+                if (method.isAnnotationPresent(EasyTransactional.class)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override

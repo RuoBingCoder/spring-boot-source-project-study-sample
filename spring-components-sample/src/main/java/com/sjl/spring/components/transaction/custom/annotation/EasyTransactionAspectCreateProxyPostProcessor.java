@@ -31,10 +31,9 @@ public class EasyTransactionAspectCreateProxyPostProcessor implements BeanPostPr
     @SneakyThrows
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
-        log.info("===>开始执行postProcessAfterInitialization 当前bean :{}",bean.getClass().getSimpleName());
-        if (hasTransaction(bean)) {
-            Object service = getProxyService(bean);
-            assert service != null;
+        log.info("===>开始执行postProcessAfterInitialization 当前bean :{}", bean.getClass().getSimpleName());
+        Object service = getProxyService(bean);
+        if (service != null) {
             TransactionAdviserSupport support = new TransactionAdviserSupport(service.getClass(), service);
             createProxy(bean, support);
         }

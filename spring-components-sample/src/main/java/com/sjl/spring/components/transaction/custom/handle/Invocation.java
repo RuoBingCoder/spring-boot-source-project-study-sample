@@ -9,5 +9,5 @@ import java.lang.reflect.InvocationTargetException;
  */
 public interface Invocation {
 
-    Object proceed() throws InvocationTargetException, IllegalAccessException;
+    Object proceed() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
 }

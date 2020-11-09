@@ -9,7 +9,6 @@ import com.sjl.spring.components.transaction.custom.annotation.EasyTransactional
  */
 public interface CommonOperateService<T,S> {
 
-     @EasyTransactional(rollbackFor = Exception.class)
      Integer operation(T t,S s);
 
 

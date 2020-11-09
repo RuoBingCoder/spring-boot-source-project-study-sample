@@ -29,6 +29,7 @@ public class StateOperateServiceImpl implements CommonOperateService<Team, Hero>
     @Resource
     private TeamService teamService;
 
+    @EasyTransactional(rollbackFor = Exception.class)
     @Override
     public Integer operation(Team team, Hero hero) {
         try {

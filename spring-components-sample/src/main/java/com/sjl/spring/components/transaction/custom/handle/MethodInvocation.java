@@ -28,9 +28,12 @@ public class MethodInvocation extends TransactionAdviserSupport implements Invoc
     }
 
     @Override
-    public Object proceed() throws InvocationTargetException, IllegalAccessException {
-        if (hasTransaction(method)) {
-            EasyRuleBaseTransactionAttributes transactionAttributes = createTransactionAttributes(method);
+    public Object proceed() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        Class<?> proxyClass = method.getDeclaringClass();
+        Object bean = SpringUtil.getBeanByType(proxyClass);
+        Method declaredMethod = bean.getClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
+        if (isTransactionMethod(declaredMethod)) {
+            EasyRuleBaseTransactionAttributes transactionAttributes = createTransactionAttributes(declaredMethod);
             //处理事务
             DataSourceTransactionManager manager = null;
             DefaultTransactionDefinition transactionDefinition;
@@ -63,13 +66,14 @@ public class MethodInvocation extends TransactionAdviserSupport implements Invoc
     }
 
     private EasyRuleBaseTransactionAttributes createTransactionAttributes(Method method) {
+        method.setAccessible(true);
         return EasyRuleBaseTransactionAttributes.EasyRuleBaseTransactionAttributesBuilder
                 .anEasyRuleBaseTransactionAttributes().withPropagate(getTransactionAnnotationsInfo(method).propagate())
                 .withRollbacks(getTransactionAnnotationsInfo(method).rollbackFor()).build();
 
     }
 
-    private boolean hasTransaction(Method method) {
+    private boolean isTransactionMethod(Method method) {
         EasyTransactional annotation = method.getAnnotation(EasyTransactional.class);
         return annotation != null;
     }
