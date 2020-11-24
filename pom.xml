@@ -30,6 +30,8 @@
         <module>netty-channelHandler-sample</module>
         <module>spring-components-sample</module>
         <module>zk-framework-sample</module>
+        <module>spring-boot-kafka-sample</module>
+        <module>spring-boot-es-sample</module>
     </modules>
     <dependencies>
         <dependency>

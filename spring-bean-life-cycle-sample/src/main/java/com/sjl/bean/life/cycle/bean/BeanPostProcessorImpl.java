@@ -29,17 +29,17 @@ public class BeanPostProcessorImpl implements BeanPostProcessor,Ordered, Applica
       Constant.beansMap.put(pig.getClass().getSimpleName(),pig);
       System.out.println("$pig class name is:" + pig.getClass().getName());
     }
-    System.out.println(
+   /* System.out.println(
         Constant.count.incrementAndGet()
-            + "、->[BeanPostDemo  postProcess[Before]Initialization 执行! ]");
+            + "、->[BeanPostDemo  postProcess[Before]Initialization 执行! ]");*/
     return null;
   }
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-    System.out.println(
+   /* System.out.println(
         Constant.count.incrementAndGet()
-            + "、->[BeanPostDemo  postProcess[After]Initialization 执行! ]");
+            + "、->[BeanPostDemo  postProcess[After]Initialization 执行! ]");*/
     return null;
   }
 
@@ -51,7 +51,7 @@ public class BeanPostProcessorImpl implements BeanPostProcessor,Ordered, Applica
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    System.out.println(Constant.count.incrementAndGet()+"、->开始setter");
+//    System.out.println(Constant.count.incrementAndGet()+"、->开始setter");
     this.applicationContext=applicationContext;
   }
 }

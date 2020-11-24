@@ -3,6 +3,7 @@ package com.sjl.spring.components.transaction.custom.annotation;
 import cn.hutool.core.lang.Assert;
 import com.sjl.spring.components.transaction.custom.proxy.ProxyFactory;
 import com.sjl.spring.components.transaction.custom.suuport.TransactionAdviserSupport;
+import com.sjl.spring.components.transaction.service.impl.StateOperateServiceImpl;
 import com.sjl.spring.components.utils.SpringUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +14,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,6 +26,14 @@ import java.util.Set;
 @Slf4j
 public class EasyTransactionAspectCreateProxyPostProcessor implements BeanPostProcessor {
 
+
+    @Override
+    public Object postProcessBeforeInitialization(@NonNull Object bean,@NonNull String beanName) throws BeansException {
+        if (bean instanceof StateOperateServiceImpl){
+            log.info("********>> BeforeInitialization bean is:{}",bean.getClass());
+        }
+        return null;
+    }
 
     @SneakyThrows
     @Override
@@ -75,27 +82,4 @@ public class EasyTransactionAspectCreateProxyPostProcessor implements BeanPostPr
         return null;
     }
 
-    private boolean hasTransaction(Object bean) {
-        Class<?> aClass = bean.getClass();
-        Field[] fields = aClass.getDeclaredFields();
-        if (fields.length > 0) {
-            Field field = getProxyField(fields);
-            if (field == null) {
-                return false;
-            }
-            field.setAccessible(true);
-            Class<?> clazz = field.getType();
-            if (clazz.isInterface()) {
-                Method[] methods = clazz.getDeclaredMethods();
-                if (methods.length > 0) {
-                    for (Method method : methods) {
-                        if (method.getAnnotation(EasyTransactional.class) != null) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
 }

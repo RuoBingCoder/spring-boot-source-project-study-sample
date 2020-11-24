@@ -18,9 +18,17 @@ import java.util.concurrent.atomic.AtomicReference;
  * @description:
  */
 public class ProxyFactory implements CustomProxy {
-  private final AdvisedSupport support;
+  private  AdvisedSupport support;
   private static final AtomicReference<ProxyFactory> factory = new AtomicReference<>();
   private static final Enhancer en = new Enhancer();
+
+  public AdvisedSupport getSupport() {
+    return support;
+  }
+
+  public void setSupport(AdvisedSupport support) {
+    this.support = support;
+  }
 
   public ProxyFactory(AdvisedSupport support) {
     this.support = support;
@@ -30,6 +38,7 @@ public class ProxyFactory implements CustomProxy {
     for (; ; ) {
       ProxyFactory proxyFactory = factory.get();
       if (proxyFactory != null) {
+        proxyFactory.setSupport(support);
         return proxyFactory;
       }
       proxyFactory = new ProxyFactory(support);
@@ -43,9 +52,9 @@ public class ProxyFactory implements CustomProxy {
   public <T> T createJDKProxy(Class<?> clazz) {
     return (T)
         Proxy.newProxyInstance(
-            support.getTarget().getClass().getClassLoader(),
+            this.support.getTarget().getClass().getClassLoader(),
             new Class[] {this.support.getTargetClass()},
-            new JdkInvocation(support));
+            new JdkInvocation(this.support));
   }
 
   public static <T> T getJDKProxy(AdvisedSupport support) {

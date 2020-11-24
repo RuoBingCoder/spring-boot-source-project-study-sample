@@ -18,13 +18,13 @@ public class BeanPostProcessorImplTestOrdered implements BeanPostProcessor,Order
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-    System.out.println("测试BeanPostProcessorImplTestOrdered PriorityOrdered 加载优先级 postProcessBeforeInitialization");
+//    System.out.println("测试BeanPostProcessorImplTestOrdered PriorityOrdered 加载优先级 postProcessBeforeInitialization");
         return null;
     }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        System.out.println("测试BeanPostProcessorImplTestOrdered PriorityOrdered 加载优先级 postProcessAfterInitialization");
+//        System.out.println("测试BeanPostProcessorImplTestOrdered PriorityOrdered 加载优先级 postProcessAfterInitialization");
         return null;
     }
 

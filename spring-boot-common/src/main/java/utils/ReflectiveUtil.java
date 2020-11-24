@@ -1,6 +1,10 @@
 package utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -9,6 +13,7 @@ import java.util.*;
  * @date: 2020/9/26 1:07 下午
  * @description:
  */
+@Slf4j
 public class ReflectiveUtil {
 
   public static Map<Object, List<Object>> parseBeanAndMethodsAnnotationInfo(
@@ -29,5 +34,13 @@ public class ReflectiveUtil {
       }
     }
     return methods;
+  }
+
+
+  public static void threadClassLoader(String name) throws ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
+    Class<?> clazz= Class.forName(name, false, Thread.currentThread().getContextClassLoader());
+    log.info("===>currentThread class is:{}",clazz.getName());
+    Constructor<?> constructor = clazz.getConstructor(String.class);
+    log.info("----->>>:{}",constructor.newInstance("hello word!").toString());
   }
 }

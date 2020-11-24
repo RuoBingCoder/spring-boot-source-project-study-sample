@@ -1,0 +1,9 @@
+server:
+  port: 9090
+  #关闭thymeleaf的缓存
+spring:
+  thymeleaf:
+    cache: false
+  elasticsearch:
+    rest:
+      uris: http://127.0.0.1:9200

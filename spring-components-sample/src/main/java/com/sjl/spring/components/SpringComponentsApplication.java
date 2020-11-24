@@ -2,14 +2,18 @@ package com.sjl.spring.components;
 
 import com.sjl.spring.components.event.CustomEvent;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import utils.ReflectiveUtil;
 
 @SpringBootApplication
 @MapperScan("com.sjl.spring.components.transaction.dao")
-public class SpringComponentsApplication {
+@EnableAspectJAutoProxy(proxyTargetClass = true,exposeProxy = true)
+public class SpringComponentsApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         //如果是容器启动之前注册事件则需要进行以下操作
@@ -24,4 +28,10 @@ public class SpringComponentsApplication {
 //        applicationContext.close();
     }
 
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println("====================CommandLineRunner========================");
+        ReflectiveUtil.threadClassLoader("com.sjl.spring.components.pojo.Hello");
+
+    }
 }

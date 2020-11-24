@@ -14,11 +14,11 @@
     <!--@mbg.generated-->
     `id`, `NAME`, `type`, `money`, `create_time`
   </sql>
-  <insert id="insert" parameterType="com.sjl.spring.components.transaction.pojo.Hero">
+  <insert id="insert" parameterType="com.sjl.spring.components.transaction.pojo.Hero" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into `hero` (`id`, `NAME`, `type`, 
+    insert into `hero` (`NAME`, `type`,
       `money`, `create_time`)
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+    values (#{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
       #{money,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.sjl.spring.components.transaction.pojo.Hero">

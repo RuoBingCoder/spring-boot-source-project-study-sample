@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sjl.spring.components.transaction.dao.TeamMapper">
+  <resultMap id="BaseResultMap" type="com.sjl.spring.components.transaction.pojo.Team">
+    <!--@mbg.generated-->
+    <!--@Table `team`-->
+    <id column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="team_name" jdbcType="VARCHAR" property="teamName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    `team_id`, `team_name`, `create_time`, `update_time`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from `team`
+    where `team_id` = #{teamId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from `team`
+    where `team_id` = #{teamId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.sjl.spring.components.transaction.pojo.Team">
+    <!--@mbg.generated-->
+    insert into `team` (`team_id`, `team_name`, `create_time`, 
+      `update_time`)
+    values (#{teamId,jdbcType=INTEGER}, #{teamName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.sjl.spring.components.transaction.pojo.Team">
+    <!--@mbg.generated-->
+    insert into `team`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="teamId != null">
+        `team_id`,
+      </if>
+      <if test="teamName != null and teamName != ''">
+        `team_name`,
+      </if>
+      <if test="createTime != null">
+        `create_time`,
+      </if>
+      <if test="updateTime != null">
+        `update_time`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="teamId != null">
+        #{teamId,jdbcType=INTEGER},
+      </if>
+      <if test="teamName != null and teamName != ''">
+        #{teamName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sjl.spring.components.transaction.pojo.Team">
+    <!--@mbg.generated-->
+    update `team`
+    <set>
+      <if test="teamName != null and teamName != ''">
+        `team_name` = #{teamName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        `create_time` = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        `update_time` = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where `team_id` = #{teamId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sjl.spring.components.transaction.pojo.Team">
+    <!--@mbg.generated-->
+    update `team`
+    set `team_name` = #{teamName,jdbcType=VARCHAR},
+      `create_time` = #{createTime,jdbcType=TIMESTAMP},
+      `update_time` = #{updateTime,jdbcType=TIMESTAMP}
+    where `team_id` = #{teamId,jdbcType=INTEGER}
+  </update>
+  <update id="updateBatch" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update `team`
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="`team_name` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when `team_id` = #{item.teamId,jdbcType=INTEGER} then #{item.teamName,jdbcType=VARCHAR}
+        </foreach>
+      </trim>
+      <trim prefix="`create_time` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when `team_id` = #{item.teamId,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+      <trim prefix="`update_time` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          when `team_id` = #{item.teamId,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+        </foreach>
+      </trim>
+    </trim>
+    where `team_id` in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.teamId,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    <!--@mbg.generated-->
+    update `team`
+    <trim prefix="set" suffixOverrides=",">
+      <trim prefix="`team_name` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.teamName != null">
+            when `team_id` = #{item.teamId,jdbcType=INTEGER} then #{item.teamName,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`create_time` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when `team_id` = #{item.teamId,jdbcType=INTEGER} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+      <trim prefix="`update_time` = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when `team_id` = #{item.teamId,jdbcType=INTEGER} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+    </trim>
+    where `team_id` in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.teamId,jdbcType=INTEGER}
+    </foreach>
+  </update>
+  <insert id="batchInsert" parameterType="map">
+    <!--@mbg.generated-->
+    insert into `team`
+    (`team_id`, `team_name`, `create_time`, `update_time`)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.teamId,jdbcType=INTEGER}, #{item.teamName,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+</mapper>

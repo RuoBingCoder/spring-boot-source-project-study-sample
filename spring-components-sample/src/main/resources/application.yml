@@ -37,3 +37,8 @@ service:
 #配置依赖注入bean后缀
 match:
   controller: Controller
+
+
+logging:
+  level:
+    com.sjl.spring.components.transaction.dao: debug

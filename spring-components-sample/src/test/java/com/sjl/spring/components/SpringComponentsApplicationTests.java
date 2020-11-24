@@ -7,14 +7,17 @@ import com.sjl.spring.components.transaction.pojo.Team;
 import com.sjl.spring.components.transaction.service.CommonOperateService;
 import com.sjl.spring.components.transaction.service.JdGoodsService;
 import com.sjl.spring.components.transaction.pojo.JdGoods;
+import com.sjl.spring.components.transaction.service.TeamService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
 @SpringBootTest
+@EnableAspectJAutoProxy(proxyTargetClass = true,exposeProxy = true)
 class SpringComponentsApplicationTests {
 
 
@@ -22,6 +25,8 @@ class SpringComponentsApplicationTests {
     private JdGoodsService jdGoodsService;
     @Resource
     private JdGoodsMapper jdGoodsMapper;
+    @Resource
+    private TeamService teamService;
     @Autowired
     private CommonOperateService<Team, Hero> commonOperateService;
 
@@ -52,8 +57,19 @@ class SpringComponentsApplicationTests {
 
     private Team getTeam() {
         return Team.builder().createTime(LocalDateTime.now())
-                .teamName("狼人杀").updateTime(LocalDateTime.now())
+                .teamName("斗地主").updateTime(LocalDateTime.now())
                 .build();
+    }
+
+    /**
+     * 事务传播机制测试
+     */
+    @Test
+    public void propagationAttrTest(){
+
+        teamService.insert(getTeam());
+
+
     }
 
 

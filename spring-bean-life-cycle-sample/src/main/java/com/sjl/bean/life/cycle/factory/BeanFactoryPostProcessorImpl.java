@@ -19,7 +19,7 @@ public class BeanFactoryPostProcessorImpl implements BeanFactoryPostProcessor {
         //一旦调用getBean会对bean进行初始化
 //        Pig pig = (Pig) clb.getBean("pig");
 //        System.out.println("------------->>>>>"+pig.toString());
-        System.out.println(Constant.count.incrementAndGet()+"、->[BeanPostFactoryDemo  postProcessBeanFactory 执行! ]");
+//        System.out.println(Constant.count.incrementAndGet()+"、->[BeanPostFactoryDemo  postProcessBeanFactory 执行! ]");
 
     }
 }

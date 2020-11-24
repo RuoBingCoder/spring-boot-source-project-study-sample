@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class MergedBeanDefinitionPostProcessorImpl implements MergedBeanDefinitionPostProcessor {
     @Override
     public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-    System.out.println(Constant.count.incrementAndGet()+"、->MergedBeanDefinitionPostProcessorImpl postProcessMergedBeanDefinition()");
+//    System.out.println(Constant.count.incrementAndGet()+"、->MergedBeanDefinitionPostProcessorImpl postProcessMergedBeanDefinition()");
     }
 
     @Override

@@ -1,0 +1,25 @@
+server:
+  port: 9090
+spring:
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092  # 多个使用`,`隔开
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 0 # 失败重试次数
+      batch-size: 16384
+      buffer-memory: 33554432
+      acks: -1 # 取值 all, -1, 0, 1
+    consumer:
+      enable-auto-commit: true
+      auto-commit-interval: 5000
+      group-id: group-test
+      auto-offset-reset: earliest # 消费offset取值earliest,latest,none（默认：latest）
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      missing-topics-fatal: false
+# 自定义producer topic
+kafka:
+  producer:
+    topic: test-producer

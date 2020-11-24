@@ -1,7 +1,6 @@
 package com.sjl.spring.components.utils;
 
 import com.sjl.spring.components.exception.BeansNotFoundException;
-import com.sjl.spring.components.transaction.custom.annotation.EasyAutowired;
 import com.sjl.spring.components.transaction.custom.annotation.EasyTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -14,9 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -70,13 +67,38 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
         this.environment = environment;
     }
 
+    /**
+     * 一旦getBean 创建bean走
+     * <p>
+     *     @Nullable
+     *        protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
+     * 		Object bean = null;
+     * 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
+     * 			// Make sure bean class is actually resolved at this point.
+     * 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+     * 				Class<?> targetType = determineTargetType(beanName, mbd);
+     * 				if (targetType != null) {
+     * 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+     * 					if (bean != null) {
+     * 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+     *                    }
+     *                }
+     *            }
+     * 			mbd.beforeInstantiationResolved = (bean != null);
+     *        }
+     * 		return bean;
+     * </p>
+     */
     private void getMyAutowiredBeans() {
         for (String beanDefinitionName : applicationContext.getBeanDefinitionNames()) {
             try {
                 Object bean = null;
                 if (beanDefinitionName.startsWith(
                         Objects.requireNonNull(environment.getProperty(SERVICE_NAME_SPACE)))) {
-                    //一旦getBean 则不会走后置处理器
+                    /**
+                     *
+                     */
+                    //一旦getBean 创建bean走 @{link BeanPostProcessor #applyBeanPostProcessorsBeforeInstantiation  } 则不会走后置处理器
                     bean = applicationContext.getBean(beanDefinitionName);
                     if (isNeedProxy(bean)) {
                         SERVICE_BEANS_SET.add(bean);
