@@ -32,6 +32,7 @@
         <module>zk-framework-sample</module>
         <module>spring-boot-kafka-sample</module>
         <module>spring-boot-es-sample</module>
+        <module>spring-circular-dependency</module>
     </modules>
     <dependencies>
         <dependency>
