@@ -32,10 +32,10 @@ spring boot整合 es的学习
 Spring boot整合kafka写的demo
 ## 13、spring-circular-dependency
 Spring 循环依赖,本项目主要是用来调试测试循环依赖的
-##14、spring-components-sample 
+## 14、spring-components-sample 
 spring `自定义事务注解实现声明式事务`,用来理解Spring事务处理,本项目可能很简单,但是主要是学习Spring的处理事务思想
 
-##15、zk-framework-sample
+## 15、zk-framework-sample
 zookeeper的学习
 
 
