@@ -1,15 +1,11 @@
 package com.sjl.boot.autowired.inject.sample.controller;
 
-import com.sjl.boot.autowired.inject.sample.annotation.MyAutowired;
-import com.sjl.boot.autowired.inject.sample.annotation.MyValue;
-import com.sjl.boot.autowired.inject.sample.service.AutowiredService;
+import com.alibaba.fastjson.JSONObject;
+import com.sjl.boot.autowired.inject.sample.annotation.CustomAutowired;
+import com.sjl.boot.autowired.inject.sample.annotation.CustomValue;
+import com.sjl.boot.autowired.inject.sample.service.HelloService;
 import com.sjl.boot.autowired.inject.sample.service.IMyAsync;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.EmbeddedValueResolver;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,27 +22,38 @@ public class TestController {
 //  @MyAutowired(group = "101", version = "1.0.0")
 //  private AutowiredService autowiredService;
 
-  @MyValue("${app.name}")
-  private String appName;
+    @CustomValue("${app.name}")
+    private String appName;
 
-  @MyAutowired
-  private IMyAsync myAsync;
+    @CustomAutowired
+    private IMyAsync myAsync;
 
-  @GetMapping(value = "/auto", name = "true")
-  @ResponseBody
-  public void auto() {
-    System.out.println("===>app name is: "+appName);
+    @CustomAutowired
+    private HelloService helloService;
+
+    @GetMapping(value = "/auto", name = "true")
+    @ResponseBody
+    public void auto() {
+        System.out.println("===>app name is: " + appName);
 //    autowiredService.sayToService();
 
-  }
-  @GetMapping(value = "/async", name = "true")
-  @ResponseBody
-  public void async() {
-    log.info("开始订单查询异步任务开始");
-    myAsync.startAsync("订单查询");
-    log.info("开始订单查询异步任务结束");
+    }
+
+    @GetMapping(value = "/async", name = "true")
+    public void async() {
+        log.info("开始订单查询异步任务开始");
+        myAsync.startAsync("订单查询");
+        log.info("开始订单查询异步任务结束");
 
 //    myAsync.startSync("物流查询");
 
-  }
+    }
+
+    @GetMapping(value = "/sayHello", name = "true")
+    public void sayHello() {
+        String hello = helloService.sayHello();
+        log.info("==>:{}", JSONObject.toJSONString(hello));
+//    myAsync.startSync("物流查询");
+
+    }
 }

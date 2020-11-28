@@ -14,15 +14,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @date: 2020/9/28 10:03 上午
  * @description: MyAsyncProxy
  */
-public class MyAsyncProxy implements InvocationHandler {
+public class JdkDynamicHandler implements InvocationHandler {
   private final AtomicInteger integer = new AtomicInteger();
   private MyAsyncHolder myAsyncHolder;
 
-  public MyAsyncProxy(MyAsyncHolder myAsyncHolder) {
+  public JdkDynamicHandler(MyAsyncHolder myAsyncHolder) {
     this.myAsyncHolder = myAsyncHolder;
   }
 
-  public MyAsyncProxy() {}
+  public JdkDynamicHandler() {}
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

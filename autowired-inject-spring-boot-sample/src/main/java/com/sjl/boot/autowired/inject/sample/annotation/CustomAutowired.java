@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface MyAutowired {
+public @interface CustomAutowired {
     String value() default "";
     String version() default "1.0.0";
     String group() default "";

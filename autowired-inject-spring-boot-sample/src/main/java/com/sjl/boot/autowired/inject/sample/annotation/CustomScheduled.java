@@ -2,10 +2,10 @@ package com.sjl.boot.autowired.inject.sample.annotation;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.FIELD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface MyValue {
-    String  value()default "";
+public @interface CustomScheduled {
+    String cron() default "* * * * * *";
 }

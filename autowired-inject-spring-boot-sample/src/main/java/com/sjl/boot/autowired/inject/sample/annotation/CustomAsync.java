@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface MyAsync {
+public @interface CustomAsync {
     String value() default "";
 }

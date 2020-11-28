@@ -1,6 +1,7 @@
 package com.sjl.boot.autowired.inject.sample.service;
 
-import com.sjl.boot.autowired.inject.sample.annotation.MyAsync;
+import com.sjl.boot.autowired.inject.sample.annotation.CustomAsync;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,17 +10,19 @@ import org.springframework.stereotype.Component;
  * @description: MyAsyncImpl
  */
 @Component
+@Slf4j
 public class MyAsyncImpl implements IMyAsync {
 
-  @Override
-  @MyAsync
-  public void startAsync(String task) {
-    System.out.println("异步任务service" + task+"当前线程是: "+Thread.currentThread().getName());
-  }
+    @Override
+    @CustomAsync
+    public void startAsync(String task) {
+        log.info("异步任务service:{}当前线程是:{}", task, Thread.currentThread().getName());
+    }
 
-  @Override
-  public void startSync(String task) {
-    System.out.println("同步任务service" + task+"当前线程是: "+Thread.currentThread().getName());
+    @Override
+    public void startSync(String task) {
+        log.info("同步任务service:{}当前线程是:{}", task, Thread.currentThread().getName());
 
-  }
+
+    }
 }

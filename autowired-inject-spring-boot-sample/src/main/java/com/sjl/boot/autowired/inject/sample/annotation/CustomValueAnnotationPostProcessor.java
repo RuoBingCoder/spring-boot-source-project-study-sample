@@ -4,8 +4,6 @@ import com.sjl.boot.autowired.inject.sample.utils.ReflectiveUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,17 +12,13 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Component
-public class MyValueAnnotationPostProcessor implements BeanPostProcessor, EnvironmentAware {
-    private Environment environment;
+public class CustomValueAnnotationPostProcessor implements BeanPostProcessor {
+
     @SneakyThrows
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        ReflectiveUtil.inject(bean,null,environment,MyValue.class);
+        ReflectiveUtil.inject(bean, CustomValue.class);
         return bean;
     }
 
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment=environment;
-    }
 }

@@ -4,11 +4,10 @@ import com.sjl.spring.components.event.CustomEvent;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import utils.ReflectiveUtil;
+import utils.ReflectUtil;
 
 @SpringBootApplication
 @MapperScan("com.sjl.spring.components.transaction.dao")
@@ -31,7 +30,7 @@ public class SpringComponentsApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("====================CommandLineRunner========================");
-        ReflectiveUtil.threadClassLoader("com.sjl.spring.components.pojo.Hello");
+        ReflectUtil.threadClassLoader("com.sjl.spring.components.pojo.Hello");
 
     }
 }

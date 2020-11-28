@@ -1,5 +1,5 @@
 rocketmq:
-  name-server: 127.0.0.1:9876
+  name-server: 119.45.139.133:9876
   producer:
     group: greetings-producer-group
 server:

@@ -1,15 +1,16 @@
 package com.sjl.boot.autowired.inject.sample.utils;
 
-import com.sjl.boot.autowired.inject.sample.annotation.MyAsync;
-import com.sjl.boot.autowired.inject.sample.annotation.MyAutowired;
-import com.sjl.boot.autowired.inject.sample.annotation.MyValue;
+import cn.hutool.core.collection.CollectionUtil;
+import com.sjl.boot.autowired.inject.sample.annotation.CustomAsync;
+import com.sjl.boot.autowired.inject.sample.annotation.CustomAutowired;
+import com.sjl.boot.autowired.inject.sample.annotation.CustomValue;
 import com.sjl.boot.autowired.inject.sample.bean.MyAsyncHolder;
-import com.sjl.boot.autowired.inject.sample.proxy.MyAsyncFactoryBean;
 import com.sjl.boot.autowired.inject.sample.proxy.ProxyFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: JianLei
@@ -26,89 +26,120 @@ import java.util.Map;
  * @description:
  */
 @Component
-public class ReflectiveUtil {
+public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware {
 
-  public static final String VALUE_PREFIX = "${";
-  public static final String VALUE_SUFFIX = "}";
+    public static final String VALUE_PREFIX = "${";
+    public static final String VALUE_SUFFIX = "}";
+    private static ApplicationContext applicationContext;
+    private static Environment environment;
 
-  public static void inject(Object bean,ApplicationContext context, Environment env, Class<? extends Annotation> clazz)
-          throws Exception {
-    Field[] fields = bean.getClass().getDeclaredFields();
+    public static void inject(Object bean, Class<? extends Annotation> clazz)
+            throws Exception {
+        Field[] fields = getField(bean.getClass(),null);
 
-    for (Field field : fields) {
-      if (field.isAnnotationPresent(clazz)) {
-        parseField(bean,context, field, env, clazz);
-      }
-    }
-  }
-
-  private static void parseField(
-      Object bean,ApplicationContext context, Field field, Environment env, Class<? extends Annotation> clazz)
-          throws Exception {
-    field.setAccessible(true);
-
-    Annotation annotation = field.getAnnotation(clazz);
-    if (annotation instanceof MyValue) {
-      MyValue myValue = (MyValue) annotation;
-      String value = resolvePlaceHolder(myValue);
-      String property = env.getProperty(value);
-      if (StringUtils.isEmpty(property)) {
-        throw new RuntimeException("property value [" + value + "] is null");
-      }
-      setFieldValue(bean, property, field);
-    } else if (annotation instanceof MyAutowired) {
-      if (field.getType().isInterface()) {
-        MyAsyncHolder myAsyncHolder=new MyAsyncHolder();
-        Map<String, ?> beansOfType = context.getBeansOfType(field.getType());
-        for (Map.Entry<String, ?> entry : beansOfType.entrySet()) {
-          myAsyncHolder.setBean(entry.getValue().getClass());
-          //获取异步处理方法添加到list中
-          List<Method> asyncMethods = getAsyncMethods(entry.getValue().getClass());
-          myAsyncHolder.setMethods(asyncMethods);
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(clazz)) {
+                parseField(bean, applicationContext, field, environment, clazz);
+            }
         }
-
-        field.set(bean, new MyAsyncFactoryBean(myAsyncHolder).getObject());
-      }
     }
-  }
 
-  private static List<Method> getAsyncMethods(Class<?> aClass) {
-    List<Method> methods=new LinkedList<>();
-    for (Method method : aClass.getDeclaredMethods()) {
-      if (method.isAnnotationPresent(MyAsync.class)){
-        methods.add(method);
-      }
+    private static void parseField(Object bean, ApplicationContext context, Field field, Environment env, Class<? extends Annotation> clazz) throws Exception {
+        field.setAccessible(true);
+
+        Annotation annotation = field.getAnnotation(clazz);
+        if (annotation instanceof CustomValue) {
+            CustomValue myValue = (CustomValue) annotation;
+            String value = resolvePlaceHolder(myValue);
+            String property = env.getProperty(value);
+            if (StringUtils.isEmpty(property)) {
+                throw new RuntimeException("property value [" + value + "] is null");
+            }
+            setFieldValue(bean, property, field);
+        } else if (annotation instanceof CustomAutowired) {
+            MyAsyncHolder myAsyncHolder = new MyAsyncHolder();
+            Object obj = context.getBean(field.getType());
+            if (obj == null) {
+                throw new RuntimeException("bean is not found");
+            }
+            myAsyncHolder.setBean(obj.getClass());
+            //获取异步处理方法添加到list中
+            List<Method> asyncMethods = getAsyncMethods(obj.getClass());
+            if (CollectionUtil.isNotEmpty(asyncMethods)) {
+                myAsyncHolder.setMethods(asyncMethods);
+                field.set(bean, new ProxyFactory(myAsyncHolder).getObject());
+            } else {
+                field.set(bean, obj);
+
+            }
+
+        }
     }
-    return methods;
-  }
 
-  private static void setFieldValue(Object bean, String property, Field field)
-      throws IllegalAccessException {
-    if (field.getType().equals(String.class)) {
-      field.set(bean, property);
-    } else if (field.getType().equals(Integer.class)) {
-      field.set(bean, Integer.valueOf(property));
+    private static List<Method> getAsyncMethods(Class<?> aClass) throws NoSuchMethodException {
+        List<Method> methods = new LinkedList<>();
+        for (Method method : getMethods(aClass,null)) {
+            if (method.isAnnotationPresent(CustomAsync.class)) {
+                methods.add(method);
+            }
+        }
+        return methods;
     }
-  }
 
-  private static String resolvePlaceHolder(MyValue myValue) {
-    String value = myValue.value();
-    int startInterceptionIndex = value.indexOf(VALUE_PREFIX);
-    int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
-    String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);
-    if (StringUtils.isNotBlank(v)) {
-      return v;
+    private static void setFieldValue(Object bean, String property, Field field)
+            throws IllegalAccessException {
+        if (field.getType().equals(String.class)) {
+            field.set(bean, property);
+        } else if (field.getType().equals(Integer.class)) {
+            field.set(bean, Integer.valueOf(property));
+        }
     }
-    throw new RuntimeException(VALUE_PREFIX + value + VALUE_SUFFIX + "is null!");
-  }
 
-  public static void main(String[] args) {
-    String value = "${app.name}";
-    int startInterceptionIndex = 0;
-    int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
-    String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);
-    System.out.println(v);
-  }
+    private static String resolvePlaceHolder(CustomValue myValue) {
+        String value = myValue.value();
+        int startInterceptionIndex = value.indexOf(VALUE_PREFIX);
+        int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
+        String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);
+        if (StringUtils.isNotBlank(v)) {
+            return v;
+        }
+        throw new RuntimeException(VALUE_PREFIX + value + VALUE_SUFFIX + "is null!");
+    }
 
+    public static void main(String[] args) {
+        String value = "${app.name}";
+        int startInterceptionIndex = 0;
+        int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
+        String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);
+        System.out.println(v);
+    }
+
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ReflectiveUtil.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        ReflectiveUtil.environment = environment;
+    }
+
+
+    public static Field[] getField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        if (fieldName == null) {
+            return clazz.getDeclaredFields();
+        }
+        Field field = clazz.getDeclaredField(fieldName);
+        return new Field[]{field};
+    }
+
+    public static Method[] getMethods(Class<?> clazz, String methodName) throws NoSuchMethodException {
+        if (methodName == null) {
+            return clazz.getDeclaredMethods();
+        }
+        Method method = clazz.getDeclaredMethod(methodName);
+        return new Method[]{method};
+    }
 
 }

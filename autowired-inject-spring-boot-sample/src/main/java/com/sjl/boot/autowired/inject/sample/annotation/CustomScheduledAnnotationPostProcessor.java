@@ -1,32 +1,30 @@
 package com.sjl.boot.autowired.inject.sample.annotation;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sjl.boot.autowired.inject.sample.bean.CronScheduled;
 import com.sjl.boot.autowired.inject.sample.utils.ThreadPoolUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.EmbeddedValueResolver;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * @author: JianLei
  * @date: 2020/9/23 7:59 下午
  * @description:
+ * @see ApplicationContextAwareProcessor #postProcessBeforeInitialization
  */
 @Component
 @Slf4j
-public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
+public class CustomScheduledAnnotationPostProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -34,10 +32,10 @@ public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor, Em
     if (log.isDebugEnabled()) {
       log.debug("->定时任务后置处理器执行<-");
     }
-    Map<Method, Set<MyScheduled>> methodSetMap = mergeMethodsScheduled(bean);
+    Map<Method, Set<CustomScheduled>> methodSetMap = mergeMethodsScheduled(bean);
     if (!methodSetMap.isEmpty()) {
       // 执行定时任务
-      for (Map.Entry<Method, Set<MyScheduled>> methodSetEntry : methodSetMap.entrySet()) {
+      for (Map.Entry<Method, Set<CustomScheduled>> methodSetEntry : methodSetMap.entrySet()) {
         String cron = getCron(methodSetEntry.getValue());
         CronScheduled cronScheduled = createScheduled(cron, methodSetEntry.getKey(), bean);
         ThreadPoolUtil.scheduledTask(cronScheduled);
@@ -50,21 +48,21 @@ public class MyScheduledAnnotationPostProcessor implements BeanPostProcessor, Em
     return new CronScheduled(key, cron, bean);
   }
 
-  private String getCron(Set<MyScheduled> value) {
+  private String getCron(Set<CustomScheduled> value) {
     if (value.size() == 1) {
-      for (MyScheduled myScheduled : value) {
+      for (CustomScheduled myScheduled : value) {
         return myScheduled.cron();
       }
     }
     return "";
   }
 
-  private Map<Method, Set<MyScheduled>> mergeMethodsScheduled(Object bean) {
-    Map<Method, Set<MyScheduled>> methodSetMap = new ConcurrentHashMap<>();
+  private Map<Method, Set<CustomScheduled>> mergeMethodsScheduled(Object bean) {
+    Map<Method, Set<CustomScheduled>> methodSetMap = new ConcurrentHashMap<>();
     for (Method method : bean.getClass().getMethods()) {
-      if (method.isAnnotationPresent(MyScheduled.class)) {
-        MyScheduled annotation = method.getAnnotation(MyScheduled.class);
-        LinkedHashSet<MyScheduled> hashSet = new LinkedHashSet<>();
+      if (method.isAnnotationPresent(CustomScheduled.class)) {
+        CustomScheduled annotation = method.getAnnotation(CustomScheduled.class);
+        LinkedHashSet<CustomScheduled> hashSet = new LinkedHashSet<>();
         hashSet.add(annotation);
         methodSetMap.put(method, hashSet);
       }

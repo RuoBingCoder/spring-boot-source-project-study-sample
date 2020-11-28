@@ -1,47 +1,56 @@
 package com.sjl.boot.autowired.inject.sample.proxy;
 
 import com.sjl.boot.autowired.inject.sample.bean.MyAsyncHolder;
+import com.sjl.boot.autowired.inject.sample.interceptor.CglibMethodInterceptor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.cglib.proxy.Enhancer;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
-public class ProxyFactory<T> implements FactoryBean<T> {
+/**
+ * @author: JianLei
+ * @date: 2020/9/28 10:46 上午
+ * @description: MyAsyncFactoryBean
+ */
+@Slf4j
+public class ProxyFactory implements FactoryBean {
 
-  private final Class<T> interfaceType;
-  private final boolean isAsync;
-  private final MyAsyncHolder holder;
+    private final MyAsyncHolder holder;
 
-  @Override
-  public T getObject() {
-    if (!isAsync){
-      InvocationHandler handler = new RpcServiceProxy<>(interfaceType);
-      return (T)
-              Proxy.newProxyInstance(
-                      interfaceType.getClassLoader(), new Class[] {interfaceType}, handler);
+    public static String proxy;
+    private static final Enhancer en = new Enhancer();
+
+    public ProxyFactory(MyAsyncHolder holder) {
+        this.holder = holder;
     }
-    InvocationHandler handler = new MyAsyncProxy(holder);
-    return (T)
-            Proxy.newProxyInstance(
-                    holder.getBean().getInterfaces()[0].getClassLoader(), new Class[] {holder.getBean().getInterfaces()[0]}, handler);
 
-  }
+    @Override
+    public Object getObject() {
+        if (com.sjl.boot.autowired.inject.sample.constant.Proxy.CGLIB.equals(proxy)) {
+            if (log.isTraceEnabled()){
+                log.info("cglib proxy trace!");
+            }
+            log.info("开始cglib代理开始:{}",proxy);
+            en.setSuperclass(holder.getBean());
+            en.setCallback(new CglibMethodInterceptor(holder));
+            return en.create();
+        }
+        InvocationHandler handler = new JdkDynamicHandler(holder);
+        return Proxy.newProxyInstance(
+                holder.getBean().getClassLoader(),
+                new Class[]{holder.getBean().getInterfaces()[0]},
+                handler);
+    }
 
-  public ProxyFactory(Class<T> interfaceType, boolean isAsync, MyAsyncHolder holder) {
-    this.interfaceType = interfaceType;
-    this.isAsync = isAsync;
-    this.holder = holder;
-  }
+    @Override
+    public Class<?> getObjectType() {
+        return holder.getBean();
+    }
 
-
-
-  @Override
-  public Class<T> getObjectType() {
-    return interfaceType;
-  }
-
-  @Override
-  public boolean isSingleton() {
-    return true;
-  }
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 }
