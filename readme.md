@@ -1,7 +1,7 @@
 # 本项目都基于 Spring boot开发 主要是针对Spring 原理学习写的demo
 
 ## 1、autowired-inject-spring-boot-sample
-`   本项目主要是对@Autowired 注解原理实现
+`   本项目主要是对@Autowired @Value @Async @Scheduled 注解原理实现
 `
 ## 2、custom-aop-spring-boot-sample
 `   本项目主要是对spring aop原理实现
