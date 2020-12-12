@@ -16,6 +16,10 @@ import java.lang.reflect.Method;
  * @author: JianLei
  * @date: 2020/11/8 11:50 上午
  * @description: 事务方法处理类
+ * @see org.springframework.transaction.interceptor.TransactionAspectSupport#invokeWithinTransaction
+ * @see org.springframework.transaction.interceptor.TransactionAspectSupport#createTransactionIfNecessary
+ * @see org.springframework.transaction.interceptor.TransactionAspectSupport#prepareTransactionInfo
+ * @see org.springframework.transaction.interceptor.TransactionAspectSupport#bindToThread 绑定线程
  */
 @Slf4j
 public class MethodInvocation extends TransactionAdviserSupport implements Invocation {

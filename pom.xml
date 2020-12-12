@@ -33,6 +33,7 @@
         <module>spring-boot-kafka-sample</module>
         <module>spring-boot-es-sample</module>
         <module>spring-circular-dependency</module>
+        <module>simple-ioc</module>
     </modules>
     <dependencies>
         <dependency>

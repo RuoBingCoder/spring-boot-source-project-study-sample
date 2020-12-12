@@ -1,26 +1,35 @@
 package com.sjl.bean.life.cycle.bean;
 
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.core.Ordered;
 
 /**
  * @author: JianLei
  * @date: 2020/9/11 4:45 下午
  * @description:
  */
-@Component
-@Data
-public class Cat {
+public class Cat implements Ordered {
 
-    @Autowired
-    private Pig pig;
+
+
+
+   /* @Autowired
+    private Pig pig;*/
 
     static {
         System.out.println("*************Cat static************************");
     }
 
-    public Pig getPig() {
-        return pig;
+//    public Pig getPig() {
+//        return pig;
+//    }
+
+    public String hello(){
+        return "hello";
+    }
+
+
+    @Override
+    public int getOrder() {
+        return -200;
     }
 }

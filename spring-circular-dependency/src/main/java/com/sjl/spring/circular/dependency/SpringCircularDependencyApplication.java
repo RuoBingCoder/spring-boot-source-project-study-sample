@@ -1,5 +1,6 @@
 package com.sjl.spring.circular.dependency;
 
+import com.sjl.spring.circular.dependency.pojo.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +18,8 @@ public class SpringCircularDependencyApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        factory.getBean("aopController");
+        A a= (A) factory.getBean("a");
+        a.output();
     }
 
 

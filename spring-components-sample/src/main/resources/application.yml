@@ -24,6 +24,17 @@ spring:
       #      这两个参数很关键，是否配置了代理
       test-on-borrow: true
       test-while-idle: true
+  redis:
+    host: 39.108.137.115
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        min-idle: 0
+        max-idle: 8
+
+    port: 6379
+    password: 123456
 
 mybatis:
   check-config-location: false

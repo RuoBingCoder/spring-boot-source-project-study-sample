@@ -7,12 +7,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
 @SpringBootApplication
 @EnableCustomAsync(Proxy.CGLIB)
+@EnableAsync
 public class BootAutowiredInjectSampleApplication implements CommandLineRunner {
 
   public static void main(String[] args) {
@@ -25,5 +27,7 @@ public class BootAutowiredInjectSampleApplication implements CommandLineRunner {
     Field myAsync = ReflectionUtils.findField(TestController.class, "myAsync");
     assert myAsync != null;
     System.out.println("======>"+myAsync.getName());
+    Thread.currentThread().getContextClassLoader();
+
   }
 }

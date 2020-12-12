@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sjl.bean.life.cycle.constants.Constant;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +26,7 @@ import java.util.Map;
  */
 @Component
 //@DependsOn("springUtil")
-public class Pig implements InitializingBean, DisposableBean {
+public class Pig implements InitializingBean, DisposableBean, Ordered {
 
     private String name;
 
@@ -63,5 +63,10 @@ public class Pig implements InitializingBean, DisposableBean {
     @Override
     public void destroy() throws Exception {
     System.out.println(Constant.count.incrementAndGet()+"、->开始destroy()");
+    }
+
+    @Override
+    public int getOrder() {
+        return -100;
     }
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
@@ -14,9 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: JianLei
@@ -33,6 +32,7 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
     private static final String SERVICE_NAME_SPACE = "service.namespace";
     private static final String MATCH_CONTROLLER = "match.controller";
     private Environment environment;
+    public static Map<Class<?>, Object> tomcatBean = new HashMap<>();
 
     public static Set<Object> getInjectBeans() {
         return AUTOWIRED_BEANS_SET;
@@ -70,23 +70,23 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
     /**
      * 一旦getBean 创建bean走
      * <p>
-     *     @Nullable
-     *        protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
-     * 		Object bean = null;
-     * 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
-     * 			// Make sure bean class is actually resolved at this point.
-     * 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
-     * 				Class<?> targetType = determineTargetType(beanName, mbd);
-     * 				if (targetType != null) {
-     * 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
-     * 					if (bean != null) {
-     * 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
-     *                    }
-     *                }
-     *            }
-     * 			mbd.beforeInstantiationResolved = (bean != null);
-     *        }
-     * 		return bean;
+     *
+     * @Nullable protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
+     * Object bean = null;
+     * if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
+     * // Make sure bean class is actually resolved at this point.
+     * if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+     * Class<?> targetType = determineTargetType(beanName, mbd);
+     * if (targetType != null) {
+     * bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+     * if (bean != null) {
+     * bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+     * }
+     * }
+     * }
+     * mbd.beforeInstantiationResolved = (bean != null);
+     * }
+     * return bean;
      * </p>
      */
     private void getMyAutowiredBeans() {
@@ -95,10 +95,6 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
                 Object bean = null;
                 if (beanDefinitionName.startsWith(
                         Objects.requireNonNull(environment.getProperty(SERVICE_NAME_SPACE)))) {
-                    /**
-                     *
-                     */
-                    //一旦getBean 创建bean走 @{link BeanPostProcessor #applyBeanPostProcessorsBeforeInstantiation  } 则不会走后置处理器
                     bean = applicationContext.getBean(beanDefinitionName);
                     if (isNeedProxy(bean)) {
                         SERVICE_BEANS_SET.add(bean);
@@ -135,6 +131,18 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
         log.info("=============>开始清空缓存<==============");
         AUTOWIRED_BEANS_SET.clear();
         SERVICE_BEANS_SET.clear();
+    }
+
+    /**
+     * 依赖查找
+     * @see org.springframework.beans.factory.ObjectFactory#getObject
+     */
+    public static void dependencyLookup() {
+        ObjectProvider<String> beanProvider = applicationContext.getBeanProvider(String.class);
+        //getIfAvailable 如果是空不会报错
+        System.out.println(beanProvider.getIfAvailable());
+        //空的话则会报错
+        beanProvider.stream().forEach(System.out::println);
     }
 
 }

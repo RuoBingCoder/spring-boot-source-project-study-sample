@@ -1,7 +1,6 @@
 package com.sjl.spring.components.transaction.custom.proxy;
 
 import com.sjl.spring.components.transaction.custom.handle.MethodInvocation;
-import com.sjl.spring.components.transaction.custom.suuport.TransactionAdviserSupport;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -9,7 +8,9 @@ import java.lang.reflect.Method;
 /**
  * @author: JianLei
  * @date: 2020/11/8 11:14 上午
- * @description: TransactionHandler
+ * @description:
+ * @see org.springframework.transaction.interceptor.TransactionInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+ *
  */
 
 public class JdkTransactionInvocation implements InvocationHandler {

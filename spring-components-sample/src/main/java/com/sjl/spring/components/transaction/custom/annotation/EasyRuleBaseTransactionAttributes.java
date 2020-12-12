@@ -5,6 +5,7 @@ package com.sjl.spring.components.transaction.custom.annotation;
  * @date: 2020/11/8 11:58 上午
  * @description: TransactionAttributes
  */
+
 public class EasyRuleBaseTransactionAttributes {
     private Integer propagate;
     private Class<? extends Throwable>[] rollbacks;

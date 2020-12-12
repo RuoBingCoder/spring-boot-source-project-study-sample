@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 /**
  * @author: JianLei
  * @date: 2020/11/8 11:37 上午
- * @description: TransactionAdviserSuport
+ * @description: TransactionAdviserSupport
  */
 
 public class TransactionAdviserSupport extends EasyDefaultTransactionAttribute {

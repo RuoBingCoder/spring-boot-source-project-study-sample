@@ -1,6 +1,8 @@
 package utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodIntrospector;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -38,10 +40,12 @@ public class ReflectUtil {
 
 
     public static void threadClassLoader(String name) throws ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
+//        Class<?> clazz = Class.forName(name);
+
         Class<?> clazz = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
-        log.info("===>currentThread class is:{}", clazz.getName());
-        Constructor<?> constructor = clazz.getConstructor(String.class);
-        log.info("----->>>:{}", constructor.newInstance("hello word!").toString());
+        log.info("===>currentThread class is:{} the classLoader is:{}", clazz.getName(),clazz.getClassLoader().toString());
+        Constructor<?> constructor = clazz.getConstructor();
+        log.info("----->>>:{}", constructor.newInstance().toString());
     }
 
     /**
@@ -81,6 +85,19 @@ public class ReflectUtil {
 
     public static boolean checkParameters(Object bean, Class<? extends Annotation> annotation) {
         return bean == null || annotation == null;
+    }
+
+    /**
+     * spring 提供反射获取方法注解信息
+     * @param bean
+     * @param annotation
+     * @param <T>
+     * @return
+     */
+    public static <T extends Annotation> Map<Method, T> getMethodAndAnnotation(Object bean, Class<T> annotation) {
+        return MethodIntrospector.selectMethods(bean.getClass(),
+                (MethodIntrospector.MetadataLookup<T>) method -> AnnotatedElementUtils
+                        .findMergedAnnotation(method, annotation));
     }
 
 }

@@ -1,10 +1,5 @@
 package com.sjl.rocket.consumer.sample.mq;
 
-import lombok.extern.log4j.Log4j2;
-import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
-import org.apache.rocketmq.spring.core.RocketMQListener;
-import org.springframework.stereotype.Service;
-
 /**
  * @author: JianLei
  * @date: 2020/9/18 10:44 上午
@@ -25,4 +20,5 @@ class SimpleConsumer implements RocketMQListener<Greeting> {
     log.info("=>消费者收到消息:{}", greeting.toString());
   }
 }
+com.sjl.rocket.consumer.sample.mq.MktSqlSelectorConsumer
 */

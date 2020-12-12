@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sjl.boot.autowired.inject.sample.bean.MyAsyncHolder;
 import com.sjl.boot.autowired.inject.sample.proxy.AsyncInvocationTask;
 import lombok.extern.slf4j.Slf4j;
+import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
@@ -13,11 +14,13 @@ import java.lang.reflect.Method;
  * @author: JianLei
  * @date: 2020/9/29 10:53 上午
  * @description: CglibMethodInterceptor
+ * @see org.springframework.aop.interceptor.AsyncExecutionInterceptor#invoke(MethodInvocation)
+ * @see org.springframework.aop.interceptor.AsyncExecutionAspectSupport#determineAsyncExecutor(Method)  匹配@Async注解
  */
 @Slf4j
 public class CglibMethodInterceptor implements MethodInterceptor {
 
-    private MyAsyncHolder myAsyncHolder;
+    private final MyAsyncHolder myAsyncHolder;
 
     public CglibMethodInterceptor(MyAsyncHolder myAsyncHolder) {
         this.myAsyncHolder = myAsyncHolder;

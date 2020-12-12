@@ -11,14 +11,18 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.MethodIntrospector;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: JianLei
@@ -35,7 +39,7 @@ public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware
 
     public static void inject(Object bean, Class<? extends Annotation> clazz)
             throws Exception {
-        Field[] fields = getField(bean.getClass(),null);
+        Field[] fields = getField(bean.getClass(), null);
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(clazz)) {
@@ -64,9 +68,10 @@ public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware
             }
             myAsyncHolder.setBean(obj.getClass());
             //获取异步处理方法添加到list中
-            List<Method> asyncMethods = getAsyncMethods(obj.getClass());
-            if (CollectionUtil.isNotEmpty(asyncMethods)) {
-                myAsyncHolder.setMethods(asyncMethods);
+            Map<Method, CustomAsync> methodAndAnnotation = getMethodAndAnnotation(obj, CustomAsync.class);
+            List<Method> methodList = new ArrayList<>(methodAndAnnotation.keySet());
+            if (CollectionUtil.isNotEmpty(methodList)) {
+                myAsyncHolder.setMethods(methodList);
                 field.set(bean, new ProxyFactory(myAsyncHolder).getObject());
             } else {
                 field.set(bean, obj);
@@ -76,15 +81,12 @@ public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware
         }
     }
 
-    private static List<Method> getAsyncMethods(Class<?> aClass) throws NoSuchMethodException {
-        List<Method> methods = new LinkedList<>();
-        for (Method method : getMethods(aClass,null)) {
-            if (method.isAnnotationPresent(CustomAsync.class)) {
-                methods.add(method);
-            }
-        }
-        return methods;
+    public static <T extends Annotation> Map<Method, T> getMethodAndAnnotation(Object bean, Class<T> annotation) {
+        return MethodIntrospector.selectMethods(bean.getClass(),
+                (MethodIntrospector.MetadataLookup<T>) method -> AnnotatedElementUtils
+                        .findMergedAnnotation(method, annotation));
     }
+
 
     private static void setFieldValue(Object bean, String property, Field field)
             throws IllegalAccessException {
@@ -121,7 +123,7 @@ public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware
     }
 
     @Override
-    public void setEnvironment(Environment environment) {
+    public void setEnvironment(@NotNull Environment environment) {
         ReflectiveUtil.environment = environment;
     }
 
