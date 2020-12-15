@@ -1,7 +1,5 @@
 package com.github.simple.ioc.factory;
 
-import java.util.Map;
-
 /**
  * @author: JianLei
  * @date: 2020/12/11 5:26 下午
@@ -9,9 +7,13 @@ import java.util.Map;
  */
 public interface SimpleBeanFactory {
 
-    Object getBean(Class<?> clazz) throws Throwable;
+    <T> T getBean(Class<?> clazz) throws Throwable;
 
-    Object getBean(String name) throws Throwable;
+    <T> T getBean(String name) throws Throwable;
 
-    Map<String, Object> getBeanOfType(Class<?> clazz);
+    default void registerSingleton(String beanName, Object singletonObject){
+
+    }
+
+
 }

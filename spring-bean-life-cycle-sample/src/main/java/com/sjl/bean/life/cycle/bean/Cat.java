@@ -1,12 +1,14 @@
 package com.sjl.bean.life.cycle.bean;
 
 import org.springframework.core.Ordered;
+import org.springframework.stereotype.Component;
 
 /**
  * @author: JianLei
  * @date: 2020/9/11 4:45 下午
  * @description:
  */
+@Component
 public class Cat implements Ordered {
 
 

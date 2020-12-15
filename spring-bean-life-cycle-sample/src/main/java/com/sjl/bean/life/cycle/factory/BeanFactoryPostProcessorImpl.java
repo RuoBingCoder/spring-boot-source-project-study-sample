@@ -1,7 +1,5 @@
 package com.sjl.bean.life.cycle.factory;
 
-import com.sjl.bean.life.cycle.bean.Pig;
-import com.sjl.bean.life.cycle.constants.Constant;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -16,6 +14,16 @@ import org.springframework.stereotype.Component;
 public class BeanFactoryPostProcessorImpl implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory clb) throws BeansException {
+         try {
+             int i=10;
+             if (i<0){
+
+             }
+
+                 } catch (Exception e) {
+
+                 }
+        System.out.println("==================BeanFactoryPostProcessorImpl=========================");
         //一旦调用getBean会对bean进行初始化
 //        Pig pig = (Pig) clb.getBean("pig");
 //        System.out.println("------------->>>>>"+pig.toString());

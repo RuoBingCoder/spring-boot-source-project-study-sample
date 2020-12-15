@@ -58,6 +58,7 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
     }
 
     public static <T> T getBeanByType(Class<?> type) {
+        applicationContext.getBeansOfType(null);
         Object bean = applicationContext.getBean(type);
         return (T) bean;
     }

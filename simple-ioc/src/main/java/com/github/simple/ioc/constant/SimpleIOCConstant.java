@@ -9,4 +9,5 @@ package com.github.simple.ioc.constant;
 public class SimpleIOCConstant {
 
     public static final String  BASE_PACKAGE_NAME="com.github.simple.demo";
+    public static final Integer DEFAULT_ORDER_VALUE=1;
 }

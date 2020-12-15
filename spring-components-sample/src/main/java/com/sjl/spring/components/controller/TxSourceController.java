@@ -25,9 +25,12 @@ public class TxSourceController {
     private HeroService heroService;
 
 
+
     @GetMapping(value = "/getHero")
     public String getHero() {
         heroService.insert(Hero.builder().createTime(LocalDateTime.now()).money(122).name("sunshangxiang").type("刺客").build());
         return "success";
     }
+
+
 }

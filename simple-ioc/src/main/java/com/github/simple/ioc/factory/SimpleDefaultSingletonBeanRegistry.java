@@ -22,6 +22,8 @@ public class SimpleDefaultSingletonBeanRegistry {
     protected final Map<String, SimpleObjectFactory<?>> singletonFactoryMap = new ConcurrentHashMap<>(256);
     /**
      * 二级缓存
+     * {@link SimpleObjectFactory#getObject()} 主要是获取对象的时候,如果对象被代理了,则每次获取对象都会创建新的代理对象,二级缓存作用就是为了避免这种情况
+     * 确保代理只被创建一次
      */
     protected final Map<String, Object> earlySingletonMap = new ConcurrentHashMap<>(256);
 
@@ -33,12 +35,18 @@ public class SimpleDefaultSingletonBeanRegistry {
      * @date 10:01 下午 2020/12/11
      **/
 
-    public Object getSingletonBean(String beanName, SimpleObjectFactory<?> objectFactory) throws Throwable {
+    public <T> T getSingletonBean(String beanName, SimpleObjectFactory<?> objectFactory) throws Throwable {
+        //此处省略了很多spring逻辑 只做简化处理
         Object object = objectFactory.getObject();
         addSingleton(beanName, object);
-        return object;
+        return (T) object;
     }
 
+    /**
+     * 添加bean
+     * @param beanName
+     * @param singletonObject
+     */
     private void addSingleton(String beanName, Object singletonObject) {
         synchronized (this.singletonObjectMap) {
             if (!this.singletonObjectMap.containsKey(beanName)) {
@@ -53,6 +61,13 @@ public class SimpleDefaultSingletonBeanRegistry {
         return getSingleton(beanName, true);
     }
 
+    /**
+     * 获取bean
+     * @param beanName
+     * @param isAllowRef
+     * @return
+     * @throws Throwable
+     */
     protected Object getSingleton(String beanName, boolean isAllowRef) throws Throwable {
         Object singleton = singletonObjectMap.get(beanName);
         if (singleton == null) {

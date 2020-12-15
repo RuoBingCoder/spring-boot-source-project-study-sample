@@ -1,9 +1,10 @@
 package com.sjl.spring.components;
 
 import com.sjl.spring.components.event.CustomEvent;
-import com.sjl.spring.components.utils.SpringUtil;
-import org.apache.tomcat.util.net.NioEndpoint;
+import com.sjl.spring.components.pojo.GeoHolder;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,13 +13,20 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.annotation.Order;
 import org.springframework.retry.annotation.EnableRetry;
 
+import javax.annotation.Resource;
+
 @SpringBootApplication
 @MapperScan("com.sjl.spring.components.transaction.dao")
-@EnableAspectJAutoProxy(proxyTargetClass = true,exposeProxy = true)
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @Order
 @EnableRetry
 public class SpringComponentsApplication implements CommandLineRunner {
-
+    /**
+     * 推荐ObjectProvider 延迟注入 避免风险
+     * {@link ObjectFactory#getObject()}
+     */
+    @Resource
+    private ObjectProvider<GeoHolder> opGeoHolder;
 
 
     public static void main(String[] args) {
@@ -38,12 +46,7 @@ public class SpringComponentsApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         System.out.println("====================CommandLineRunner========================");
 //        ReflectUtil.threadClassLoader("");
-
-        Object tomcat = SpringUtil.tomcatBean.get(NioEndpoint.class);
-
-        System.out.println("===>>"+tomcat.getClass());
-
-        SpringUtil.dependencyLookup();
+        System.out.println("->>>>>>"+opGeoHolder.getIfAvailable());
 
     }
 }

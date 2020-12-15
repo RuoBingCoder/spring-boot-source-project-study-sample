@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.ioc.factory.SimpleAutowiredCapableBeanFactory;
 import com.github.simple.ioc.factory.SimpleBeanFactory;
 import com.github.simple.ioc.factory.SimpleBeanFactoryAware;
-import com.github.simple.ioc.utils.IOCReflectionUtils;
+import com.github.simple.ioc.utils.ReflectUtils;
 import lombok.Data;
 
 import java.lang.reflect.Field;
@@ -18,8 +18,7 @@ import java.util.LinkedHashMap;
  * @date: 2020/12/12 1:56 下午
  * @description: SimpleAutowiredAnnotationBeanPostProcessor
  */
-
-public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimplePostProcessor, SimpleBeanFactoryAware {
+public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleBeanPostProcessor, SimpleBeanFactoryAware {
 
     public static SimpleAutowiredCapableBeanFactory beanFactory;
     @Override
@@ -50,7 +49,7 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimplePostPr
     }
 
     private InjectMeta findAutowired(Object bean) {
-        LinkedHashMap<String, Field> fieldLinkedHashMap = IOCReflectionUtils.findAutowired(bean.getClass());
+        LinkedHashMap<String, Field> fieldLinkedHashMap = ReflectUtils.findAutowired(bean.getClass());
         return getInjectMeta(fieldLinkedHashMap,bean);
     }
 
@@ -89,7 +88,7 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimplePostPr
             //递归获取bean
             Object dep = SimpleAutowiredAnnotationBeanPostProcessor.beanFactory.getBean(this.getElementName());
             Field field = (Field) this.getMember();
-            IOCReflectionUtils.makeAccessible(field);
+            ReflectUtils.makeAccessible(field);
             field.set(target,dep);
 
         }

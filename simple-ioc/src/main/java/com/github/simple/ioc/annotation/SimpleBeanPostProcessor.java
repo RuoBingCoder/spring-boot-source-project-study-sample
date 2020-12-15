@@ -5,7 +5,7 @@ package com.github.simple.ioc.annotation;
  * @date: 2020/12/12 1:41 下午
  * @description: SimplePostProcessor
  */
-public interface SimplePostProcessor {
+public interface SimpleBeanPostProcessor {
 
     default Boolean postProcessAfterInstantiation(Object bean, String beanName) {
         return true;

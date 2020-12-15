@@ -4,7 +4,7 @@ import com.github.simple.ioc.annotation.SimpleAutowired;
 import com.github.simple.ioc.annotation.SimpleComponent;
 import com.github.simple.ioc.annotation.SimpleService;
 import com.github.simple.ioc.enums.SimpleIOCEnum;
-import com.github.simple.ioc.exception.SimpleIOCBaseException;
+import com.github.simple.ioc.exception.SimpleFieldTypeException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
  * @description: IOCReflectionUtils
  */
 
-public class IOCReflectionUtils {
+public class ReflectUtils {
 
     public static void makeAccessible(Field field) {
         if ((!Modifier.isPublic(field.getModifiers()) ||
@@ -26,31 +26,31 @@ public class IOCReflectionUtils {
         }
     }
 
-    public static LinkedHashMap<String,Field> findAutowired(Class<?> clazz){
+    public static LinkedHashMap<String, Field> findAutowired(Class<?> clazz) {
         return matchType(clazz);
 
     }
 
-    private static LinkedHashMap<String,Field> matchType(Class<?> clazz) {
+    private static LinkedHashMap<String, Field> matchType(Class<?> clazz) {
         return matchField(clazz.getDeclaredFields());
     }
 
-    private static LinkedHashMap<String,Field> matchField(Field[] declaredFields) {
-        LinkedHashMap<String,Field>  beanFields = new LinkedHashMap<>(20);
+    private static LinkedHashMap<String, Field> matchField(Field[] declaredFields) {
+        LinkedHashMap<String, Field> beanFields = new LinkedHashMap<>(20);
         for (Field field : declaredFields) {
-            if (field.isAnnotationPresent(SimpleAutowired.class)){
-                if (Modifier.isStatic(field.getModifiers())){
-                    throw new SimpleIOCBaseException(SimpleIOCEnum.STATIC_FIELD_NOT_INJECT.getMsg());
+            if (field.isAnnotationPresent(SimpleAutowired.class)) {
+                if (Modifier.isStatic(field.getModifiers())) {
+                    throw new SimpleFieldTypeException(SimpleIOCEnum.STATIC_FIELD_NOT_INJECT.getMsg());
                 }
-                beanFields.put(field.getType().getSimpleName(),field);
+                beanFields.put(field.getType().getSimpleName(), field);
             }
         }
         return beanFields;
     }
 
 
-    public static Boolean matchComponent(Class< ? > clazz){
-        return clazz.isAnnotationPresent(SimpleComponent.class)||clazz.isAnnotationPresent(SimpleService.class);
+    public static Boolean matchAnnotationComponent(Class<?> clazz) {
+        return clazz.isAnnotationPresent(SimpleComponent.class) || clazz.isAnnotationPresent(SimpleService.class);
     }
 
 

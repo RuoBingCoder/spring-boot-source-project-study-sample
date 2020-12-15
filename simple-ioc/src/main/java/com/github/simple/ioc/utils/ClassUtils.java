@@ -1,7 +1,9 @@
 package com.github.simple.ioc.utils;
 
-import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
+import com.github.simple.ioc.annotation.SimpleOrdered;
+import com.github.simple.ioc.definition.SimpleRootBeanDefinition;
 import com.github.simple.ioc.enums.SimpleIOCEnum;
 import com.github.simple.ioc.exception.SimpleIOCBaseException;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +21,7 @@ public class ClassUtils {
         if (checkParams(basePackages)) {
             throw new SimpleIOCBaseException(SimpleIOCEnum.BASE_PACKAGES_NOT_NULL.getMsg());
         }
-        return ClassUtil.scanPackage(basePackages);
+        return cn.hutool.core.util.ClassUtil.scanPackage(basePackages);
     }
 
     private static Boolean checkParams(String basePackages) {
@@ -47,5 +49,24 @@ public class ClassUtils {
 
     public static Object newInstance(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         return clazz.newInstance();
+    }
+
+    public static Class<?> getClass(Object obj){
+        Assert.notNull(obj,"obj notNull");
+        if (obj instanceof SimpleRootBeanDefinition){
+            SimpleRootBeanDefinition srb= (SimpleRootBeanDefinition) obj;
+            return srb.getRootClass();
+        }
+        return obj.getClass();
+    }
+
+    public static boolean matchOrdered(Object obj){
+        return obj.getClass().isAnnotationPresent(SimpleOrdered.class);
+
+    }
+
+    public static Integer getOrderedValue(Object obj){
+        SimpleOrdered ordered = obj.getClass().getAnnotation(SimpleOrdered.class);
+        return ordered.value();
     }
 }
