@@ -3,6 +3,7 @@ package com.github.simple.ioc.factory;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.ioc.annotation.SimpleBeanPostProcessor;
+import com.github.simple.ioc.annotation.SimpleInstantiationAwareBeanPostProcessor;
 import com.github.simple.ioc.constant.SimpleIOCConstant;
 import com.github.simple.ioc.definition.SimpleRootBeanDefinition;
 import com.github.simple.ioc.exception.SimpleIOCBaseException;
@@ -22,9 +23,8 @@ import java.util.Set;
  * @see org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
  */
 @Slf4j
-public class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
-    public SimpleAutowiredCapableBeanFactory() throws Throwable {
-        super();
+public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
+    protected SimpleAutowiredCapableBeanFactory() throws Throwable {
         registryBeanDef();
         invokerBeanFactoryProcessor();
         invokerBeanPostProcessor();
@@ -134,13 +134,15 @@ public class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     private void populateBean(String beanName, Object instance) throws Throwable {
         if (CollectionUtil.isNotEmpty(getBeanPostProcessor())) {
             for (SimpleBeanPostProcessor simplePostProcessor : getBeanPostProcessor()) {
-                if (!simplePostProcessor.postProcessAfterInstantiation(instance, beanName)) {
-                    return;
+                if (simplePostProcessor instanceof SimpleInstantiationAwareBeanPostProcessor){
+                    SimpleInstantiationAwareBeanPostProcessor sbp= (SimpleInstantiationAwareBeanPostProcessor) simplePostProcessor;
+                    if (!sbp.postProcessAfterInstantiation(instance, beanName)) {
+                        return;
+                    }
+                    sbp.postProcessProperties(instance, beanName);
                 }
             }
-            for (SimpleBeanPostProcessor spc : getBeanPostProcessor()) {
-                spc.postProcessProperties(instance, beanName);
-            }
+
         }
     }
 

@@ -15,15 +15,6 @@ import com.github.simple.ioc.factory.SimpleBeanFactoryAware;
 @SimpleOrdered(-10)
 public class CustomBeanPostProcessor2 implements SimpleBeanPostProcessor, SimpleBeanFactoryAware {
     private SimpleBeanFactory beanFactory;
-    @Override
-    public Boolean postProcessAfterInstantiation(Object bean, String beanName) {
-        return true;
-    }
-
-    @Override
-    public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) {
-        return null;
-    }
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
@@ -38,10 +29,7 @@ public class CustomBeanPostProcessor2 implements SimpleBeanPostProcessor, Simple
         return null;
     }
 
-    @Override
-    public void postProcessProperties(Object bean, String beanName) {
-        System.out.println("=====>>>"+ bean.getClass().getSimpleName());
-    }
+
 
 
     @Override

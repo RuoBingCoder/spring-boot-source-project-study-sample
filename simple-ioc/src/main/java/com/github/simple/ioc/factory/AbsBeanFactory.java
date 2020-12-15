@@ -1,7 +1,7 @@
 package com.github.simple.ioc.factory;
 
 import com.github.simple.ioc.annotation.SimpleAutowiredAnnotationBeanPostProcessor;
-import com.github.simple.ioc.annotation.SimpleBeanFactoryProcessor;
+import com.github.simple.ioc.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.ioc.annotation.SimpleBeanPostProcessor;
 import com.github.simple.ioc.constant.SimpleIOCConstant;
 import com.github.simple.ioc.definition.SimpleRootBeanDefinition;
@@ -130,8 +130,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     protected void invokerBeanFactoryProcessor() throws Throwable {
         for (Map.Entry<String, SimpleRootBeanDefinition> entry : this.getBeanDefinitions().entrySet()) {
-            if(SimpleBeanFactoryProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))){
-                SimpleBeanFactoryProcessor simpleBeanDefinitionRegistry = getBean(entry.getKey());
+            if(SimpleBeanFactoryPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))){
+                SimpleBeanFactoryPostProcessor simpleBeanDefinitionRegistry = getBean(entry.getKey());
                 simpleBeanDefinitionRegistry.postProcessBeanFactory(this);
             }
         }

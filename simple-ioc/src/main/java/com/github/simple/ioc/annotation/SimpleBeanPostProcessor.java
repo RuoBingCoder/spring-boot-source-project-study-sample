@@ -7,21 +7,14 @@ package com.github.simple.ioc.annotation;
  */
 public interface SimpleBeanPostProcessor {
 
-    default Boolean postProcessAfterInstantiation(Object bean, String beanName) {
-        return true;
-    }
 
-    default Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) {
-        return null;
-    }
 
     default Object postProcessBeforeInitialization(Object bean, String beanName) {
-        return null;
+        return bean;
     }
 
     default Object postProcessAfterInitialization(Object bean, String beanName) {
-        return null;
+        return bean;
     }
-    default void postProcessProperties(Object bean, String beanName) throws Throwable {
-    }
+
 }

@@ -7,7 +7,7 @@ import com.github.simple.ioc.factory.SimpleBeanFactory;
  * @date: 2020/12/14 5:41 下午
  * @description: SimpleBeanDefinitionRegistry
  */
-public interface SimpleBeanFactoryProcessor {
+public interface SimpleBeanFactoryPostProcessor {
 
     void postProcessBeanFactory(SimpleBeanFactory factory);
 }

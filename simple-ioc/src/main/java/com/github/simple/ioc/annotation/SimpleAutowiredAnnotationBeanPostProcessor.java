@@ -1,11 +1,13 @@
 package com.github.simple.ioc.annotation;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.github.simple.ioc.exception.SimpleIOCBaseException;
 import com.github.simple.ioc.factory.SimpleAutowiredCapableBeanFactory;
 import com.github.simple.ioc.factory.SimpleBeanFactory;
 import com.github.simple.ioc.factory.SimpleBeanFactoryAware;
 import com.github.simple.ioc.utils.ReflectUtils;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -18,19 +20,15 @@ import java.util.LinkedHashMap;
  * @date: 2020/12/12 1:56 下午
  * @description: SimpleAutowiredAnnotationBeanPostProcessor
  */
-public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleBeanPostProcessor, SimpleBeanFactoryAware {
+@Slf4j
+public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleInstantiationAwareBeanPostProcessor, SimpleBeanFactoryAware {
 
     public static SimpleAutowiredCapableBeanFactory beanFactory;
+
     @Override
     public Boolean postProcessAfterInstantiation(Object bean, String beanName) {
         return true;
     }
-
-    @Override
-    public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) {
-        return null;
-    }
-
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
         return null;
@@ -86,6 +84,10 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleBeanPo
 
         public void inject(Object target) throws Throwable {
             //递归获取bean
+            if (SimpleAutowiredAnnotationBeanPostProcessor.beanFactory==null){
+                throw new SimpleIOCBaseException("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory Exception! is null");
+            }
+            log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}",SimpleAutowiredAnnotationBeanPostProcessor.beanFactory);
             Object dep = SimpleAutowiredAnnotationBeanPostProcessor.beanFactory.getBean(this.getElementName());
             Field field = (Field) this.getMember();
             ReflectUtils.makeAccessible(field);
@@ -94,4 +96,6 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleBeanPo
         }
 
     }
+
+
 }

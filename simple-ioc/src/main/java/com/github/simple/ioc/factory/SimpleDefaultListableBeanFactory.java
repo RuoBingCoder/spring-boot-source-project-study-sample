@@ -17,11 +17,9 @@ import java.util.stream.Collectors;
  * @description: SimpleDefaultListableBeanFactory
  */
 
-public class SimpleDefaultListableBeanFactory implements SimpleListableBeanFactory {
-    private final SimpleAutowiredCapableBeanFactory factory;
-
+public class SimpleDefaultListableBeanFactory extends SimpleAutowiredCapableBeanFactory implements SimpleListableBeanFactory {
     public SimpleDefaultListableBeanFactory() throws Throwable {
-        this.factory = new SimpleAutowiredCapableBeanFactory();
+        super();
     }
 
     @Override
@@ -36,12 +34,12 @@ public class SimpleDefaultListableBeanFactory implements SimpleListableBeanFacto
     private <T> Map<String, T> doGetBeans(Class<T> clazz, boolean needInit) throws Throwable {
         Map<String, T> beans = new HashMap<>();
         if (needInit) {
-            Map<String, SimpleRootBeanDefinition> beanDefinitionMap = factory.getBeanDefinitions();
+            Map<String, SimpleRootBeanDefinition> beanDefinitionMap = super.getBeanDefinitions();
             Map<String, SimpleRootBeanDefinition> definitionTypeMap = beanDefinitionMap.entrySet().stream()
                     .filter(d -> clazz.isAssignableFrom(ClassUtils.getClass(d.getValue()))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             if (CollectionUtil.isNotEmpty(definitionTypeMap)) {
                 for (Map.Entry<String, SimpleRootBeanDefinition> entry : definitionTypeMap.entrySet()) {
-                    if (factory.getBean(entry.getKey()) == null) {
+                    if (this.getBean(entry.getKey()) == null) {
                         beans.put(entry.getKey(), (T) ClassUtils.newInstance(ClassUtils.getClass(entry.getValue())));
                     }
                 }
@@ -50,7 +48,7 @@ public class SimpleDefaultListableBeanFactory implements SimpleListableBeanFacto
         String[] names = matchType(clazz);
         if (names.length > 0) {
             for (String name : names) {
-                beans.put(name, factory.getBean(name));
+                beans.put(name, super.getBean(name));
             }
         }
         return beans;
@@ -58,7 +56,7 @@ public class SimpleDefaultListableBeanFactory implements SimpleListableBeanFacto
 
     private <T> String[] matchType(Class<T> clazz) {
         List<String> names = new ArrayList<>();
-        factory.getBeans().forEach((key, obj) -> {
+        getBeans().forEach((key, obj) -> {
             if (clazz.isAssignableFrom(obj.getClass())) {
                 names.add(key);
             }
@@ -68,19 +66,17 @@ public class SimpleDefaultListableBeanFactory implements SimpleListableBeanFacto
     }
 
 
-    public Map<String, Object> getBeans() {
-        return factory.getBeans();
-    }
+
 
 
 
     @Override
     public <T> T getBean(Class<?> clazz) throws Throwable {
-        return factory.getBean(clazz);
+        return super.getBean(clazz);
     }
 
     @Override
     public <T> T getBean(String name) throws Throwable {
-        return factory.getBean(name);
+        return super.getBean(name);
     }
 }
