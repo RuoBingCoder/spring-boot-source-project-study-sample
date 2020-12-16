@@ -1,9 +1,9 @@
 package com.github.simple.demo.service;
 
-import com.github.simple.ioc.annotation.SimpleBeanFactoryPostProcessor;
-import com.github.simple.ioc.annotation.SimpleComponent;
-import com.github.simple.ioc.definition.SimpleRootBeanDefinition;
-import com.github.simple.ioc.factory.SimpleBeanFactory;
+import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
+import com.github.simple.core.annotation.SimpleComponent;
+import com.github.simple.core.definition.SimpleRootBeanDefinition;
+import com.github.simple.core.factory.SimpleBeanFactory;
 
 /**
  * @author: jianlei.shi

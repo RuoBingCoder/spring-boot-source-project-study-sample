@@ -1,6 +1,6 @@
 package com.github.simple.demo.service.aop;
 
-import com.github.simple.ioc.annotation.SimpleComponent;
+import com.github.simple.core.annotation.SimpleComponent;
 
 /**
  * @author: jianlei.shi

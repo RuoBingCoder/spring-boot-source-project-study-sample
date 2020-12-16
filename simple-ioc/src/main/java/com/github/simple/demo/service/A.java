@@ -1,7 +1,7 @@
 package com.github.simple.demo.service;
 
-import com.github.simple.ioc.annotation.SimpleAutowired;
-import com.github.simple.ioc.annotation.SimpleComponent;
+import com.github.simple.core.annotation.SimpleAutowired;
+import com.github.simple.core.annotation.SimpleComponent;
 
 import java.util.Arrays;
 import java.util.List;

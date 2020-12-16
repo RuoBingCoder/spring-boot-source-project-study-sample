@@ -1,8 +1,8 @@
 package com.github.simple.demo.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.simple.ioc.annotation.SimpleAutowired;
-import com.github.simple.ioc.annotation.SimpleComponent;
+import com.github.simple.core.annotation.SimpleAutowired;
+import com.github.simple.core.annotation.SimpleComponent;
 
 /**
  * @author: JianLei

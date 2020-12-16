@@ -1,10 +1,10 @@
 package com.github.simple.demo.service;
 
-import com.github.simple.ioc.annotation.SimpleComponent;
-import com.github.simple.ioc.annotation.SimpleOrdered;
-import com.github.simple.ioc.annotation.SimpleBeanPostProcessor;
-import com.github.simple.ioc.factory.SimpleBeanFactory;
-import com.github.simple.ioc.factory.SimpleBeanFactoryAware;
+import com.github.simple.core.annotation.SimpleComponent;
+import com.github.simple.core.annotation.SimpleOrdered;
+import com.github.simple.core.annotation.SimpleBeanPostProcessor;
+import com.github.simple.core.factory.SimpleBeanFactory;
+import com.github.simple.core.factory.SimpleBeanFactoryAware;
 
 /**
  * @author: jianlei.shi

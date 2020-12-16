@@ -1,8 +1,8 @@
 package com.github.simple.demo.service.aspect;
 
-import com.github.simple.ioc.annotation.SimpleAspect;
-import com.github.simple.ioc.annotation.SimpleComponent;
-import com.github.simple.ioc.annotation.SimplePointCut;
+import com.github.simple.core.annotation.SimpleAspect;
+import com.github.simple.core.annotation.SimpleComponent;
+import com.github.simple.core.annotation.SimplePointCut;
 
 /**
  * @author: jianlei.shi
