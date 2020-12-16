@@ -3,6 +3,7 @@ package com.github.simple.core.factory;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.utils.ClassUtils;
+import com.github.simple.core.utils.ReflectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -18,8 +19,15 @@ import java.util.stream.Collectors;
  */
 
 public class SimpleDefaultListableBeanFactory extends SimpleAutowiredCapableBeanFactory implements SimpleListableBeanFactory {
-    public SimpleDefaultListableBeanFactory() throws Throwable {
-        super();
+
+    public SimpleDefaultListableBeanFactory(Class<?> startClass) throws Throwable {
+        super(ReflectUtils.getBasePackages(startClass));
+
+    }
+
+
+    public static SimpleDefaultListableBeanFactory run(Class<?> clazz) throws Throwable {
+        return new SimpleDefaultListableBeanFactory(clazz);
     }
 
     @Override
@@ -64,10 +72,6 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowiredCapableBean
         });
         return StringUtils.toStringArray(names);
     }
-
-
-
-
 
 
     @Override

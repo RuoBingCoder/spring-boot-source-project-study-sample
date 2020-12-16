@@ -1,19 +1,20 @@
 package com.github.simple.core.utils;
 
-import com.github.simple.core.annotation.SimpleAspect;
-import com.github.simple.core.annotation.SimpleAutowired;
-import com.github.simple.core.annotation.SimpleComponent;
-import com.github.simple.core.annotation.SimpleService;
+import cn.hutool.core.lang.Assert;
+import com.github.simple.core.annotation.*;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleFieldTypeException;
+import com.github.simple.core.exception.SimpleIOCBaseException;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public class ReflectUtils {
     private static LinkedHashMap<String, Field> matchField(Field[] declaredFields) {
         LinkedHashMap<String, Field> beanFields = new LinkedHashMap<>(20);
         for (Field field : declaredFields) {
-            if (field.isAnnotationPresent(SimpleAutowired.class)) {
+            if (field.isAnnotationPresent(SimpleAutowired.class)||field.isAnnotationPresent(SimpleValue.class)) {
                 if (Modifier.isStatic(field.getModifiers())) {
                     throw new SimpleFieldTypeException(SimpleIOCEnum.STATIC_FIELD_NOT_INJECT.getMsg());
                 }
@@ -70,5 +71,28 @@ public class ReflectUtils {
                         .findMergedAnnotation(method, annotation));
     }
 
+    public static String getBasePackages(Class< ? > clazz){
+        if (clazz.isAnnotationPresent(SimpleComponentScan.class)) {
+            return clazz.getAnnotation(SimpleComponentScan.class).basePackages();
+        }
+        throw new SimpleIOCBaseException("包路径不能为空!");
+    }
+
+    public static boolean resolveDependencies(Member member){
+        Field field = (Field) member;
+        if (field.getType().equals(String.class)){
+            return true;
+        }
+        if (field.getType().equals(Integer.class)){
+            return true;
+        }
+        return field.getType().equals(List.class);
+    }
+
+    public static String parseValue(Field field){
+        SimpleValue simpleValue = field.getAnnotation(SimpleValue.class);
+        Assert.notNull(simpleValue.value(),"Annotation SimpleValue value is null!");
+        return simpleValue.value();
+    }
 
 }

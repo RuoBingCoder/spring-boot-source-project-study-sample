@@ -8,13 +8,13 @@ import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.init.SimpleInitializingBean;
+import com.github.simple.core.resource.SimpleClassPathResource;
+import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
+import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: JianLei
@@ -24,9 +24,13 @@ import java.util.Set;
  */
 @Slf4j
 public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
-    protected SimpleAutowiredCapableBeanFactory() throws Throwable {
+
+    protected   List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
+
+    protected SimpleAutowiredCapableBeanFactory(String basePackages) throws Throwable {
         try {
-            registryBeanDef();
+            registryBeanDef(basePackages);
+            prepareSource();
             invokerBeanFactoryProcessor();
             invokerBeanPostProcessor();
             finishBeanInstance();
@@ -34,6 +38,14 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
             destroyBeans();
         }
     }
+
+    private void prepareSource() {
+        SimpleClassPathResource  source=new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
+        SimplePropertiesPropertySourceLoader loader=new SimplePropertiesPropertySourceLoader();
+        simplePropertiesPropertySourceLoader= loader.load(source.getFilename(), source);
+
+    }
+
 
     private void destroyBeans() {
         super.simplePostProcessors.clear();
@@ -51,8 +63,8 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     }
 
 
-    public void registryBeanDef() {
-        Set<Class<?>> classSet = ClassUtils.scannerBasePackages(SimpleIOCConstant.BASE_PACKAGE_NAME);
+    public void registryBeanDef(String basePackages) {
+        Set<Class<?>> classSet = ClassUtils.scannerBasePackages(basePackages);
         doRegistryBeanDefinition(classSet);
     }
 
@@ -181,4 +193,12 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
        Object exportObject = super.earlySingleton(beanName, instance);
        addSingletonFactory(beanName, () -> exportObject);
    }
+
+    @Override
+    public  List<SimplePropertySource<Properties>> getResource() {
+        if (simplePropertiesPropertySourceLoader==null){
+            throw new SimpleIOCBaseException("resource is null!");
+        }
+        return simplePropertiesPropertySourceLoader;
+    }
 }

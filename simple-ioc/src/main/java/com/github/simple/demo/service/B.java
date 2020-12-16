@@ -1,5 +1,6 @@
 package com.github.simple.demo.service;
 
+import com.github.simple.core.annotation.SimpleValue;
 import com.github.simple.demo.service.aop.LogService;
 import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponent;
@@ -15,9 +16,12 @@ public class B {
     private A a;
     @SimpleAutowired
     private LogService logService;
+
+    @SimpleValue("${simple.address}")
+    private String address;
     public String hello() {
         a.sendMsg();
-        System.out.println("***************testLog output :"+logService.testLog());
+        System.out.println("***************testLog output :"+logService.testLog()+"--->>address is:"+address);
         return "this B msg";
     }
 

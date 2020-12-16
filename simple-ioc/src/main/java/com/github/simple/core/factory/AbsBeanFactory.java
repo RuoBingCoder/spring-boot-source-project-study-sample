@@ -211,7 +211,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         List<SimpleBeanPostProcessor> sortedPostProcessors = new ArrayList<>();
         systemPostProcessors.add(simpleAutowiredAnnotationBeanPostProcessor);
         List<SimpleBeanPostProcessor> nonOrderPostprocessors = new ArrayList<>();
-        for (Map.Entry<String, SimpleRootBeanDefinition> entry : this.getBeanDefinitions().entrySet()) {
+        for (Map.Entry<String, SimpleRootBeanDefinition> entry : getBeanDefinitions().entrySet()) {
 
             if (SimpleBeanPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
                 SimpleBeanPostProcessor simplePostProcessor = getBean(entry.getKey());

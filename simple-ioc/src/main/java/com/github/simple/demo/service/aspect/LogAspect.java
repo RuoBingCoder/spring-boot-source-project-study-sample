@@ -7,7 +7,7 @@ import com.github.simple.core.annotation.SimplePointCut;
 /**
  * @author: jianlei.shi
  * @date: 2020/12/16 11:53 上午
- * @description: LogAspect
+ * @description: aop切面
  */
 @SimpleComponent
 @SimpleAspect

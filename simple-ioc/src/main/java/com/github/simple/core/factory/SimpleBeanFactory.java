@@ -1,5 +1,10 @@
 package com.github.simple.core.factory;
 
+import com.github.simple.core.resource.SimplePropertySource;
+
+import java.util.List;
+import java.util.Properties;
+
 /**
  * @author: JianLei
  * @date: 2020/12/11 5:26 下午
@@ -15,5 +20,8 @@ public interface SimpleBeanFactory {
 
     }
 
+    default List<SimplePropertySource<Properties>> getResource(){
+        return null;
+    }
 
 }

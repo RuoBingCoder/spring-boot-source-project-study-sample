@@ -5,15 +5,15 @@ import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.factory.SimpleAutowiredCapableBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactoryAware;
+import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ReflectUtils;
+import com.github.simple.core.utils.StringUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * @author: JianLei
@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
  * @description: SimpleAutowiredAnnotationBeanPostProcessor
  */
 @Slf4j
-public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleInstantiationAwareBeanPostProcessor, SimpleBeanFactoryAware {
+public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstantiationAwareBeanPostProcessor, SimpleBeanFactoryAware {
 
     public static SimpleAutowiredCapableBeanFactory beanFactory;
 
@@ -29,6 +29,7 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleInstan
     public Boolean postProcessAfterInstantiation(Object bean, String beanName) {
         return true;
     }
+
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
         return null;
@@ -48,12 +49,12 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleInstan
 
     private InjectMeta findAutowired(Object bean) {
         LinkedHashMap<String, Field> fieldLinkedHashMap = ReflectUtils.findAutowired(bean.getClass());
-        return getInjectMeta(fieldLinkedHashMap,bean);
+        return getInjectMeta(fieldLinkedHashMap, bean);
     }
 
     private InjectMeta getInjectMeta(LinkedHashMap<String, Field> fields, Object bean) {
         InjectMeta injectMeta = new InjectMeta();
-        Collection<InjectMeta.InjectElement> elements=new ArrayList<>();
+        Collection<InjectMeta.InjectElement> elements = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(fields)) {
             fields.forEach((key, value) -> elements.add(new InjectMeta.InjectElement(value, true, key)));
         }
@@ -66,12 +67,12 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleInstan
 
     @Override
     public void setBeanFactory(SimpleBeanFactory simpleBeanFactory) {
-        SimpleAutowiredAnnotationBeanPostProcessor.beanFactory= (SimpleAutowiredCapableBeanFactory) simpleBeanFactory;
+        SimpleAutowiredAnnotationBeanPostProcessor.beanFactory = (SimpleAutowiredCapableBeanFactory) simpleBeanFactory;
     }
 
 
     @Data
-    public static class InjectFieldElement{
+    public static class InjectFieldElement {
         private Member member;
         private boolean isField;
         private String elementName;
@@ -83,16 +84,34 @@ public class SimpleAutowiredAnnotationBeanPostProcessor  implements SimpleInstan
         }
 
         public void inject(Object target) throws Throwable {
+            SimpleAutowiredCapableBeanFactory beanFactory = getBeanFactory(SimpleAutowiredAnnotationBeanPostProcessor.beanFactory);
             //递归获取bean
-            if (SimpleAutowiredAnnotationBeanPostProcessor.beanFactory==null){
+            if (beanFactory == null) {
                 throw new SimpleIOCBaseException("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory Exception! is null");
             }
-            log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}",SimpleAutowiredAnnotationBeanPostProcessor.beanFactory);
-            Object dep = SimpleAutowiredAnnotationBeanPostProcessor.beanFactory.getBean(this.getElementName());
+
+            log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}", beanFactory);
+            if (ReflectUtils.resolveDependencies(this.member)) {
+                System.out.println("====>>>>value 赋值开始<<<<<======");
+                List<SimplePropertySource<Properties>> resource = beanFactory.getResource();
+                String key = StringUtils.parsePlaceholder((Field) member);
+                String value = (String) resource.get(0).getValue().get(key);
+                Field field = (Field) this.getMember();
+                ReflectUtils.makeAccessible(field);
+                field.set(target, value);
+                System.out.println("====>>>>value 赋值结束<<<<<======");
+                return;
+            }
+            Object dep = beanFactory.getBean(this.getElementName());
             Field field = (Field) this.getMember();
             ReflectUtils.makeAccessible(field);
-            field.set(target,dep);
+            field.set(target, dep);
 
+        }
+
+        public SimpleAutowiredCapableBeanFactory getBeanFactory(SimpleBeanFactory beanFactory) {
+            SimpleAutowiredCapableBeanFactory factory = (SimpleAutowiredCapableBeanFactory) beanFactory;
+            return factory;
         }
 
     }

@@ -8,6 +8,7 @@ package com.github.simple.core.constant;
 
 public class SimpleIOCConstant {
 
-    public static final String  BASE_PACKAGE_NAME="com.github.simple.demo";
-    public static final Integer DEFAULT_ORDER_VALUE=1;
+    public static final String BASE_PACKAGE_NAME = "com.github.simple.demo";
+    public static final Integer DEFAULT_ORDER_VALUE = 1;
+    public static final String DEFAULT_SOURCE_NAME = "simple-application.properties";
 }
