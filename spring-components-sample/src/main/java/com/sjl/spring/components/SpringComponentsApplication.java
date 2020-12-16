@@ -2,6 +2,7 @@ package com.sjl.spring.components;
 
 import com.sjl.spring.components.event.CustomEvent;
 import com.sjl.spring.components.pojo.GeoHolder;
+import com.sjl.spring.components.service.LazyService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -10,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.retry.annotation.EnableRetry;
 
@@ -28,6 +30,14 @@ public class SpringComponentsApplication implements CommandLineRunner {
     @Resource
     private ObjectProvider<GeoHolder> opGeoHolder;
 
+    /**
+     * @see org.springframework.context.annotation.CommonAnnotationBeanPostProcessor.ResourceElement#getResourceToInject(Object, String)
+     * 创建代理
+     */
+    @Resource
+    @Lazy
+    private LazyService lazyService;
+
 
     public static void main(String[] args) {
         //如果是容器启动之前注册事件则需要进行以下操作
@@ -45,6 +55,7 @@ public class SpringComponentsApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         System.out.println("====================CommandLineRunner========================");
+        lazyService.testLazy();
 //        ReflectUtil.threadClassLoader("");
         System.out.println("->>>>>>"+opGeoHolder.getIfAvailable());
 

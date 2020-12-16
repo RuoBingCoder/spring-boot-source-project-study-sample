@@ -25,10 +25,19 @@ import java.util.Set;
 @Slf4j
 public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     protected SimpleAutowiredCapableBeanFactory() throws Throwable {
-        registryBeanDef();
-        invokerBeanFactoryProcessor();
-        invokerBeanPostProcessor();
-        finishBeanInstance();
+        try {
+            registryBeanDef();
+            invokerBeanFactoryProcessor();
+            invokerBeanPostProcessor();
+            finishBeanInstance();
+        } catch (Exception e) {
+            destroyBeans();
+        }
+    }
+
+    private void destroyBeans() {
+        super.simplePostProcessors.clear();
+        super.earlySingletonMap.clear();
     }
 
 
@@ -61,48 +70,52 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         if (simpleRootBeanDefinition.getIsSingleton()) {
             instance = createInstance(simpleRootBeanDefinition.getRootClass());
         }
-        Object finalInstance = instance;
         //添加aop代理bean
-        addSingletonFactory(beanName, () -> earlySingleton(finalInstance));
+        addSingletonFactory(beanName,instance);
         //填充属性
         populateBean(beanName, instance);
         //初始化bean
-        initialization(beanName, instance);
-        return finalInstance;
+        return initialization(beanName, instance);
     }
 
-    private void initialization(String beanName, Object instance) {
+    private Object initialization(String beanName, Object instance) {
         invokerAware(beanName, instance);
-        invokerBeforeInitialization(beanName,instance);
+        invokerBeforeInitialization(beanName, instance);
         try {
             initMethods(beanName, instance);
         } catch (Exception e) {
-            log.error("invoker initMethods error!",e);
+            log.error("invoker initMethods error!", e);
             throw new SimpleIOCBaseException("invoker initMethods error");
         }
-        invokerAfterInitialization(beanName,instance);
+        Object shareObject = invokerAfterInitialization(beanName, instance);
+        if (shareObject != null){
+            return shareObject;
+        }
+        return instance;
+
 
     }
 
-    private void invokerAfterInitialization(String beanName, Object instance) {
-        if (CollectionUtil.isEmpty(getBeanPostProcessor())){
-            return;
+    private Object invokerAfterInitialization(String beanName, Object instance) {
+        if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
+            return instance;
         }
         for (SimpleBeanPostProcessor simplePostProcessor : getBeanPostProcessor()) {
             Object bean = simplePostProcessor.postProcessAfterInitialization(instance, beanName);
             if (bean != null){
-                return;
+                return bean;
             }
         }
+        return instance;
     }
 
     private void invokerBeforeInitialization(String beanName, Object instance) {
-        if (CollectionUtil.isEmpty(getBeanPostProcessor())){
+        if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
             return;
         }
         for (SimpleBeanPostProcessor simplePostProcessor : getBeanPostProcessor()) {
             Object bean = simplePostProcessor.postProcessBeforeInitialization(instance, beanName);
-            if (ObjectUtil.isNotNull(bean)){
+            if (ObjectUtil.isNotNull(bean)) {
                 return;
             }
         }
@@ -134,8 +147,8 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     private void populateBean(String beanName, Object instance) throws Throwable {
         if (CollectionUtil.isNotEmpty(getBeanPostProcessor())) {
             for (SimpleBeanPostProcessor simplePostProcessor : getBeanPostProcessor()) {
-                if (simplePostProcessor instanceof SimpleInstantiationAwareBeanPostProcessor){
-                    SimpleInstantiationAwareBeanPostProcessor sbp= (SimpleInstantiationAwareBeanPostProcessor) simplePostProcessor;
+                if (simplePostProcessor instanceof SimpleInstantiationAwareBeanPostProcessor) {
+                    SimpleInstantiationAwareBeanPostProcessor sbp = (SimpleInstantiationAwareBeanPostProcessor) simplePostProcessor;
                     if (!sbp.postProcessAfterInstantiation(instance, beanName)) {
                         return;
                     }
@@ -163,4 +176,9 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     public Map<String, Object> getBeans() {
         return singletonObjectMap;
     }
+
+   public void addSingletonFactory(String beanName, Object instance){
+       Object exportObject = super.earlySingleton(beanName, instance);
+       addSingletonFactory(beanName, () -> exportObject);
+   }
 }

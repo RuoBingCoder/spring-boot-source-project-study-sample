@@ -1,14 +1,20 @@
 package com.github.simple.ioc.utils;
 
+import com.github.simple.ioc.annotation.SimpleAspect;
 import com.github.simple.ioc.annotation.SimpleAutowired;
 import com.github.simple.ioc.annotation.SimpleComponent;
 import com.github.simple.ioc.annotation.SimpleService;
 import com.github.simple.ioc.enums.SimpleIOCEnum;
 import com.github.simple.ioc.exception.SimpleFieldTypeException;
+import org.springframework.core.MethodIntrospector;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author: JianLei
@@ -51,6 +57,17 @@ public class ReflectUtils {
 
     public static Boolean matchAnnotationComponent(Class<?> clazz) {
         return clazz.isAnnotationPresent(SimpleComponent.class) || clazz.isAnnotationPresent(SimpleService.class);
+    }
+
+    public static Boolean matchAspect(Class< ? > clazz){
+        return clazz.isAnnotationPresent(SimpleAspect.class);
+
+    }
+
+    public static <T extends Annotation> Map<Method, T> getMethodAndAnnotation(Class< ? > clazz, Class<T> annotation) {
+        return MethodIntrospector.selectMethods(clazz,
+                (MethodIntrospector.MetadataLookup<T>) method -> AnnotatedElementUtils
+                        .findMergedAnnotation(method, annotation));
     }
 
 

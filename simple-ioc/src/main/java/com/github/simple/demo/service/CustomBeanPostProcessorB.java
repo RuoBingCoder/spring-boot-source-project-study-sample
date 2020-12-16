@@ -12,26 +12,30 @@ import com.github.simple.ioc.factory.SimpleBeanFactoryAware;
  * @description: CustomBeanPostProcessor
  */
 @SimpleComponent
-@SimpleOrdered(-2)
-public class CustomBeanPostProcessor implements SimpleBeanPostProcessor, SimpleBeanFactoryAware {
+@SimpleOrdered(-10)
+public class CustomBeanPostProcessorB implements SimpleBeanPostProcessor, SimpleBeanFactoryAware {
+    private SimpleBeanFactory beanFactory;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
-        System.out.println("Before --->>>"+bean.getClass()+"->CustomBeanPostProcessor order: -2");
+        System.out.println("Before --->>>"+bean.getClass()+"->CustomBeanPostProcessor2 order: -10");
 
         return null;
     }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
-        System.out.println("After --->>>"+bean.getClass()+"->CustomBeanPostProcessor order: -2");
+        System.out.println("After --->>>"+bean.getClass()+"->CustomBeanPostProcessor2 order: -10");
         return null;
     }
 
 
+
+
     @Override
     public void setBeanFactory(SimpleBeanFactory simpleBeanFactory) {
-        System.out.println("--->"+ simpleBeanFactory.getClass());
+        this.beanFactory=simpleBeanFactory;
+        System.out.println("--->"+beanFactory.getClass());
 
     }
 }

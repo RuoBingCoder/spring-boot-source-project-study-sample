@@ -8,13 +8,13 @@ import com.github.simple.ioc.factory.SimpleBeanFactory;
 /**
  * @author: jianlei.shi
  * @date: 2020/12/14 6:02 下午
- * @description: CustomBeanFactoryPorcessor
+ * @description: 自定义注册bean
  */
 @SimpleComponent
 public class CustomBeanFactoryProcessor implements SimpleBeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(SimpleBeanFactory factory) {
-        SimpleRootBeanDefinition subTwo = SimpleRootBeanDefinition.builder().beanName("subTwo").isSingleton(true).rootClass(SubTwo.class).build();
-        factory.registerSingleton("subTwo",subTwo);
+        SimpleRootBeanDefinition subTwo = SimpleRootBeanDefinition.builder().beanName("beanFactoryRegistryBeanTest").isSingleton(true).rootClass(BeanFactoryRegistryBeanTest.class).build();
+        factory.registerSingleton("beanFactoryRegistryBeanTest",subTwo);
     }
 }

@@ -1,8 +1,9 @@
 package com.github.simple.demo.start;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.simple.demo.service.B;
 import com.github.simple.demo.service.Order;
-import com.github.simple.demo.service.SubTwo;
+import com.github.simple.ioc.factory.SimpleBeanFactory;
 import com.github.simple.ioc.factory.SimpleDefaultListableBeanFactory;
 
 import java.util.Map;
@@ -18,8 +19,12 @@ public class StartIocApplication {
     public static void main(String[] args) throws Throwable {
         SimpleDefaultListableBeanFactory beanFactory = new SimpleDefaultListableBeanFactory();
 //        A a = beanFactory.getBean(A.class);
-        SubTwo teacher = beanFactory.getBean(SubTwo.class);
-        teacher.test1();
+        /**
+         * @see com.github.simple.demo.service.CustomBeanFactoryProcessor#postProcessBeanFactory(SimpleBeanFactory)
+         */
+        B b = beanFactory.getBean(B.class);
+
+        System.out.println("b output:"+b.hello());
 //        System.out.println(a.tasks());
         System.out.println("->beans size:"+beanFactory.getBeans().size());
 

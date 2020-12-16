@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @SimpleComponent
 @Slf4j
-public class Init implements SimpleInitializingBean {
+public class InitializingBeanTest implements SimpleInitializingBean {
     @Override
     public void afterPropertiesSet() {
         log.info("==>>Init method call back!");
