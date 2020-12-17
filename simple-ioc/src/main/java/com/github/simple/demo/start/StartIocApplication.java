@@ -7,6 +7,8 @@ import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.demo.service.ConfigBeanTest;
 import com.github.simple.demo.service.ConfigBeanTest2;
 import com.github.simple.demo.service.Order;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -17,7 +19,7 @@ import java.util.Map;
  */
 @SimpleComponentScan(basePackages = "com.github.simple.demo")
 public class StartIocApplication {
-
+    private static final Logger logger = LoggerFactory.getLogger(StartIocApplication.class);
     public static void main(String[] args) throws Throwable {
         SimpleDefaultListableBeanFactory beanFactory = SimpleDefaultListableBeanFactory.run(StartIocApplication.class);
 //        A a = beanFactory.getBean(A.class);
@@ -34,18 +36,18 @@ public class StartIocApplication {
 //        B b = beanFactory.getBean(B.class);
         ConfigBeanTest configBeanTest = beanFactory.getBean(ConfigBeanTest.class);
 
-        System.out.println(" configBeanTest output:"+configBeanTest.toString());
-        System.out.println("=================================**********=======================================");
+         logger.info(" configBeanTest output:{}",configBeanTest.toString());
+         logger.info("=================================**********=======================================");
         ConfigBeanTest2 configBeanTest2 = beanFactory.getBean(ConfigBeanTest2.class);
 
-        System.out.println(" configBeanTest2 output:"+configBeanTest2.toString());
+         logger.info(" configBeanTest2 output:{}",configBeanTest2.toString());
 
 
-//        System.out.println(a.tasks());
-        System.out.println("->beans size:"+beanFactory.getBeans().size());
+//         logger.info(a.tasks());
+         logger.info("->beans size:{}",beanFactory.getBeans().size());
 
         Map<String, Order> beans = beanFactory.getBeansOfType(Order.class);
-        System.out.println("==>"+ JSONObject.toJSONString(beans));
+         logger.info("==>{}",JSONObject.toJSONString(beans));
 
     }
 }

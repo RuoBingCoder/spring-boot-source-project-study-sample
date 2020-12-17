@@ -15,6 +15,5 @@ public class InitializingBeanTest implements SimpleInitializingBean {
     @Override
     public void afterPropertiesSet() {
         log.info("==>>Init method call back!");
-        System.out.println("==>>Init method call back!");
     }
 }

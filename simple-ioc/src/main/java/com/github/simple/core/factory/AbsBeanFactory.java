@@ -76,6 +76,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
                     }
             );
         } catch (Exception e) {
+            log.error("createBean exception!",e);
             throw new SimpleBeanCreateException("[" + beanName + "] getSingletonBean exception! errorMsg: [" + e.getMessage() + "]");
         }
         beanDefinitions.remove(beanName);

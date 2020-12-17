@@ -57,10 +57,15 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     public void finishBeanInstance() throws Throwable {
         Map<String, SimpleRootBeanDefinition> beanDefinitionMap = this.getBeanDefinitions();
         List<String> beanNames = new ArrayList<>(beanDefinitionMap.keySet());
+
         for (String beanName : beanNames) {
             try {
+                if (log.isDebugEnabled()) {
+                    log.debug("-->getBean beanName is:{}", beanName);
+                }
                 this.getBean(beanName);
             } catch (Exception e) {
+                log.error("getBean exception!", e);
                 throw new SimpleIOCBaseException("finishBeanInstance getBean exception! beanName is :[" + beanName + "]" + e.getMessage());
             }
         }

@@ -91,7 +91,7 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
 
             log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}", beanFactory);
             if (ReflectUtils.resolveDependencies(this.member)) {
-                System.out.println("====>>>>value 赋值开始<<<<<======");
+                 log.info("====>>>>value 赋值开始<<<<<======");
                 List<SimplePropertySource<Properties>> resource = beanFactory.getResource();
                 String key = StringUtils.parsePlaceholder((Field) member);
                 String value = (String) resource.get(0).getValue().get(key);
@@ -101,7 +101,7 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
                     throw new SimpleIOCBaseException("no such field placeholder->" + key);
                 }
                 field.set(target, value);
-                System.out.println("====>>>>value 赋值结束<<<<<======");
+                 log.info("====>>>>value 赋值结束<<<<<======");
                 return;
             }
             Object dep = beanFactory.getBean(this.getElementName());

@@ -4,6 +4,7 @@ import com.github.simple.core.annotation.SimpleOrdered;
 import com.github.simple.core.annotation.SimpleSmartInstantiationAwareBeanPostProcessor;
 import com.github.simple.core.exception.SimpleProxyCreateException;
 import com.github.simple.core.factory.SimpleProxyFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * @description: 代理
  */
 @SimpleOrdered(-90)
+@Slf4j
 public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBeanPostProcessor {
 
     private List<SimpleAdviseSupport> simpleAdviseSupports;
@@ -29,6 +31,7 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
     public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
         if (isEligibleAdvisors(bean)) {
             Object proxyBean;
+            log.info("开始创建代理 beanName :{}",beanName);
             try {
                 proxyBean = createProxy(bean);
                 cacheBeans.put(beanName, proxyBean);

@@ -5,6 +5,7 @@ import com.github.simple.core.annotation.SimpleOrdered;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactoryAware;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author: jianlei.shi
@@ -13,25 +14,26 @@ import com.github.simple.core.factory.SimpleBeanFactoryAware;
  */
 @SimpleComponent
 @SimpleOrdered(-2)
+@Slf4j
 public class CustomBeanPostProcessorA implements SimpleBeanPostProcessor, SimpleBeanFactoryAware {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) {
-        System.out.println("Before --->>>"+bean.getClass()+"->CustomBeanPostProcessor order: -2");
+        log.info("Before --->>>" + bean.getClass() + "->CustomBeanPostProcessor order: -2");
 
         return null;
     }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {
-        System.out.println("After --->>>"+bean.getClass()+"->CustomBeanPostProcessor order: -2");
+        log.info("After --->>>" + bean.getClass() + "->CustomBeanPostProcessor order: -2");
         return null;
     }
 
 
     @Override
     public void setBeanFactory(SimpleBeanFactory simpleBeanFactory) {
-        System.out.println("--->"+ simpleBeanFactory.getClass());
+        log.info("--->" + simpleBeanFactory.getClass());
 
     }
 }
