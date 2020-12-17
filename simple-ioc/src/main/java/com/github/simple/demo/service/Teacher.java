@@ -11,6 +11,15 @@ import com.github.simple.core.annotation.SimpleService;
 @SimpleService
 public class Teacher {
 
+    private String name;
+
+    public Teacher(String name) {
+        this.name = name;
+    }
+
+    public Teacher() {
+    }
+
     @SimpleAutowired
     private Student student;
 

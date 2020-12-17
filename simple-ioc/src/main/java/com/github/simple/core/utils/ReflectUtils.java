@@ -45,7 +45,7 @@ public class ReflectUtils {
     private static LinkedHashMap<String, Field> matchField(Field[] declaredFields) {
         LinkedHashMap<String, Field> beanFields = new LinkedHashMap<>(20);
         for (Field field : declaredFields) {
-            if (field.isAnnotationPresent(SimpleAutowired.class)||field.isAnnotationPresent(SimpleValue.class)) {
+            if (field.isAnnotationPresent(SimpleAutowired.class) || field.isAnnotationPresent(SimpleValue.class)) {
                 if (Modifier.isStatic(field.getModifiers())) {
                     throw new SimpleFieldTypeException(SimpleIOCEnum.STATIC_FIELD_NOT_INJECT.getMsg());
                 }
@@ -56,42 +56,47 @@ public class ReflectUtils {
     }
 
 
-    public static Boolean matchAnnotationComponent(Class<?> clazz) {
-        return clazz.isAnnotationPresent(SimpleComponent.class) || clazz.isAnnotationPresent(SimpleService.class);
+    public static <T extends Annotation> Boolean matchAnnotationComponent(Class<?> clazz,Class<T> annotation) {
+        return clazz.isAnnotationPresent(annotation);
     }
 
-    public static Boolean matchAspect(Class< ? > clazz){
+    public static Boolean matchAspect(Class<?> clazz) {
         return clazz.isAnnotationPresent(SimpleAspect.class);
 
     }
 
-    public static <T extends Annotation> Map<Method, T> getMethodAndAnnotation(Class< ? > clazz, Class<T> annotation) {
+    public static <T extends Annotation> Method getMethodWithAnnotation(Class<?> clazz, Class<T> annotation) {
+        Map<Method, T> methodAndAnnotation = getMethodAndAnnotation(clazz, annotation);
+        return methodAndAnnotation.keySet().stream().findFirst().get();
+    }
+
+    public static <T extends Annotation> Map<Method, T> getMethodAndAnnotation(Class<?> clazz, Class<T> annotation) {
         return MethodIntrospector.selectMethods(clazz,
                 (MethodIntrospector.MetadataLookup<T>) method -> AnnotatedElementUtils
                         .findMergedAnnotation(method, annotation));
     }
 
-    public static String getBasePackages(Class< ? > clazz){
+    public static String getBasePackages(Class<?> clazz) {
         if (clazz.isAnnotationPresent(SimpleComponentScan.class)) {
             return clazz.getAnnotation(SimpleComponentScan.class).basePackages();
         }
         throw new SimpleIOCBaseException("包路径不能为空!");
     }
 
-    public static boolean resolveDependencies(Member member){
+    public static boolean resolveDependencies(Member member) {
         Field field = (Field) member;
-        if (field.getType().equals(String.class)){
+        if (field.getType().equals(String.class)) {
             return true;
         }
-        if (field.getType().equals(Integer.class)){
+        if (field.getType().equals(Integer.class)) {
             return true;
         }
         return field.getType().equals(List.class);
     }
 
-    public static String parseValue(Field field){
+    public static String parseValue(Field field) {
         SimpleValue simpleValue = field.getAnnotation(SimpleValue.class);
-        Assert.notNull(simpleValue.value(),"Annotation SimpleValue value is null!");
+        Assert.notNull(simpleValue.value(), "Annotation SimpleValue value is null!");
         return simpleValue.value();
     }
 

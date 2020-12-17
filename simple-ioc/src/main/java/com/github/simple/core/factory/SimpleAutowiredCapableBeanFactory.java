@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleInstantiationAwareBeanPostProcessor;
+import com.github.simple.core.config.SimpleConfigBean;
 import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.exception.SimpleIOCBaseException;
@@ -25,7 +26,7 @@ import java.util.*;
 @Slf4j
 public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
 
-    protected   List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
+    protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
 
     protected SimpleAutowiredCapableBeanFactory(String basePackages) throws Throwable {
         try {
@@ -40,9 +41,9 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     }
 
     private void prepareEnvSource() {
-        SimpleClassPathResource  source=new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
-        SimplePropertiesPropertySourceLoader loader=new SimplePropertiesPropertySourceLoader();
-        simplePropertiesPropertySourceLoader= loader.load(source.getFilename(), source);
+        SimpleClassPathResource source = new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
+        SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
+        simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
 
     }
 
@@ -57,8 +58,13 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         Map<String, SimpleRootBeanDefinition> beanDefinitionMap = this.getBeanDefinitions();
         List<String> beanNames = new ArrayList<>(beanDefinitionMap.keySet());
         for (String beanName : beanNames) {
-            this.getBean(beanName);
+            try {
+                this.getBean(beanName);
+            } catch (Exception e) {
+                throw new SimpleIOCBaseException("finishBeanInstance getBean exception! beanName is :[" + beanName + "]" + e.getMessage());
+            }
         }
+
 
     }
 
@@ -80,11 +86,11 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         SimpleRootBeanDefinition simpleRootBeanDefinition = beanDefinitions.get(beanName);
         Object instance = null;
         if (simpleRootBeanDefinition.getIsSingleton()) {
-            instance = createInstance(simpleRootBeanDefinition.getRootClass());
+            instance = createInstance(simpleRootBeanDefinition);
         }
         //添加aop代理bean
         Object exportObject = instance;
-        addSingletonFactory(beanName, () ->earlyRefSingleton(beanName, exportObject));
+        addSingletonFactory(beanName, () -> earlyRefSingleton(beanName, exportObject));
         //填充属性
         populateBean(beanName, exportObject);
         //初始化bean
@@ -101,7 +107,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
             throw new SimpleIOCBaseException("invoker initMethods error");
         }
         Object shareObject = invokerAfterInitialization(beanName, instance);
-        if (shareObject != null){
+        if (shareObject != null) {
             return shareObject;
         }
         return instance;
@@ -115,7 +121,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         }
         for (SimpleBeanPostProcessor simplePostProcessor : getBeanPostProcessor()) {
             Object bean = simplePostProcessor.postProcessAfterInitialization(instance, beanName);
-            if (bean != null){
+            if (bean != null) {
                 return bean;
             }
         }
@@ -142,7 +148,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         }
     }
 
-    private void invokerAware(Object instance, Object o) {
+    private void invokerAware(String beanName, Object instance) {
         if (instance instanceof SimpleBeanFactoryAware) {
             SimpleBeanFactoryAware simpleBeanFactoryAware = (SimpleBeanFactoryAware) instance;
             simpleBeanFactoryAware.setBeanFactory(this);
@@ -173,9 +179,31 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     }
 
 
-    private Object createInstance(Class<?> beanClass) throws InstantiationException, IllegalAccessException {
-        return ClassUtils.newInstance(beanClass);
+    private Object createInstance(SimpleRootBeanDefinition mbd) throws InstantiationException, IllegalAccessException {
+        Object bean = handlerIsConfigBean(mbd);
+        if (bean != null) {
+            return bean;
+        }
+        return ClassUtils.newInstance(mbd.getRootClass());
 
+    }
+
+    private Object handlerIsConfigBean(SimpleRootBeanDefinition mbd) {
+        try {
+            if (mbd.getRootClass().equals(SimpleConfigBean.class)) {
+                return null;
+            }
+            SimpleConfigBean configBean = getBean(SimpleConfigBean.class);
+            if (configBean == null) {
+                throw new SimpleIOCBaseException("get config bean exception!");
+            }
+            if (configBean.matchMethodName(mbd.getBeanName())) {
+                return configBean.invoker(mbd.getBeanName());
+            }
+        } catch (Throwable e) {
+            throw new SimpleIOCBaseException("handler configBean exception!");
+        }
+        return null;
     }
 
     public void addSingletonFactory(String beanName, SimpleObjectFactory<?> factory) {
@@ -191,8 +219,8 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     }
 
     @Override
-    public  List<SimplePropertySource<Properties>> getResource() {
-        if (simplePropertiesPropertySourceLoader==null){
+    public List<SimplePropertySource<Properties>> getResource() {
+        if (simplePropertiesPropertySourceLoader == null) {
             throw new SimpleIOCBaseException("resource is null!");
         }
         return simplePropertiesPropertySourceLoader;

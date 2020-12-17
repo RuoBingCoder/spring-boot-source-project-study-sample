@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.simple.core.annotation.SimpleComponentScan;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
-import com.github.simple.demo.service.B;
+import com.github.simple.demo.service.ConfigBeanTest;
+import com.github.simple.demo.service.ConfigBeanTest2;
 import com.github.simple.demo.service.Order;
 
 import java.util.Map;
@@ -30,9 +31,16 @@ public class StartIocApplication {
         /**
          * 获取代理bean
          */
-        B b = beanFactory.getBean(B.class);
+//        B b = beanFactory.getBean(B.class);
+        ConfigBeanTest configBeanTest = beanFactory.getBean(ConfigBeanTest.class);
 
-        System.out.println("b output:"+b.hello());
+        System.out.println(" configBeanTest output:"+configBeanTest.toString());
+        System.out.println("=================================**********=======================================");
+        ConfigBeanTest2 configBeanTest2 = beanFactory.getBean(ConfigBeanTest2.class);
+
+        System.out.println(" configBeanTest2 output:"+configBeanTest2.toString());
+
+
 //        System.out.println(a.tasks());
         System.out.println("->beans size:"+beanFactory.getBeans().size());
 

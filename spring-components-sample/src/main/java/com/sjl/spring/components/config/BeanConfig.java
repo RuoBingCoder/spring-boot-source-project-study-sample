@@ -24,7 +24,9 @@ public class BeanConfig {
 
     @Bean
     public AnnotationBean annotationBean(){
-        return new AnnotationBean();
+        AnnotationBean annotationBean = new AnnotationBean();
+        annotationBean.setName("haha");
+        return annotationBean;
     }
 
 

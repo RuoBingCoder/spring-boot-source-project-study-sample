@@ -39,6 +39,7 @@ public class SimpleDefaultSingletonBeanRegistry {
         //此处省略了很多spring逻辑 只做简化处理
         Object object = objectFactory.getObject();
         addSingleton(beanName, object);
+
         return (T) object;
     }
 

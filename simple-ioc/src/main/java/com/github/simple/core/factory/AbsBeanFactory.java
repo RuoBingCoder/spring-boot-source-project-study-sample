@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.core.annotation.*;
 import com.github.simple.core.aop.SimpleAdviseSupport;
 import com.github.simple.core.aop.SimpleAutoProxyCreator;
+import com.github.simple.core.config.SimpleConfigBean;
 import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.enums.SimpleIOCEnum;
@@ -63,15 +64,22 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         if (ObjectUtil.isNull(sbf)) {
             throw new SimpleBeanDefinitionNotFoundException("the BeanDefinition not found:" + beanName);
         }
-        return getSingletonBean(beanName, () -> {
-                    try {
-                        return createBean(beanName, sbf);
-                    } catch (Exception e) {
-                        singletonObjectMap.clear();
-                        throw new SimpleBeanCreateException(SimpleIOCEnum.CREATE_BEAN_ERROR.getMsg());
+        Object bean;
+        try {
+            bean = getSingletonBean(beanName, () -> {
+                        try {
+                            return createBean(beanName, sbf);
+                        } catch (Exception e) {
+                            singletonObjectMap.clear();
+                            throw new SimpleBeanCreateException(SimpleIOCEnum.CREATE_BEAN_ERROR.getMsg() + "[" + beanName + "]");
+                        }
                     }
-                }
-        );
+            );
+        } catch (Exception e) {
+            throw new SimpleBeanCreateException("[" + beanName + "] getSingletonBean exception! errorMsg: [" + e.getMessage() + "]");
+        }
+        beanDefinitions.remove(beanName);
+        return (T) bean;
     }
 
     /**
@@ -135,11 +143,13 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     public void doRegistryBeanDefinition(Set<Class<?>> classSet) {
         SimpleAutoProxyCreator spc = new SimpleAutoProxyCreator();
         List<SimpleAdviseSupport> simpleAdviseSupports = new ArrayList<>();
-        classSet.forEach(cb -> {
-            if (ReflectUtils.matchAnnotationComponent(cb)) {
-                SimpleRootBeanDefinition rootBeanDefinition = buildRootBeanDefinition(cb);
-                addBeanDefinition(rootBeanDefinition.getBeanName(), rootBeanDefinition);
-                parseAspect(cb, simpleAdviseSupports);
+        classSet.forEach(mbd -> {
+            try {
+                configBeanRegistry(mbd);
+                generalRegistry(mbd);
+                parseAspect(mbd, simpleAdviseSupports);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
         });
         registrySystemPostProcessor();
@@ -147,12 +157,87 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         simplePostProcessors.add(spc);
     }
 
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 配置bean注册 {@link SimpleConfig}
+     * @date 5:20 下午 2020/12/17
+     **/
+    private void configBeanRegistry(Class<?> bdClazz) throws Throwable {
+        if (ReflectUtils.matchAnnotationComponent(bdClazz, SimpleConfig.class)) {
+            SimpleRootBeanDefinition configBeanDefinition = buildRootBeanDefinition(bdClazz);
+            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+            doParseAndRegistryConfigBean(bdClazz);
+        }
+    }
+
+    private void doParseAndRegistryConfigBean(Class<?> bdClazz) throws Throwable {
+        Map<Method, SimpleBean> methodAndAnnotation = ReflectUtils.getMethodAndAnnotation(bdClazz, SimpleBean.class);
+        SimpleRootBeanDefinition configMbd = buildRootBeanDefinition(SimpleConfigBean.class);
+        if (!beanDefinitions.containsKey(configMbd.getBeanName())) {
+            addBeanDefinition(configMbd.getBeanName(), configMbd);
+        }
+        for (Map.Entry<Method, SimpleBean> entry : methodAndAnnotation.entrySet()) {
+            SimpleRootBeanDefinition configBeanDefinition;
+            if (!"".equals(entry.getValue().name())) {
+                configBeanDefinition = buildRootBeanDefinition(entry.getKey().getReturnType(), entry.getValue().name(), true);
+            } else {
+                configBeanDefinition = buildRootBeanDefinition(entry.getKey().getReturnType());
+            }
+            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+            SimpleConfigBean simpleBeanMethod = getBean(SimpleConfigBean.class);
+            if (simpleBeanMethod != null) {
+                if (simpleBeanMethod.getBeanMethods() == null) {
+                    SimpleBeanMethod method = new SimpleBeanMethod(createMethodMeta(entry.getKey()), bdClazz);
+                    simpleBeanMethod.setBeanMethods(method);
+                } else {
+                    simpleBeanMethod.getBeanMethods().getMethodMetadata().add(new SimpleMethodMeta(entry.getKey().getName(), entry.getKey()));
+                }
+            }
+        }
+    }
+
+    private List<SimpleMethodMetadata> createMethodMeta(Method key) {
+        List<SimpleMethodMetadata> methodMetadata = new ArrayList<>();
+        SimpleMethodMetadata metadata = new SimpleMethodMeta(key.getName(), key);
+        methodMetadata.add(metadata);
+        return methodMetadata;
+    }
+
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 普通bean注册
+     * @date 4:27 下午 2020/12/17
+     **/
+    private void generalRegistry(Class<?> cb) {
+        if (ReflectUtils.matchAnnotationComponent(cb, SimpleComponent.class) || ReflectUtils.matchAnnotationComponent(cb, SimpleService.class)) {
+            SimpleRootBeanDefinition rootBeanDefinition = buildRootBeanDefinition(cb);
+            addBeanDefinition(rootBeanDefinition.getBeanName(), rootBeanDefinition);
+        }
+    }
+
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 注册系统后置处理器
+     * @date 4:28 下午 2020/12/17
+     **/
     private void registrySystemPostProcessor() {
         SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
         addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
 
     }
 
+    /**
+     * 解析aop切面
+     *
+     * @param clazz
+     * @param simpleAdviseSupports
+     */
     private void parseAspect(Class<?> clazz, List<SimpleAdviseSupport> simpleAdviseSupports) {
         if (ReflectUtils.matchAspect(clazz)) {
             List<SimpleAdviseSupport.MethodWrapper> methods = new ArrayList<>(3);
@@ -176,6 +261,13 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         }
     }
 
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 获取切面方法包装
+     * @date 4:28 下午 2020/12/17
+     **/
     private <T extends Annotation> SimpleAdviseSupport.MethodWrapper getMethodWrapper(Map<Method, T> methodAndAnnotation) {
         Iterator<Method> iterator = methodAndAnnotation.keySet().iterator();
         Method method = null;
@@ -206,6 +298,13 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
                 , annotationMeta, method);
     }
 
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 调用工厂后置处理器
+     * @date 4:29 下午 2020/12/17
+     **/
     protected void invokerBeanFactoryProcessor() throws Throwable {
         for (Map.Entry<String, SimpleRootBeanDefinition> entry : this.getBeanDefinitions().entrySet()) {
             if (SimpleBeanFactoryPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
@@ -216,6 +315,13 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     }
 
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 调用bean后置处理器
+     * @date 4:29 下午 2020/12/17
+     **/
     protected void invokerBeanPostProcessor() throws Throwable {
         List<SimpleBeanPostProcessor> sortedPostProcessors = new ArrayList<>();
         List<SimpleBeanPostProcessor> nonOrderPostprocessors = new ArrayList<>();
@@ -232,6 +338,13 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     }
 
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description 处理 {@link SimpleAutowiredAnnotationBeanPostProcessor}
+     * @date 4:29 下午 2020/12/17
+     **/
     protected abstract void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors);
 
     private void sortPostProcessors(List<SimpleBeanPostProcessor> nonOrderPostprocessors, List<SimpleBeanPostProcessor> sortedPostProcessors) {
@@ -252,9 +365,13 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     private SimpleRootBeanDefinition buildRootBeanDefinition(Class<?> clazz) {
+        return buildRootBeanDefinition(clazz, ClassUtils.toLowerBeanName(clazz.getSimpleName()), true);
+    }
+
+    private SimpleRootBeanDefinition buildRootBeanDefinition(Class<?> clazz, String beanName, Boolean isSingleton) {
         return SimpleRootBeanDefinition.builder().rootClass(clazz)
-                .beanName(ClassUtils.toLowerBeanName(clazz.getSimpleName()))
-                .isSingleton(true).build();
+                .beanName(beanName)
+                .isSingleton(isSingleton).build();
     }
 
     protected List<SimpleBeanPostProcessor> getBeanPostProcessor() {
