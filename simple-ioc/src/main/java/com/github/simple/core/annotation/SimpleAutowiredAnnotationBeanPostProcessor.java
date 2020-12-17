@@ -2,7 +2,6 @@ package com.github.simple.core.annotation;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.exception.SimpleIOCBaseException;
-import com.github.simple.core.factory.SimpleAutowiredCapableBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactoryAware;
 import com.github.simple.core.resource.SimplePropertySource;
@@ -21,9 +20,10 @@ import java.util.*;
  * @description: SimpleAutowiredAnnotationBeanPostProcessor
  */
 @Slf4j
+@SimpleOrdered(-100)
 public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstantiationAwareBeanPostProcessor, SimpleBeanFactoryAware {
 
-    public static SimpleAutowiredCapableBeanFactory beanFactory;
+    private static SimpleBeanFactory beanFactory;
 
     @Override
     public Boolean postProcessAfterInstantiation(Object bean, String beanName) {
@@ -67,24 +67,23 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
 
     @Override
     public void setBeanFactory(SimpleBeanFactory simpleBeanFactory) {
-        SimpleAutowiredAnnotationBeanPostProcessor.beanFactory = (SimpleAutowiredCapableBeanFactory) simpleBeanFactory;
+        SimpleAutowiredAnnotationBeanPostProcessor.beanFactory = simpleBeanFactory;
     }
 
 
     @Data
-    public static class InjectFieldElement {
+    protected abstract static class InjectFieldElement {
         private Member member;
         private boolean isField;
         private String elementName;
 
-        public InjectFieldElement(Member member, boolean isField, String elementName) {
+        protected InjectFieldElement(Member member, boolean isField, String elementName) {
             this.member = member;
             this.isField = isField;
             this.elementName = elementName;
         }
 
         public void inject(Object target) throws Throwable {
-            SimpleAutowiredCapableBeanFactory beanFactory = getBeanFactory(SimpleAutowiredAnnotationBeanPostProcessor.beanFactory);
             //递归获取bean
             if (beanFactory == null) {
                 throw new SimpleIOCBaseException("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory Exception! is null");
@@ -98,21 +97,22 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
                 String value = (String) resource.get(0).getValue().get(key);
                 Field field = (Field) this.getMember();
                 ReflectUtils.makeAccessible(field);
+                if (value == null) {
+                    throw new SimpleIOCBaseException("no such field placeholder->" + key);
+                }
                 field.set(target, value);
                 System.out.println("====>>>>value 赋值结束<<<<<======");
                 return;
             }
             Object dep = beanFactory.getBean(this.getElementName());
-            Field field = (Field) this.getMember();
-            ReflectUtils.makeAccessible(field);
-            field.set(target, dep);
+            if (dep != null) {
+                Field field = (Field) this.getMember();
+                ReflectUtils.makeAccessible(field);
+                field.set(target, dep);
+            }
 
         }
 
-        public SimpleAutowiredCapableBeanFactory getBeanFactory(SimpleBeanFactory beanFactory) {
-            SimpleAutowiredCapableBeanFactory factory = (SimpleAutowiredCapableBeanFactory) beanFactory;
-            return factory;
-        }
 
     }
 

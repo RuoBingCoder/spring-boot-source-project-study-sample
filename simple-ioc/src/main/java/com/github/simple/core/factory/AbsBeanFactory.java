@@ -1,6 +1,7 @@
 package com.github.simple.core.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.core.annotation.*;
 import com.github.simple.core.aop.SimpleAdviseSupport;
 import com.github.simple.core.aop.SimpleAutoProxyCreator;
@@ -8,6 +9,7 @@ import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleBeanCreateException;
+import com.github.simple.core.exception.SimpleBeanDefinitionNotFoundException;
 import com.github.simple.core.exception.SimpleClassNotFoundException;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
@@ -58,6 +60,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
             return (T) singleton;
         }
         SimpleRootBeanDefinition sbf = getMergeBeanDefinition(beanName);
+        if (ObjectUtil.isNull(sbf)) {
+            throw new SimpleBeanDefinitionNotFoundException("the BeanDefinition not found:" + beanName);
+        }
         return getSingletonBean(beanName, () -> {
                     try {
                         return createBean(beanName, sbf);
@@ -115,7 +120,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * @param wrapperInstance
      * @return obj 代理对象&本对象
      */
-    protected Object earlySingleton(String beanName, Object wrapperInstance) {
+    protected Object earlyRefSingleton(String beanName, Object wrapperInstance) {
         //spring 此处为依赖注入检查bean是否为代理类,如果是则替换为代理类实现依赖注入
         Object exportObject = wrapperInstance;
         for (SimpleBeanPostProcessor simpleBeanPostProcessor : getBeanPostProcessor()) {
@@ -137,8 +142,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
                 parseAspect(cb, simpleAdviseSupports);
             }
         });
+        registrySystemPostProcessor();
         spc.setSimpleAdviseSupports(simpleAdviseSupports);
         simplePostProcessors.add(spc);
+    }
+
+    private void registrySystemPostProcessor() {
+        SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
+        addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
+
     }
 
     private void parseAspect(Class<?> clazz, List<SimpleAdviseSupport> simpleAdviseSupports) {
@@ -205,14 +217,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     protected void invokerBeanPostProcessor() throws Throwable {
-        SimpleAutowiredAnnotationBeanPostProcessor simpleAutowiredAnnotationBeanPostProcessor = new SimpleAutowiredAnnotationBeanPostProcessor();
-        simpleAutowiredAnnotationBeanPostProcessor.setBeanFactory(this);
-        List<SimpleBeanPostProcessor> systemPostProcessors = new ArrayList<>();
         List<SimpleBeanPostProcessor> sortedPostProcessors = new ArrayList<>();
-        systemPostProcessors.add(simpleAutowiredAnnotationBeanPostProcessor);
         List<SimpleBeanPostProcessor> nonOrderPostprocessors = new ArrayList<>();
         for (Map.Entry<String, SimpleRootBeanDefinition> entry : getBeanDefinitions().entrySet()) {
-
             if (SimpleBeanPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
                 SimpleBeanPostProcessor simplePostProcessor = getBean(entry.getKey());
                 nonOrderPostprocessors.add(simplePostProcessor);
@@ -220,10 +227,12 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
         }
         sortPostProcessors(nonOrderPostprocessors, sortedPostProcessors);
-        simplePostProcessors.addAll(systemPostProcessors);
+        processInjectionBasedOnCurrentContext(sortedPostProcessors);
         simplePostProcessors.addAll(sortedPostProcessors);
 
     }
+
+    protected abstract void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors);
 
     private void sortPostProcessors(List<SimpleBeanPostProcessor> nonOrderPostprocessors, List<SimpleBeanPostProcessor> sortedPostProcessors) {
         Map<Integer, SimpleBeanPostProcessor> markPostProcessorMap = new LinkedHashMap<>();

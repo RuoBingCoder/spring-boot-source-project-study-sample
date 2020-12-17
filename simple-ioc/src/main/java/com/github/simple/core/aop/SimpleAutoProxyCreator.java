@@ -1,5 +1,6 @@
 package com.github.simple.core.aop;
 
+import com.github.simple.core.annotation.SimpleOrdered;
 import com.github.simple.core.annotation.SimpleSmartInstantiationAwareBeanPostProcessor;
 import com.github.simple.core.exception.SimpleProxyCreateException;
 import com.github.simple.core.factory.SimpleProxyFactory;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
  * @date: 2020/12/15 7:44 下午
  * @description: 代理
  */
-
+@SimpleOrdered(-90)
 public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBeanPostProcessor {
 
     private List<SimpleAdviseSupport> simpleAdviseSupports;

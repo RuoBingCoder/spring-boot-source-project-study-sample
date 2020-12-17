@@ -30,7 +30,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     protected SimpleAutowiredCapableBeanFactory(String basePackages) throws Throwable {
         try {
             registryBeanDef(basePackages);
-            prepareSource();
+            prepareEnvSource();
             invokerBeanFactoryProcessor();
             invokerBeanPostProcessor();
             finishBeanInstance();
@@ -39,7 +39,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         }
     }
 
-    private void prepareSource() {
+    private void prepareEnvSource() {
         SimpleClassPathResource  source=new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
         SimplePropertiesPropertySourceLoader loader=new SimplePropertiesPropertySourceLoader();
         simplePropertiesPropertySourceLoader= loader.load(source.getFilename(), source);
@@ -83,11 +83,12 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
             instance = createInstance(simpleRootBeanDefinition.getRootClass());
         }
         //添加aop代理bean
-        addSingletonFactory(beanName,instance);
+        Object exportObject = instance;
+        addSingletonFactory(beanName, () ->earlyRefSingleton(beanName, exportObject));
         //填充属性
-        populateBean(beanName, instance);
+        populateBean(beanName, exportObject);
         //初始化bean
-        return initialization(beanName, instance);
+        return initialization(beanName, exportObject);
     }
 
     private Object initialization(String beanName, Object instance) {
@@ -188,11 +189,6 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
     public Map<String, Object> getBeans() {
         return singletonObjectMap;
     }
-
-   public void addSingletonFactory(String beanName, Object instance){
-       Object exportObject = super.earlySingleton(beanName, instance);
-       addSingletonFactory(beanName, () -> exportObject);
-   }
 
     @Override
     public  List<SimplePropertySource<Properties>> getResource() {

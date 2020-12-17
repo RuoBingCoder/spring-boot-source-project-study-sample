@@ -1,6 +1,8 @@
 package com.github.simple.core.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.github.simple.core.annotation.SimpleAutowiredAnnotationBeanPostProcessor;
+import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
@@ -82,5 +84,15 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowiredCapableBean
     @Override
     public <T> T getBean(String name) throws Throwable {
         return super.getBean(name);
+    }
+
+    @Override
+    protected void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors) {
+        for (SimpleBeanPostProcessor sortedPostProcessor : sortedPostProcessors) {
+            if (sortedPostProcessor instanceof SimpleAutowiredAnnotationBeanPostProcessor) {
+                SimpleAutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = (SimpleAutowiredAnnotationBeanPostProcessor) sortedPostProcessor;
+                autowiredAnnotationBeanPostProcessor.setBeanFactory(this);
+            }
+        }
     }
 }
