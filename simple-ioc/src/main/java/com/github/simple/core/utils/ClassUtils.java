@@ -43,9 +43,6 @@ public class ClassUtils {
         return new String(chars);
     }
 
-    public static void main(String[] args) {
-        System.out.println(toLowerBeanName("HelloWord"));
-    }
 
     public static Object newInstance(Class<?> clazz) throws IllegalAccessException, InstantiationException {
         return clazz.newInstance();
@@ -69,4 +66,29 @@ public class ClassUtils {
         SimpleOrdered ordered = obj.getClass().getAnnotation(SimpleOrdered.class);
         return ordered.value();
     }
+
+    public static ClassLoader getDefaultClassLoader() {
+        ClassLoader cl;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Exception ex) {
+            throw new SimpleIOCBaseException("getDefaultClassLoader exception!"+ex.getMessage());
+        }
+        if (cl == null) {
+            cl = ClassUtils.class.getClassLoader();
+            if (cl == null) {
+                try {
+                    cl = ClassLoader.getSystemClassLoader();
+                }
+                catch (Exception ex) {
+                    throw new SimpleIOCBaseException("getSystemClassLoader exception!"+ex.getMessage());
+
+                }
+            }
+        }
+        return cl;
+    }
+
+
 }

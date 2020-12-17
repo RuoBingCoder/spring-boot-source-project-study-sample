@@ -1,5 +1,7 @@
 package com.github.simple.core.resource;
 
+import com.github.simple.core.utils.ClassUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -15,7 +17,7 @@ public class SimpleClassPathResource implements SimpleResource{
     private final InputStream inputStream;
     public SimpleClassPathResource(String fileName) {
         this.fileName = fileName;
-        this.inputStream=SimpleClassPathResource.class.getClassLoader().getResourceAsStream(fileName);
+        this.inputStream= ClassUtils.getDefaultClassLoader().getResourceAsStream(fileName);
 
 
     }
