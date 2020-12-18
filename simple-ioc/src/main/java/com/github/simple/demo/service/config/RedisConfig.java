@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author: jianlei.shi
  * @date: 2020/12/18 11:08 上午
  * @description: RedisConfig
+ * {@link SimpleConfig}
+ * {@link SimpleBean}
  */
 @SimpleConfig
 @Slf4j
@@ -21,7 +23,7 @@ public class RedisConfig {
 
     @SimpleBean
     public RedisTemplate redisTemplate() {
-        log.info("获取redisName is:{}",redisName==null?" null ":redisName);
+        log.info("获取redisName is:{}", redisName == null ? " null " : redisName);
         return new RedisTemplate(redisName);
     }
 }

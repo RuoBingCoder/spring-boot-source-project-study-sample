@@ -24,11 +24,11 @@ import java.util.*;
  * @see org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
  */
 @Slf4j
-public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
+public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
 
-    protected SimpleAutowiredCapableBeanFactory(String basePackages) throws Throwable {
+    protected SimpleAutowireCapableBeanFactory(String basePackages) throws Throwable {
         try {
             registryBeanDef(basePackages);
             prepareEnvSource();

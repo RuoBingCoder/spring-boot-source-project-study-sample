@@ -11,4 +11,7 @@ public class SimpleIOCConstant {
     public static final String BASE_PACKAGE_NAME = "com.github.simple.demo";
     public static final Integer DEFAULT_ORDER_VALUE = 1;
     public static final String DEFAULT_SOURCE_NAME = "simple-application.properties";
+    public static final String SIMPLE_POINT_CUT = "SimplePointCut";
+    public static final String SIMPLE_BEFORE = "SimpleBefore";
+    public static final String SIMPLE_AFTER = "SimpleAfter";
 }

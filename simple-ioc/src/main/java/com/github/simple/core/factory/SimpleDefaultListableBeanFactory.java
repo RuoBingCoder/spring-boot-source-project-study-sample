@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @description: SimpleDefaultListableBeanFactory
  */
 
-public class SimpleDefaultListableBeanFactory extends SimpleAutowiredCapableBeanFactory implements SimpleListableBeanFactory {
+public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanFactory implements SimpleListableBeanFactory {
 
     public SimpleDefaultListableBeanFactory(Class<?> startClass) throws Throwable {
         super(ReflectUtils.getBasePackages(startClass));

@@ -1,10 +1,14 @@
 package com.github.simple.core.utils;
 
 import cn.hutool.core.lang.Assert;
-import com.github.simple.core.annotation.*;
+import com.github.simple.core.annotation.SimpleAspect;
+import com.github.simple.core.annotation.SimpleAutowired;
+import com.github.simple.core.annotation.SimpleComponentScan;
+import com.github.simple.core.annotation.SimpleValue;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleFieldTypeException;
 import com.github.simple.core.exception.SimpleIOCBaseException;
+import com.github.simple.demo.service.config.BeanConfig;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -27,10 +31,27 @@ public class ReflectUtils {
 
     public static void makeAccessible(Field field) {
         if ((!Modifier.isPublic(field.getModifiers()) ||
-                !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
+             !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
                 Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {
             field.setAccessible(true);
         }
+    }
+    public static Boolean checkFieldModifier(Field clazz){
+        return commonTypeCheck(clazz.getModifiers());
+    }
+
+    private static Boolean commonTypeCheck(int modifiers) {
+        return Modifier.isStatic(modifiers)||Modifier.isFinal(modifiers)
+                ||Modifier.isPrivate(modifiers)||Modifier.isAbstract(modifiers)
+                ||Modifier.isInterface(modifiers)||Modifier.isProtected(modifiers);
+    }
+
+    public static Boolean checkClassModifier(Class<?> clazz){
+        return commonTypeCheck(clazz.getModifiers());
+    }
+
+    public static Boolean checkMethodModifier(Method clazz){
+        return commonTypeCheck(clazz.getModifiers());
     }
 
     public static LinkedHashMap<String, Field> findAutowired(Class<?> clazz) {
@@ -98,6 +119,10 @@ public class ReflectUtils {
         SimpleValue simpleValue = field.getAnnotation(SimpleValue.class);
         Assert.notNull(simpleValue.value(), "Annotation SimpleValue value is null!");
         return simpleValue.value();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(checkClassModifier(BeanConfig.class));
     }
 
 }

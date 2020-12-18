@@ -12,6 +12,7 @@ import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleBeanCreateException;
 import com.github.simple.core.exception.SimpleBeanDefinitionNotFoundException;
 import com.github.simple.core.exception.SimpleClassNotFoundException;
+import com.github.simple.core.exception.SimpleClassTypeException;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -167,9 +168,19 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      **/
     private void configBeanRegistry(Class<?> bdClazz) throws Throwable {
         if (ReflectUtils.matchAnnotationComponent(bdClazz, SimpleConfig.class)) {
+            checkType(bdClazz, null);
             SimpleRootBeanDefinition configBeanDefinition = buildRootBeanDefinition(bdClazz);
             addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
             doParseAndRegistryConfigBean(bdClazz);
+        }
+    }
+
+    private void checkType(Class<?> bdClazz, Method method) {
+        if (bdClazz != null && ReflectUtils.checkClassModifier(bdClazz)) {
+            throw new SimpleClassTypeException(bdClazz + ": class not public!->" + bdClazz.getSimpleName());
+        }
+        if (method != null && ReflectUtils.checkMethodModifier(method)) {
+            throw new SimpleClassTypeException(method + ": method  not public!->" + method.getName());
         }
     }
 
@@ -181,6 +192,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         }
         for (Map.Entry<Method, SimpleBean> entry : methodAndAnnotation.entrySet()) {
             SimpleRootBeanDefinition configBeanDefinition;
+            checkType(null, entry.getKey());
             if (!"".equals(entry.getValue().name())) {
                 configBeanDefinition = buildRootBeanDefinition(entry.getKey().getReturnType(), entry.getValue().name(), true);
             } else {
@@ -200,6 +212,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
             }
         }
     }
+
 
     private List<SimpleMethodMetadata> createMethodMeta(Method key) {
         List<SimpleMethodMetadata> methodMetadata = new ArrayList<>();
@@ -284,15 +297,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         if (annotation instanceof SimplePointCut) {
             SimplePointCut spc = (SimplePointCut) annotation;
             annotationMeta = spc.express();
-            annotationName = "SimplePointCut";
+            annotationName = SimpleIOCConstant.SIMPLE_POINT_CUT;
         } else if (annotation instanceof SimpleBefore) {
             SimpleBefore spc = (SimpleBefore) annotation;
             annotationMeta = spc.value();
-            annotationName = "SimpleBefore";
+            annotationName = SimpleIOCConstant.SIMPLE_BEFORE;
         } else if (annotation instanceof SimpleAfter) {
             SimpleAfter spc = (SimpleAfter) annotation;
             annotationMeta = spc.value();
-            annotationName = "SimpleAfter";
+            annotationName = SimpleIOCConstant.SIMPLE_AFTER;
 
         }
 

@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author: jianlei.shi
  * @date: 2020/12/17 3:57 下午
- * @description: BeanConfig
+ * @description: test
+ * {@link SimpleConfig}
+ * {@link SimpleBean}
  */
 @SimpleConfig
 @Slf4j
