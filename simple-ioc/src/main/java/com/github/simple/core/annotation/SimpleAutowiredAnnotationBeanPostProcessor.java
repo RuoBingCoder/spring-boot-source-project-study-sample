@@ -91,17 +91,18 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
 
             log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}", beanFactory);
             if (ReflectUtils.resolveDependencies(this.member)) {
-                 log.info("====>>>>value 赋值开始<<<<<======");
+                log.info("====>>>>value 赋值开始<<<<<======");
                 List<SimplePropertySource<Properties>> resource = beanFactory.getResource();
                 String key = StringUtils.parsePlaceholder((Field) member);
-                String value = (String) resource.get(0).getValue().get(key);
+                Object value = findValue(resource, key);
                 Field field = (Field) this.getMember();
+                checkTypeIsMatch(value, field);
                 ReflectUtils.makeAccessible(field);
                 if (value == null) {
-                    throw new SimpleIOCBaseException("no such field placeholder->" + key);
+                    throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
                 }
                 field.set(target, value);
-                 log.info("====>>>>value 赋值结束<<<<<======");
+                log.info("====>>>>value 赋值结束<<<<<======field name :{}",field.getName());
                 return;
             }
             Object dep = beanFactory.getBean(this.getElementName());
@@ -111,6 +112,31 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
                 field.set(target, dep);
             }
 
+        }
+
+        private void checkTypeIsMatch(Object value, Field field) {
+            if (value instanceof String) {
+                if (String.class.equals(field.getType())) {
+                    return;
+                }
+                throw new SimpleIOCBaseException("inject field type exception!field type:" + field.getType() + "->placeholder type: String");
+            }
+            if (value instanceof Integer) {
+                if (Integer.class.equals(field.getType())) {
+                    return;
+                }
+                throw new SimpleIOCBaseException("inject field type exception!field type:" + field.getType() + "->placeholder type: Integer");
+            }
+            if (value instanceof Long) {
+                if (Long.class.equals(field.getType())) {
+                    return;
+                }
+                throw new SimpleIOCBaseException("inject field type exception!field type:" + field.getType() + "->placeholder type: Long");
+            }
+        }
+
+        private Object findValue(List<SimplePropertySource<Properties>> resource, String key) {
+            return resource.get(0).getValue().get(key);
         }
 
 

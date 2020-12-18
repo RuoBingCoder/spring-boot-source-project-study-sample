@@ -21,9 +21,12 @@ public class RedisConfig {
     @SimpleValue("${redis.name}")
     private String redisName;
 
+    @SimpleValue("${redis.maxConnect}")
+    private String redisMaxConnect;
+
     @SimpleBean
     public RedisTemplate redisTemplate() {
         log.info("获取redisName is:{}", redisName == null ? " null " : redisName);
-        return new RedisTemplate(redisName);
+        return new RedisTemplate(redisName,redisMaxConnect);
     }
 }

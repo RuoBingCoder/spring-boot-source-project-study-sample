@@ -46,7 +46,7 @@ public class StartIocApplication {
 
         RedisTemplate redisTemplate = beanFactory.getBean(RedisTemplate.class);
 
-        logger.info(" redisTemplate output:{}", JSONObject.toJSONString(redisTemplate));
+        logger.info(" redisTemplate output:{}", redisTemplate.toString());
 
 //         logger.info(a.tasks());
         logger.info("->beans size:{}", beanFactory.getBeans().size());

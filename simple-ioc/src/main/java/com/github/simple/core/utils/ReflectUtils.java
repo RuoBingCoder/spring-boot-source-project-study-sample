@@ -70,7 +70,7 @@ public class ReflectUtils {
                 if (Modifier.isStatic(field.getModifiers())) {
                     throw new SimpleFieldTypeException(SimpleIOCEnum.STATIC_FIELD_NOT_INJECT.getMsg());
                 }
-                beanFields.put(field.getType().getSimpleName(), field);
+                beanFields.put(field.getName(), field);
             }
         }
         return beanFields;

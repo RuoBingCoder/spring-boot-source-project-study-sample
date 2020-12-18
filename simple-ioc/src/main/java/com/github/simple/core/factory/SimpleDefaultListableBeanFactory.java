@@ -41,6 +41,15 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
         return doGetBeans(clazz, needInit);
     }
 
+    /**
+     * 类型获取bean map
+     * @param clazz
+     * @param needInit
+     * @param <T>
+     * @return
+     * @throws Throwable
+     * 此处有bug //TODO
+     */
     private <T> Map<String, T> doGetBeans(Class<T> clazz, boolean needInit) throws Throwable {
         Map<String, T> beans = new HashMap<>();
         if (needInit) {
