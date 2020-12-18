@@ -76,7 +76,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
                     }
             );
         } catch (Exception e) {
-            log.error("createBean exception!",e);
+            log.error("createBean exception!", e);
             throw new SimpleBeanCreateException("[" + beanName + "] getSingletonBean exception! errorMsg: [" + e.getMessage() + "]");
         }
         beanDefinitions.remove(beanName);
@@ -187,13 +187,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
                 configBeanDefinition = buildRootBeanDefinition(entry.getKey().getReturnType());
             }
             addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
-            SimpleConfigBean simpleBeanMethod = getBean(SimpleConfigBean.class);
-            if (simpleBeanMethod != null) {
-                if (simpleBeanMethod.getBeanMethods() == null) {
+            SimpleConfigBean simpleBean = getBean(SimpleConfigBean.class);
+            if (simpleBean != null) {
+                if (!simpleBean.matchConfigClass(bdClazz)) {
                     SimpleBeanMethod method = new SimpleBeanMethod(createMethodMeta(entry.getKey()), bdClazz);
-                    simpleBeanMethod.setBeanMethods(method);
+                    simpleBean.setBeanMethods(method);
                 } else {
-                    simpleBeanMethod.getBeanMethods().getMethodMetadata().add(new SimpleMethodMeta(entry.getKey().getName(), entry.getKey()));
+                    SimpleBeanMethod beanMethod = simpleBean.getBeanMethodByConfig(bdClazz);
+                    beanMethod.getMethodMetadata().add(new SimpleMethodMeta(entry.getKey().getName(), entry.getKey()));
+
                 }
             }
         }
@@ -386,6 +388,12 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     @Override
     public void registerSingleton(String beanName, Object singletonObject) {
         this.beanDefinitions.put(beanName, (SimpleRootBeanDefinition) singletonObject);
+    }
+
+    protected void destroyBeans() {
+        simplePostProcessors.clear();
+        earlySingletonMap.clear();
+        singletonFactoryMap.clear();
     }
 
 

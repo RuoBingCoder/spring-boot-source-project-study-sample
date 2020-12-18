@@ -7,6 +7,7 @@ import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.demo.service.ConfigBeanTest;
 import com.github.simple.demo.service.ConfigBeanTest2;
 import com.github.simple.demo.service.Order;
+import com.github.simple.demo.service.RedisTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 @SimpleComponentScan(basePackages = "com.github.simple.demo")
 public class StartIocApplication {
     private static final Logger logger = LoggerFactory.getLogger(StartIocApplication.class);
+
     public static void main(String[] args) throws Throwable {
         SimpleDefaultListableBeanFactory beanFactory = SimpleDefaultListableBeanFactory.run(StartIocApplication.class);
 //        A a = beanFactory.getBean(A.class);
@@ -36,18 +38,21 @@ public class StartIocApplication {
 //        B b = beanFactory.getBean(B.class);
         ConfigBeanTest configBeanTest = beanFactory.getBean(ConfigBeanTest.class);
 
-         logger.info(" configBeanTest output:{}",configBeanTest.toString());
-         logger.info("=================================**********=======================================");
+        logger.info(" configBeanTest output:{}", JSONObject.toJSONString(configBeanTest));
+        logger.info("=================================**********=======================================");
         ConfigBeanTest2 configBeanTest2 = beanFactory.getBean(ConfigBeanTest2.class);
 
-         logger.info(" configBeanTest2 output:{}",configBeanTest2.toString());
+        logger.info(" configBeanTest2 output:{}", JSONObject.toJSONString(configBeanTest2));
 
+        RedisTemplate redisTemplate = beanFactory.getBean(RedisTemplate.class);
+
+        logger.info(" redisTemplate output:{}", JSONObject.toJSONString(redisTemplate));
 
 //         logger.info(a.tasks());
-         logger.info("->beans size:{}",beanFactory.getBeans().size());
+        logger.info("->beans size:{}", beanFactory.getBeans().size());
 
         Map<String, Order> beans = beanFactory.getBeansOfType(Order.class);
-         logger.info("==>{}",JSONObject.toJSONString(beans));
+        logger.info("==>{}", JSONObject.toJSONString(beans));
 
     }
 }

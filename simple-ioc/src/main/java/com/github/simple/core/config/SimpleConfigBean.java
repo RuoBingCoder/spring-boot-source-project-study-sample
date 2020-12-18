@@ -19,7 +19,7 @@ public class SimpleConfigBean extends SimpleConfigBeanMetadata implements Simple
     private SimpleBeanFactory beanFactory;
 
     public Object invoker(String name) throws Throwable {
-        SimpleBeanMethod beanMethods = getBeanMethods();
+        SimpleBeanMethod beanMethods = getBeanMethodByMethodName(name);
         List<SimpleMethodMetadata> simpleMethodMetadata = beanMethods.getMethodMetadata().stream().filter(m -> m.getMethodName().equals(name)).collect(Collectors.toList());
         Object bean = beanFactory.getBean(beanMethods.getConfigClazz());
         Method method = simpleMethodMetadata.get(0).getMethod();

@@ -36,6 +36,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
             invokerBeanPostProcessor();
             finishBeanInstance();
         } catch (Exception e) {
+            log.error("ioc create exception",e);
             destroyBeans();
         }
     }
@@ -45,12 +46,6 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
         SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
         simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
 
-    }
-
-
-    private void destroyBeans() {
-        super.simplePostProcessors.clear();
-        super.earlySingletonMap.clear();
     }
 
 
@@ -206,7 +201,7 @@ public abstract class SimpleAutowiredCapableBeanFactory extends AbsBeanFactory {
                 return configBean.invoker(mbd.getBeanName());
             }
         } catch (Throwable e) {
-            throw new SimpleIOCBaseException("handler configBean exception!");
+            throw new SimpleIOCBaseException("handler configBean exception!"+e.getMessage());
         }
         return null;
     }
