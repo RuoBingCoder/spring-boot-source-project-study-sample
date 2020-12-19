@@ -11,6 +11,8 @@ public interface SimpleListableBeanFactory extends SimpleBeanFactory {
 
     <T> Map<String, T> getBeansOfType(Class<T> clazz) throws Throwable;
 
+    String[]  getBeanNames();
+
 
 
 }

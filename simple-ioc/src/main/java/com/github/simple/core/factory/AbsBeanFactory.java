@@ -1,7 +1,6 @@
 package com.github.simple.core.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.core.annotation.*;
 import com.github.simple.core.aop.SimpleAdviseSupport;
 import com.github.simple.core.aop.SimpleAutoProxyCreator;
@@ -30,9 +29,10 @@ import java.util.stream.Collectors;
  * @description: AbsBeanFactory
  */
 @Slf4j
-public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry implements SimpleBeanFactory {
+public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry implements SimpleConfigBeanFactory {
 
 
+    protected ClassLoader classLoader;
     /**
      * bean 定义
      */
@@ -45,8 +45,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     @Override
     public <T> T getBean(Class<?> clazz) throws Throwable {
-        return doGetBean(clazz.getSimpleName());
+        return getBean(ClassUtils.toLowerBeanName(clazz.getSimpleName()));
     }
+
 
     /**
      * 获取bean
@@ -57,14 +58,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      */
     protected <T> T doGetBean(String name) throws Throwable {
         String beanName = transformName(name);
+        //implements simpleFactoryBean call back!
+        if (getFactoryInnerObject(name) != null) {
+            return (T) getFactoryBeanInstance(getFactoryInnerObject(name), beanName);
+        }
         Object singleton = getSingleton(beanName);
         if (singleton != null) {
             return (T) singleton;
         }
         SimpleRootBeanDefinition sbf = getMergeBeanDefinition(beanName);
-        if (ObjectUtil.isNull(sbf)) {
-            throw new SimpleBeanDefinitionNotFoundException("the BeanDefinition not found:" + beanName);
-        }
         Object bean;
         try {
             bean = getSingletonBean(beanName, () -> {
@@ -80,9 +82,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
             log.error("createBean exception!", e);
             throw new SimpleBeanCreateException("[" + beanName + "] getSingletonBean exception! errorMsg: [" + e.getMessage() + "]");
         }
-        beanDefinitions.remove(beanName);
+        predictBeanType(bean);
         return (T) bean;
     }
+
+    protected abstract void predictBeanType(Object beanName);
+
+    protected abstract Object getFactoryBeanInstance(Object singleton, String beanName);
+
+    protected abstract Object getFactoryInnerObject(String name);
 
     /**
      * @param beanName
@@ -90,7 +98,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * @description: 简单获取bean定义
      */
     private SimpleRootBeanDefinition getMergeBeanDefinition(String beanName) {
-        return beanDefinitions.get(beanName);
+        try {
+            SimpleRootBeanDefinition mbd = beanDefinitions.get(beanName);
+            if (mbd == null) {
+                throw new SimpleBeanDefinitionNotFoundException("the BeanDefinition not found:" + beanName);
+            }
+            return mbd;
+        } catch (Exception e) {
+            throw new SimpleBeanDefinitionNotFoundException("getMergeBeanDefinition exception!" + "[" + beanName + "]");
+        }
     }
 
     protected abstract Object createBean(String beanName, SimpleRootBeanDefinition sbf) throws Throwable;
@@ -107,6 +123,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         if (name.length() >= 1 && name.toCharArray()[0] >= 97 && name.toCharArray()[0] <= 122) {
             return name;
         }
+
         return ClassUtils.toLowerBeanName(name);
     }
 
@@ -159,6 +176,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         simplePostProcessors.add(spc);
     }
 
+
     /**
      * @param null
      * @return
@@ -199,7 +217,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
                 configBeanDefinition = buildRootBeanDefinition(entry.getKey().getReturnType());
             }
             addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
-            SimpleConfigBean simpleBean = getBean(SimpleConfigBean.class);
+            SimpleConfigBean simpleBean = getBean(ClassUtils.toLowerBeanName(SimpleConfigBean.class.getSimpleName()));
             if (simpleBean != null) {
                 if (!simpleBean.matchConfigClass(bdClazz)) {
                     SimpleBeanMethod method = new SimpleBeanMethod(createMethodMeta(entry.getKey()), bdClazz);
@@ -381,6 +399,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     private SimpleRootBeanDefinition buildRootBeanDefinition(Class<?> clazz) {
+//        if (ReflectUtils.isAssignableFrom(clazz, SimpleFactoryBean.class)) {
+//            return buildRootBeanDefinition(clazz, ClassUtils.transformFactoryBeanName(clazz), true);
+//        }
         return buildRootBeanDefinition(clazz, ClassUtils.toLowerBeanName(clazz.getSimpleName()), true);
     }
 
@@ -407,7 +428,20 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         simplePostProcessors.clear();
         earlySingletonMap.clear();
         singletonFactoryMap.clear();
+        destroyFactoryBeanCache();
+        beanDefinitions.clear();
     }
 
+    protected abstract void destroyFactoryBeanCache();
 
+
+    @Override
+    public void addBeanPostProcessor(SimpleBeanPostProcessor beanPostProcessor) {
+        simplePostProcessors.add(beanPostProcessor);
+    }
+
+    @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 }

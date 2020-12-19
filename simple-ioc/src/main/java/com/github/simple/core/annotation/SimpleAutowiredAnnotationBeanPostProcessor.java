@@ -76,11 +76,19 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
         private Member member;
         private boolean isField;
         private String elementName;
+        private Class<?> fieldType;
 
         protected InjectFieldElement(Member member, boolean isField, String elementName) {
             this.member = member;
             this.isField = isField;
             this.elementName = elementName;
+        }
+
+        protected InjectFieldElement(Member member, boolean isField, String elementName, Class<?> fieldType) {
+            this.member = member;
+            this.isField = isField;
+            this.elementName = elementName;
+            this.fieldType = fieldType;
         }
 
         public void inject(Object target) throws Throwable {
@@ -105,9 +113,9 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
                 log.info("====>>>>value 赋值结束<<<<<======field name :{}",field.getName());
                 return;
             }
-            Object dep = beanFactory.getBean(this.getElementName());
+            Field field = (Field) this.getMember();
+            Object dep = beanFactory.getBean(this.elementName);
             if (dep != null) {
-                Field field = (Field) this.getMember();
                 ReflectUtils.makeAccessible(field);
                 field.set(target, dep);
             }

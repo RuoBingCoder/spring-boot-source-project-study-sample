@@ -17,6 +17,9 @@ public class A {
     @SimpleAutowired
     private B b;
 
+    @SimpleAutowired
+    private FactoryBean factoryBean;
+
     public void sendMsg() {
         System.out.println("this is a send msg");
     }

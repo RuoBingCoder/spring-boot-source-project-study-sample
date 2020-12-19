@@ -8,6 +8,8 @@ import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Set;
 
 /**
@@ -89,6 +91,13 @@ public class ClassUtils {
         }
         return cl;
     }
-
+    public static String transformFactoryBeanName(Class<?> clazz) {
+        Type[] types = clazz.getGenericInterfaces();
+        ParameterizedType type = (ParameterizedType) types[0];
+        Type[] arguments = type.getActualTypeArguments();
+        String typeName = arguments[0].getTypeName();
+        String substring = typeName.substring(typeName.lastIndexOf(".")+1);
+        return ClassUtils.toLowerBeanName(substring);
+    }
 
 }

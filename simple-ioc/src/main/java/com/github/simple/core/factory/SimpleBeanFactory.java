@@ -24,4 +24,9 @@ public interface SimpleBeanFactory {
         return null;
     }
 
+
+    default <T> List<T> getBeanForType(Class<?> clazz,Class<?> type) throws Throwable {
+        return null;
+    }
+
 }

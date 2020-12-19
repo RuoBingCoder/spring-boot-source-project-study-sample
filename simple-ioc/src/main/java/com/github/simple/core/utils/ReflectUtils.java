@@ -1,22 +1,20 @@
 package com.github.simple.core.utils;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import com.github.simple.core.annotation.SimpleAspect;
 import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponentScan;
 import com.github.simple.core.annotation.SimpleValue;
+import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleFieldTypeException;
 import com.github.simple.core.exception.SimpleIOCBaseException;
-import com.github.simple.demo.service.config.BeanConfig;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,26 +29,27 @@ public class ReflectUtils {
 
     public static void makeAccessible(Field field) {
         if ((!Modifier.isPublic(field.getModifiers()) ||
-             !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
+                !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
                 Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {
             field.setAccessible(true);
         }
     }
-    public static Boolean checkFieldModifier(Field clazz){
+
+    public static Boolean checkFieldModifier(Field clazz) {
         return commonTypeCheck(clazz.getModifiers());
     }
 
     private static Boolean commonTypeCheck(int modifiers) {
-        return Modifier.isStatic(modifiers)||Modifier.isFinal(modifiers)
-                ||Modifier.isPrivate(modifiers)||Modifier.isAbstract(modifiers)
-                ||Modifier.isInterface(modifiers)||Modifier.isProtected(modifiers);
+        return Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)
+                || Modifier.isPrivate(modifiers) || Modifier.isAbstract(modifiers)
+                || Modifier.isInterface(modifiers) || Modifier.isProtected(modifiers);
     }
 
-    public static Boolean checkClassModifier(Class<?> clazz){
+    public static Boolean checkClassModifier(Class<?> clazz) {
         return commonTypeCheck(clazz.getModifiers());
     }
 
-    public static Boolean checkMethodModifier(Method clazz){
+    public static Boolean checkMethodModifier(Method clazz) {
         return commonTypeCheck(clazz.getModifiers());
     }
 
@@ -77,7 +76,7 @@ public class ReflectUtils {
     }
 
 
-    public static <T extends Annotation> Boolean matchAnnotationComponent(Class<?> clazz,Class<T> annotation) {
+    public static <T extends Annotation> Boolean matchAnnotationComponent(Class<?> clazz, Class<T> annotation) {
         return clazz.isAnnotationPresent(annotation);
     }
 
@@ -121,8 +120,27 @@ public class ReflectUtils {
         return simpleValue.value();
     }
 
-    public static void main(String[] args) {
-        System.out.println(checkClassModifier(BeanConfig.class));
+    public static String resolveTypeBeanNames(String beanName, List<SimpleFactoryBean> simpleFactoryBeans) {
+        if (CollectionUtil.isEmpty(simpleFactoryBeans)) {
+            return beanName;
+        }
+        for (SimpleFactoryBean simpleFactoryBean : simpleFactoryBeans) {
+            Type[] genericInterfaces = simpleFactoryBean.getClass().getGenericInterfaces();
+            for (Type genericInterface : genericInterfaces) {
+                if (genericInterface.getTypeName().contains(beanName)) {
+                    return ClassUtils.toLowerBeanName(simpleFactoryBean.getClass().getSimpleName());
+                }
+            }
+        }
+        return null;
     }
+
+
+
+    public static Boolean isAssignableFrom(Class<?> clazz, Class<?> type) {
+        return type.isAssignableFrom(clazz);
+    }
+
+
 
 }

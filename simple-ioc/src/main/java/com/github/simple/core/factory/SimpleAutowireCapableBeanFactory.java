@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleInstantiationAwareBeanPostProcessor;
+import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.config.SimpleConfigBean;
 import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
@@ -36,7 +37,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
             invokerBeanPostProcessor();
             finishBeanInstance();
         } catch (Exception e) {
-            log.error("ioc create exception",e);
+            log.error("ioc create exception", e);
             destroyBeans();
         }
     }
@@ -54,6 +55,11 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         List<String> beanNames = new ArrayList<>(beanDefinitionMap.keySet());
 
         for (String beanName : beanNames) {
+            if (isFactoryBean(beanName)) {
+                getBean(beanName);
+            }
+        }
+        for (String beanName : beanNames) {
             try {
                 if (log.isDebugEnabled()) {
                     log.debug("-->getBean beanName is:{}", beanName);
@@ -66,6 +72,10 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         }
 
 
+    }
+
+    private boolean isFactoryBean(String beanName) {
+        return beanDefinitions.entrySet().stream().filter(s->s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getRootClass()));
     }
 
 
@@ -201,7 +211,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
                 return configBean.invoker(mbd.getBeanName());
             }
         } catch (Throwable e) {
-            throw new SimpleIOCBaseException("handler configBean exception!"+e.getMessage());
+            throw new SimpleIOCBaseException("handler configBean exception!" + e.getMessage());
         }
         return null;
     }

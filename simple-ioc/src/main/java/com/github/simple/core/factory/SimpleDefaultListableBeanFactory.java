@@ -3,15 +3,14 @@ package com.github.simple.core.factory;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.SimpleAutowiredAnnotationBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
+import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -21,6 +20,10 @@ import java.util.stream.Collectors;
  */
 
 public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanFactory implements SimpleListableBeanFactory {
+    /**
+     * simpleFactoryBean cache
+     */
+    private static final Map<String, SimpleFactoryBean> factoryBeanCache = new ConcurrentHashMap<>();
 
     public SimpleDefaultListableBeanFactory(Class<?> startClass) throws Throwable {
         super(ReflectUtils.getBasePackages(startClass));
@@ -37,18 +40,24 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
         return getBeansOfType(clazz, true);
     }
 
+    @Override
+    public String[] getBeanNames() {
+        Set<String> beanNamesSet = getBeans().keySet();
+        return StringUtils.toStringArray(beanNamesSet);
+    }
+
     private <T> Map<String, T> getBeansOfType(Class<T> clazz, boolean needInit) throws Throwable {
         return doGetBeans(clazz, needInit);
     }
 
     /**
      * 类型获取bean map
+     *
      * @param clazz
      * @param needInit
      * @param <T>
      * @return
-     * @throws Throwable
-     * 此处有bug //TODO
+     * @throws Throwable 此处有bug //TODO
      */
     private <T> Map<String, T> doGetBeans(Class<T> clazz, boolean needInit) throws Throwable {
         Map<String, T> beans = new HashMap<>();
@@ -91,6 +100,28 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     }
 
     @Override
+    protected void predictBeanType(Object bean) {
+        if (bean instanceof SimpleFactoryBean) {
+            factoryBeanCache.put(ClassUtils.transformFactoryBeanName(bean.getClass()), (SimpleFactoryBean) bean);
+        }
+    }
+
+
+    @Override
+    protected Object getFactoryBeanInstance(Object singleton, String beanName) {
+        if (singleton instanceof SimpleFactoryBean) {
+            SimpleFactoryBean sb = (SimpleFactoryBean) singleton;
+            return sb.getObject();
+        }
+        return singleton;
+    }
+
+    @Override
+    protected Object getFactoryInnerObject(String name) {
+        return factoryBeanCache.get(name);
+    }
+
+    @Override
     public <T> T getBean(String name) throws Throwable {
         return super.getBean(name);
     }
@@ -103,5 +134,30 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
                 autowiredAnnotationBeanPostProcessor.setBeanFactory(this);
             }
         }
+    }
+
+    @Override
+    protected void destroyFactoryBeanCache() {
+        factoryBeanCache.clear();
+    }
+
+
+    @Override
+    public <T> List<T> getBeanForType(Class<?> clazz, Class<?> type) throws Throwable {
+        List<Object> factoryObjects = getBeans().values().stream().filter(o -> type.isAssignableFrom(o.getClass())).collect(Collectors.toList());
+        if (!CollectionUtil.isEmpty(factoryObjects)) {
+            return (List<T>) factoryObjects;
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void addBeanPostProcessor(SimpleBeanPostProcessor beanPostProcessor) {
+        super.addBeanPostProcessor(beanPostProcessor);
+    }
+
+    @Override
+    public void setClassLoader(ClassLoader classLoader) {
+        super.setClassLoader(classLoader);
     }
 }

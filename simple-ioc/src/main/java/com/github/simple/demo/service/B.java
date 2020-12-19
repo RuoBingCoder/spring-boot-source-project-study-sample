@@ -17,6 +17,9 @@ public class B {
     @SimpleAutowired
     private LogService logService;
 
+    @SimpleAutowired
+    private FactoryBeanB factoryBeanB;
+
     @SimpleValue("${simple.address}")
     private String address;
     public String hello() {
