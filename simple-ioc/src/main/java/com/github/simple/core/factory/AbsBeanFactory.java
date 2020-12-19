@@ -59,8 +59,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     protected <T> T doGetBean(String name) throws Throwable {
         String beanName = transformName(name);
         //implements simpleFactoryBean call back!
-        if (getFactoryInnerObject(name) != null) {
-            return (T) getFactoryBeanInstance(getFactoryInnerObject(name), beanName);
+        if (getFactoryObject(name) != null) {
+            return (T) getFactoryBeanInnerInstance(getFactoryObject(name), beanName);
         }
         Object singleton = getSingleton(beanName);
         if (singleton != null) {
@@ -88,9 +88,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     protected abstract void predictBeanType(Object beanName);
 
-    protected abstract Object getFactoryBeanInstance(Object singleton, String beanName);
+    protected abstract Object getFactoryBeanInnerInstance(Object singleton, String beanName);
 
-    protected abstract Object getFactoryInnerObject(String name);
+    protected abstract Object getFactoryObject(String name);
 
     /**
      * @param beanName

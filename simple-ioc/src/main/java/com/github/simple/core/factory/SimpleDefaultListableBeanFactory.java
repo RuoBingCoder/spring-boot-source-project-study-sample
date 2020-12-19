@@ -108,7 +108,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
 
     @Override
-    protected Object getFactoryBeanInstance(Object singleton, String beanName) {
+    protected Object getFactoryBeanInnerInstance(Object singleton, String beanName) {
         if (singleton instanceof SimpleFactoryBean) {
             SimpleFactoryBean sb = (SimpleFactoryBean) singleton;
             return sb.getObject();
@@ -117,7 +117,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     }
 
     @Override
-    protected Object getFactoryInnerObject(String name) {
+    protected Object getFactoryObject(String name) {
         return factoryBeanCache.get(name);
     }
 
