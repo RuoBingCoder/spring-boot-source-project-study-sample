@@ -56,6 +56,8 @@ public class StartIocApplication {
         C c = beanFactory.getBean(C.class);
         c.sendCMsg();
 
+        D d = beanFactory.getBean(D.class);
+        d.dTest();
 
     }
 }

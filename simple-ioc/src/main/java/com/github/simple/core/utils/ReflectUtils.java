@@ -3,7 +3,6 @@ package com.github.simple.core.utils;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import com.github.simple.core.annotation.SimpleAspect;
-import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponentScan;
 import com.github.simple.core.annotation.SimpleValue;
 import com.github.simple.core.beans.SimpleFactoryBean;
@@ -53,19 +52,19 @@ public class ReflectUtils {
         return commonTypeCheck(clazz.getModifiers());
     }
 
-    public static LinkedHashMap<String, Field> findAutowired(Class<?> clazz) {
-        return matchType(clazz);
+    public static LinkedHashMap<String, Field> findAutowiredAnnotation(Class<?> clazz, Class<? extends Annotation> autowiredType) {
+        return matchType(clazz,autowiredType);
 
     }
 
-    private static LinkedHashMap<String, Field> matchType(Class<?> clazz) {
-        return matchField(clazz.getDeclaredFields());
+    private static LinkedHashMap<String, Field> matchType(Class<?> clazz,Class<? extends Annotation> autowiredType) {
+        return matchField(clazz.getDeclaredFields(),autowiredType);
     }
 
-    private static LinkedHashMap<String, Field> matchField(Field[] declaredFields) {
+    private static LinkedHashMap<String, Field> matchField(Field[] declaredFields, Class<? extends Annotation> autowiredType) {
         LinkedHashMap<String, Field> beanFields = new LinkedHashMap<>(20);
         for (Field field : declaredFields) {
-            if (field.isAnnotationPresent(SimpleAutowired.class) || field.isAnnotationPresent(SimpleValue.class)) {
+            if (field.isAnnotationPresent(autowiredType)) {
                 if (Modifier.isStatic(field.getModifiers())) {
                     throw new SimpleFieldTypeException(SimpleIOCEnum.STATIC_FIELD_NOT_INJECT.getMsg());
                 }

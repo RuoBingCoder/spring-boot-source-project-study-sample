@@ -1,6 +1,7 @@
 package com.github.simple.core.annotation;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.github.simple.core.beans.InjectFieldMetadataWrapper;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactoryAware;
@@ -8,12 +9,12 @@ import com.github.simple.core.utils.ReflectUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.util.Assert;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * @author: JianLei
@@ -26,6 +27,18 @@ import java.util.LinkedHashMap;
 public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstantiationAwareBeanPostProcessor, SimpleBeanFactoryAware {
 
     private static SimpleBeanFactory beanFactory;
+
+    private final Set<Class<? extends Annotation>> autowiredAnnotationTypes = new LinkedHashSet<>(4);
+
+    public SimpleAutowiredAnnotationBeanPostProcessor() {
+        autowiredAnnotationTypes.add(SimpleAutowired.class);
+        autowiredAnnotationTypes.add(SimpleValue.class);
+    }
+    public void setAutowiredAnnotationType(Class<? extends Annotation> autowiredAnnotationType) {
+        Assert.notNull(autowiredAnnotationType, "'autowiredAnnotationType' must not be null");
+        this.autowiredAnnotationTypes.clear();
+        this.autowiredAnnotationTypes.add(autowiredAnnotationType);
+    }
 
     @Override
     public Boolean postProcessAfterInstantiation(Object bean, String beanName) {
@@ -50,15 +63,30 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
     }
 
     private InjectMeta findAutowiredMetadata(Object bean) {
-        LinkedHashMap<String, Field> fieldLinkedHashMap = ReflectUtils.findAutowired(bean.getClass());
-        return getInjectMeta(fieldLinkedHashMap, bean);
+        List<InjectFieldMetadataWrapper>  fieldWrapper = findAutowiredAnnotation(bean.getClass());
+        return getInjectMeta(fieldWrapper, bean);
     }
 
-    private InjectMeta getInjectMeta(LinkedHashMap<String, Field> fields, Object bean) {
+    private List<InjectFieldMetadataWrapper> findAutowiredAnnotation(Class<?> aClass) {
+        List<InjectFieldMetadataWrapper> injectFieldMetadataWrappers=new ArrayList<>();
+        for (Class<? extends Annotation> annotationType : autowiredAnnotationTypes) {
+            LinkedHashMap<String, Field> autowiredAnnotation = ReflectUtils.findAutowiredAnnotation(aClass, annotationType);
+            if (CollectionUtil.isEmpty(autowiredAnnotation)){
+                return injectFieldMetadataWrappers;
+            }
+            autowiredAnnotation.forEach((key, value) -> {
+                InjectFieldMetadataWrapper metadataWrapper = InjectFieldMetadataWrapper.builder().fieldName(key).field(value).build();
+                injectFieldMetadataWrappers.add(metadataWrapper);
+            });
+        }
+        return injectFieldMetadataWrappers;
+    }
+
+    private InjectMeta getInjectMeta(List<InjectFieldMetadataWrapper> fields, Object bean) {
         InjectMeta injectMeta = new InjectMeta();
         Collection<InjectMeta.InjectElement> elements = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(fields)) {
-            fields.forEach((key, value) -> elements.add(new InjectMeta.InjectElement(value, true, key)));
+            fields.forEach(f -> elements.add(new InjectMeta.InjectElement(f.getField(), true, f.getFieldName())));
         }
         injectMeta.setInjectElements(elements);
         injectMeta.setTargetClass(bean.getClass());
@@ -100,6 +128,9 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
             }
 
             log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}", beanFactory);
+            if (this.getMember()==null){
+                return;
+            }
             Field field = (Field) this.getMember();
             Object dep = beanFactory.resolveDependency(field,this.elementName);
             if (dep != null) {
