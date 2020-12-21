@@ -41,12 +41,16 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     /**
      * bean后置处理器
      */
-    protected List<SimpleBeanPostProcessor> simplePostProcessors = new ArrayList<>(128);
+    protected final List<SimpleBeanPostProcessor> simplePostProcessors = new ArrayList<>(128);
+
+
+    protected final List<SimpleBeanFactoryPostProcessor> beanFactoryPostProcessors=new ArrayList<>(128);
 
     @Override
     public <T> T getBean(Class<?> clazz) throws Throwable {
         return getBean(ClassUtils.toLowerBeanName(clazz.getSimpleName()));
     }
+
 
 
     /**
@@ -339,11 +343,11 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * @description 调用工厂后置处理器
      * @date 4:29 下午 2020/12/17
      **/
-    protected void invokerBeanFactoryProcessor() throws Throwable {
+    protected void postBeanFactory() throws Throwable {
         for (Map.Entry<String, SimpleRootBeanDefinition> entry : this.getBeanDefinitions().entrySet()) {
             if (SimpleBeanFactoryPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
                 SimpleBeanFactoryPostProcessor simpleBeanDefinitionRegistry = getBean(entry.getKey());
-                simpleBeanDefinitionRegistry.postProcessBeanFactory(this);
+                beanFactoryPostProcessors.add(simpleBeanDefinitionRegistry);
             }
         }
 
@@ -381,7 +385,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      **/
     protected abstract void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors);
 
-    private void sortPostProcessors(List<SimpleBeanPostProcessor> nonOrderPostprocessors, List<SimpleBeanPostProcessor> sortedPostProcessors) {
+    public void sortPostProcessors(List<SimpleBeanPostProcessor> nonOrderPostprocessors, List<SimpleBeanPostProcessor> sortedPostProcessors) {
         Map<Integer, SimpleBeanPostProcessor> markPostProcessorMap = new LinkedHashMap<>();
         for (SimpleBeanPostProcessor nonOrderPostprocessor : nonOrderPostprocessors) {
             if (ClassUtils.matchOrdered(nonOrderPostprocessor)) {
@@ -420,11 +424,11 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     @Override
-    public void registerSingleton(String beanName, Object singletonObject) {
+    public void registerBeanDefinition(String beanName, Object singletonObject) {
         this.beanDefinitions.put(beanName, (SimpleRootBeanDefinition) singletonObject);
     }
 
-    protected void destroyBeans() {
+    public void destroyBeans() {
         simplePostProcessors.clear();
         earlySingletonMap.clear();
         singletonFactoryMap.clear();

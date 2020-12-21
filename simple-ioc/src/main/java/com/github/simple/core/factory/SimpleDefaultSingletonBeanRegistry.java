@@ -48,7 +48,7 @@ public class SimpleDefaultSingletonBeanRegistry {
      * @param beanName
      * @param singletonObject
      */
-    private void addSingleton(String beanName, Object singletonObject) {
+    protected void addSingleton(String beanName, Object singletonObject) {
         synchronized (this.singletonObjectMap) {
             if (!this.singletonObjectMap.containsKey(beanName)) {
                 this.singletonObjectMap.put(beanName, singletonObject);

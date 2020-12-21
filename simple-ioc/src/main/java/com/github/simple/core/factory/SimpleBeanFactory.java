@@ -17,7 +17,7 @@ public interface SimpleBeanFactory {
 
     <T> T getBean(String name) throws Throwable;
 
-    default void registerSingleton(String beanName, Object singletonObject){
+    default void registerBeanDefinition(String beanName, Object singletonObject){
 
     }
 

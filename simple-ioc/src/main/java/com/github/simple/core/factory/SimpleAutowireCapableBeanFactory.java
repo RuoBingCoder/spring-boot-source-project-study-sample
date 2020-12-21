@@ -6,19 +6,15 @@ import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleInstantiationAwareBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.config.SimpleConfigBean;
-import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.init.SimpleInitializingBean;
-import com.github.simple.core.resource.SimpleClassPathResource;
-import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
 import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: JianLei
@@ -31,41 +27,53 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
 
-    protected static final Map<Class<?>, SimpleBeanFactory> BEAN_FACTORY_MAP = new ConcurrentHashMap<>(256);
+    public void setSimplePropertiesPropertySourceLoader(List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader) {
+        this.simplePropertiesPropertySourceLoader = simplePropertiesPropertySourceLoader;
+    }
 
-
-    protected SimpleAutowireCapableBeanFactory(String basePackages) throws Throwable {
-            prepareBeanFactory();
+    /*protected SimpleAutowireCapableBeanFactory(String basePackages) throws Throwable {
+//        prepareBeanFactory();
+        preparePropertiesSource();
         try {
-            registryBeanDef(basePackages);
-            prepareEnvSource();
-            invokerBeanFactoryProcessor();
+            registryBeanDefinition(basePackages);
+            postBeanFactory();
+            invokerBeanFactoryPostProcessor();
             invokerBeanPostProcessor();
             finishBeanInstance();
         } catch (Exception e) {
             log.error("ioc create exception", e);
             destroyBeans();
         }
-    }
+    }*/
+
+   /* protected void invokerBeanFactoryPostProcessor() {
+        if (CollectionUtil.isNotEmpty(beanFactoryPostProcessors)) {
+            for (SimpleBeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+                postProcessor.postProcessBeanFactory(this);
+            }
+        }
+
+    }*/
 
     /**
      * 依赖注入非容器管理bean
+     *
      * @see org.springframework.context.support.AbstractApplicationContext#prepareBeanFactory(ConfigurableListableBeanFactory)
      */
-    private void prepareBeanFactory() {
+   /* private void prepareBeanFactory() {
         BEAN_FACTORY_MAP.put(SimpleBeanFactory.class, this);
         BEAN_FACTORY_MAP.put(SimpleAutowireCapableBeanFactory.class, this);
         BEAN_FACTORY_MAP.put(SimpleDefaultListableBeanFactory.class, this);
         //TODO 事件发布 ApplicationContext
 
-    }
+    }*/
 
-    private void prepareEnvSource() {
+   /* private void preparePropertiesSource() {
         SimpleClassPathResource source = new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
         SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
         simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
 
-    }
+    }*/
 
 
     public void finishBeanInstance() throws Throwable {
@@ -97,7 +105,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
     }
 
 
-    public void registryBeanDef(String basePackages) {
+    public void registryBeanDefinition(String basePackages) {
         Set<Class<?>> classSet = ClassUtils.scannerBasePackages(basePackages);
         doRegistryBeanDefinition(classSet);
     }

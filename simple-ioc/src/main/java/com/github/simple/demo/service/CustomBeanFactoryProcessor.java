@@ -15,7 +15,7 @@ public class CustomBeanFactoryProcessor implements SimpleBeanFactoryPostProcesso
     @Override
     public void postProcessBeanFactory(SimpleConfigBeanFactory factory) {
         SimpleRootBeanDefinition subTwo = SimpleRootBeanDefinition.builder().beanName("beanFactoryRegistryBeanTest").isSingleton(true).rootClass(BeanFactoryRegistryBeanTest.class).build();
-        factory.registerSingleton("beanFactoryRegistryBeanTest", subTwo);
+        factory.registerBeanDefinition("beanFactoryRegistryBeanTest", subTwo);
         factory.registerResolvableDependency(String.class, "hello word!");
     }
 }

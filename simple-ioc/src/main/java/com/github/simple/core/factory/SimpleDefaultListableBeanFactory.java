@@ -2,6 +2,7 @@ package com.github.simple.core.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.SimpleAutowiredAnnotationBeanPostProcessor;
+import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
@@ -30,18 +31,14 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     /**
      * simpleFactoryBean cache
      */
-    private static final Map<String, SimpleFactoryBean> FACTORY_BEAN_CACHE = new ConcurrentHashMap<>(256);
-    private static final Map<Class<?>, Object> TYPE_CLASS_OBJECT_MAP = new ConcurrentHashMap<>(256);
+    private final Map<String, SimpleFactoryBean> factoryBeanCache = new ConcurrentHashMap<>(256);
 
-    public SimpleDefaultListableBeanFactory(Class<?> startClass) throws Throwable {
-        super(ReflectUtils.getBasePackages(startClass));
+    private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(256);
+
+    public SimpleDefaultListableBeanFactory() {
 
     }
 
-
-    public static SimpleDefaultListableBeanFactory run(Class<?> clazz) throws Throwable {
-        return new SimpleDefaultListableBeanFactory(clazz);
-    }
 
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> clazz) throws Throwable {
@@ -110,7 +107,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     @Override
     protected void predictBeanType(Object bean) {
         if (bean instanceof SimpleFactoryBean) {
-            FACTORY_BEAN_CACHE.put(ClassUtils.transformFactoryBeanName(bean.getClass()), (SimpleFactoryBean) bean);
+            factoryBeanCache.put(ClassUtils.transformFactoryBeanName(bean.getClass()), (SimpleFactoryBean) bean);
         }
     }
 
@@ -126,7 +123,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     protected Object getFactoryObject(String name) {
-        return FACTORY_BEAN_CACHE.get(name);
+        return factoryBeanCache.get(name);
     }
 
     @Override
@@ -135,7 +132,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     }
 
     @Override
-    protected void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors) {
+    public void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors) {
         for (SimpleBeanPostProcessor sortedPostProcessor : sortedPostProcessors) {
             if (sortedPostProcessor instanceof SimpleAutowiredAnnotationBeanPostProcessor) {
                 SimpleAutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = (SimpleAutowiredAnnotationBeanPostProcessor) sortedPostProcessor;
@@ -146,7 +143,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     protected void destroyFactoryBeanCache() {
-        FACTORY_BEAN_CACHE.clear();
+        factoryBeanCache.clear();
     }
 
 
@@ -168,8 +165,8 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
      */
     @Override
     public Object resolveDependency(Field type, String beanName) throws Throwable {
-        if (BEAN_FACTORY_MAP.containsKey(type.getType())) {
-            return BEAN_FACTORY_MAP.get(type.getType());
+        if (resolvableDependencies.containsKey(type.getType())) {
+            return resolvableDependencies.get(type.getType());
         }
         if (ReflectUtils.resolveValueDependency(type)) {
             if (log.isDebugEnabled()) {
@@ -184,16 +181,10 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
             return TypeConvertUtils.convert(type.getType(), (String) value);
         }
         //String Integer 类型自动注入
-        if (TYPE_CLASS_OBJECT_MAP.get(type.getType()) != null) {
-            return TYPE_CLASS_OBJECT_MAP.get(type.getType());
-        }
+
         return getBean(beanName);
     }
 
-    @Override
-    public void addBeanPostProcessor(SimpleBeanPostProcessor beanPostProcessor) {
-        super.addBeanPostProcessor(beanPostProcessor);
-    }
 
     @Override
     public void setClassLoader(ClassLoader classLoader) {
@@ -202,12 +193,37 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     public void registerResolvableDependency(Class<?> dependencyType, Object autowiredValue) {
-        TYPE_CLASS_OBJECT_MAP.put(dependencyType, autowiredValue);
+        resolvableDependencies.put(dependencyType, autowiredValue);
     }
 
 
     private Object findValue(List<SimplePropertySource<Properties>> resource, String key) {
         return resource.get(0).getValue().get(key);
     }
+
+
+    @Override
+    public void registerSingleton(String beanName, Object singletonObject) {
+        super.addSingleton(beanName, singletonObject);
+    }
+
+    public List<SimpleBeanFactoryPostProcessor> getFactoryPostProcessors() {
+        return beanFactoryPostProcessors;
+    }
+
+    public List<SimpleBeanPostProcessor> getBeanPostProcessors() {
+        return simplePostProcessors;
+    }
+
+    @Override
+    public void addBeanFactoryPostProcessor(SimpleBeanFactoryPostProcessor beanFactoryPostProcessor) {
+        getFactoryPostProcessors().add(beanFactoryPostProcessor);
+    }
+
+    @Override
+    public void addBeanPostProcessor(SimpleBeanPostProcessor beanPostProcessor) {
+        getBeanPostProcessors().add(beanPostProcessor);
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.github.simple.demo.start;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.simple.core.annotation.SimpleComponentScan;
+import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.demo.service.*;
@@ -20,7 +21,8 @@ public class StartIocApplication {
     private static final Logger logger = LoggerFactory.getLogger(StartIocApplication.class);
 
     public static void main(String[] args) throws Throwable {
-        SimpleDefaultListableBeanFactory beanFactory = SimpleDefaultListableBeanFactory.run(StartIocApplication.class);
+        SimpleApplicationContext applicationContext = SimpleApplicationContext.run(StartIocApplication.class);
+        SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) applicationContext.getBeanFactory();
 //        A a = beanFactory.getBean(A.class);
         /**
          * bean 工厂 注册bean

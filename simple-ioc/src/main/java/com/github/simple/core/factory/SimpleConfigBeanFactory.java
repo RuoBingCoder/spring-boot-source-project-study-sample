@@ -1,5 +1,6 @@
 package com.github.simple.core.factory;
 
+import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import org.springframework.lang.Nullable;
 
@@ -20,6 +21,8 @@ public interface SimpleConfigBeanFactory extends SimpleBeanFactory {
     void setClassLoader(ClassLoader classLoader);
 
     void registerResolvableDependency(Class<?> dependencyType, @Nullable Object autowiredValue);
+
+    void addBeanFactoryPostProcessor(SimpleBeanFactoryPostProcessor beanFactoryPostProcessor);
 
 
 
