@@ -14,15 +14,8 @@ import org.springframework.stereotype.Component;
 public class BeanFactoryPostProcessorImpl implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory clb) throws BeansException {
-         try {
-             int i=10;
-             if (i<0){
-
-             }
-
-                 } catch (Exception e) {
-
-                 }
+        //注意只能用于依赖注入,不能用于依赖查找
+        clb.registerResolvableDependency(String.class,"hello word");
         System.out.println("==================BeanFactoryPostProcessorImpl=========================");
         //一旦调用getBean会对bean进行初始化
 //        Pig pig = (Pig) clb.getBean("pig");

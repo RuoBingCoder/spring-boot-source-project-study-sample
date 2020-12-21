@@ -103,7 +103,7 @@ public class ReflectUtils {
         throw new SimpleIOCBaseException("包路径不能为空!");
     }
 
-    public static boolean resolveDependencies(Member member) {
+    public static boolean resolveValueDependency(Member member) {
         Field field = (Field) member;
         if (field.getType().equals(String.class)) {
             return true;
@@ -111,7 +111,7 @@ public class ReflectUtils {
         if (field.getType().equals(Integer.class)) {
             return true;
         }
-        return field.getType().equals(List.class);
+        return field.getType().equals(Long.class);
     }
 
     public static String parseValue(Field field) {

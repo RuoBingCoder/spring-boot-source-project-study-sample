@@ -10,19 +10,14 @@ public class RedisTemplate {
 
     private String redisName;
 
-    private String max;
+    private Integer max;
 
-    public String getMax() {
-        return max;
-    }
-
-    public void setMax(String max) {
-        this.max = max;
-    }
-
-    public RedisTemplate(String redisName, String max) {
+    public RedisTemplate(String redisName, Integer max) {
         this.redisName = redisName;
         this.max = max;
+    }
+
+    public RedisTemplate() {
     }
 
     public String getRedisName() {
@@ -33,15 +28,19 @@ public class RedisTemplate {
         this.redisName = redisName;
     }
 
-    public RedisTemplate(String redisName) {
-        this.redisName = redisName;
+    public Integer getMax() {
+        return max;
+    }
+
+    public void setMax(Integer max) {
+        this.max = max;
     }
 
     @Override
     public String toString() {
         return "RedisTemplate{" +
                 "redisName='" + redisName + '\'' +
-                ", max='" + max + '\'' +
+                ", max=" + max +
                 '}';
     }
 }

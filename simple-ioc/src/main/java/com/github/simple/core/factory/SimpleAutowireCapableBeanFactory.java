@@ -15,8 +15,10 @@ import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
 import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: JianLei
@@ -29,7 +31,11 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
 
+    protected static final Map<Class<?>, SimpleBeanFactory> BEAN_FACTORY_MAP = new ConcurrentHashMap<>(256);
+
+
     protected SimpleAutowireCapableBeanFactory(String basePackages) throws Throwable {
+            prepareBeanFactory();
         try {
             registryBeanDef(basePackages);
             prepareEnvSource();
@@ -40,6 +46,18 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
             log.error("ioc create exception", e);
             destroyBeans();
         }
+    }
+
+    /**
+     * 依赖注入非容器管理bean
+     * @see org.springframework.context.support.AbstractApplicationContext#prepareBeanFactory(ConfigurableListableBeanFactory)
+     */
+    private void prepareBeanFactory() {
+        BEAN_FACTORY_MAP.put(SimpleBeanFactory.class, this);
+        BEAN_FACTORY_MAP.put(SimpleAutowireCapableBeanFactory.class, this);
+        BEAN_FACTORY_MAP.put(SimpleDefaultListableBeanFactory.class, this);
+        //TODO 事件发布 ApplicationContext
+
     }
 
     private void prepareEnvSource() {
@@ -75,7 +93,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
     }
 
     private boolean isFactoryBean(String beanName) {
-        return beanDefinitions.entrySet().stream().filter(s->s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getRootClass()));
+        return beanDefinitions.entrySet().stream().filter(s -> s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getRootClass()));
     }
 
 

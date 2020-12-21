@@ -2,6 +2,7 @@ package com.github.simple.core.factory;
 
 import com.github.simple.core.resource.SimplePropertySource;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,5 +29,7 @@ public interface SimpleBeanFactory {
     default <T> List<T> getBeanForType(Class<?> clazz,Class<?> type) throws Throwable {
         return null;
     }
+
+    Object resolveDependency(Field type, String beanName) throws Throwable;
 
 }

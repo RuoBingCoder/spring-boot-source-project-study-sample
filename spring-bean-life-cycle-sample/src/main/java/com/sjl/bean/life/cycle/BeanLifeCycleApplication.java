@@ -1,15 +1,13 @@
 package com.sjl.bean.life.cycle;
 
-import cn.hutool.extra.spring.EnableSpringUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.sjl.bean.life.cycle.inject.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.UrlResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -26,11 +24,15 @@ import static org.springframework.core.io.support.SpringFactoriesLoader.FACTORIE
 @Import(SpringUtil.class)
 public class BeanLifeCycleApplication implements CommandLineRunner {
 
+    @Autowired
+    private String hello;
+
     public static void main(String[] args) {
-        ConfigurableApplicationContext run =
+        ConfigurableApplicationContext applicationContext =
                 SpringApplication.run(BeanLifeCycleApplication.class, args);
 //    run.getBean(ServiceImpl.class).doSave();
 //    run.close();
+
     }
 
     @Override
@@ -45,6 +47,8 @@ public class BeanLifeCycleApplication implements CommandLineRunner {
                 System.out.println("====>>>"+ JSONObject.toJSONString(entry.getKey()));
             }
         }
+        System.out.println("==>hello call back :"+hello);
+
 
     }
 }

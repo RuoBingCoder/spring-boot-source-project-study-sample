@@ -1,5 +1,6 @@
 package com.sjl.spring.components.utils;
 
+import cn.hutool.core.collection.CollectionUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Point;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: JianLei
@@ -20,6 +22,8 @@ import java.util.List;
  */
 @Component
 public class RedisUtil {
+
+    public static final String KEY_PREFIX = "simple_";
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -106,7 +110,7 @@ public class RedisUtil {
         DefaultRedisScript<Boolean> script = new DefaultRedisScript<>();
         script.setResultType(Boolean.class);
         script.setScriptSource(new ResourceScriptSource(new ClassPathResource("script/lock.lua")));
-        List<String> keys = Arrays.asList(key, val);
+        List<String> keys = Arrays.asList(KEY_PREFIX+key, val);
         return stringRedisTemplate.execute(script, keys, expire);
     }
 
@@ -127,11 +131,10 @@ public class RedisUtil {
      *
      * @param key
      * @param value
-     * @return
      * @description 操作list
      */
-    public Long leftPushAll(String key, String... value) {
-        return stringRedisTemplate.opsForList().leftPushAll(key, value);
+    public void leftPushAll(String key, String... value) {
+        stringRedisTemplate.opsForList().leftPushAll(key, value);
     }
 
     /**
@@ -143,6 +146,25 @@ public class RedisUtil {
      */
     public void hSet(String key, Object hashKey, Object value) {
         stringRedisTemplate.opsForHash().putIfAbsent(key, hashKey, value);
+    }
+
+    public void modifyValueForKey(String key, String newValue) {
+        String k = KEY_PREFIX + key;
+        while (true) {
+            String val = stringRedisTemplate.opsForValue().get(k);
+            if (val != null) {
+                stringRedisTemplate.watch(k);
+                //开启事务
+                stringRedisTemplate.setEnableTransactionSupport(true); //一定要开启确保multi和exec在同一个连接中
+                stringRedisTemplate.multi();
+                stringRedisTemplate.opsForValue().set(k,newValue, 50, TimeUnit.SECONDS);
+                List<Object> objectList = stringRedisTemplate.exec();
+                if (CollectionUtil.isNotEmpty(objectList)) {
+                    break;
+                }
+            }
+
+        }
     }
 
 }

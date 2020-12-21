@@ -5,10 +5,15 @@ import com.github.simple.core.annotation.SimpleAutowiredAnnotationBeanPostProces
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
+import com.github.simple.core.exception.SimpleIOCBaseException;
+import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
+import com.github.simple.core.utils.TypeConvertUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -18,12 +23,14 @@ import java.util.stream.Collectors;
  * @date: 2020/12/12 3:01 下午
  * @description: SimpleDefaultListableBeanFactory
  */
-
+@Slf4j
 public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanFactory implements SimpleListableBeanFactory {
+
+
     /**
      * simpleFactoryBean cache
      */
-    private static final Map<String, SimpleFactoryBean> factoryBeanCache = new ConcurrentHashMap<>();
+    private static final Map<String, SimpleFactoryBean> FACTORY_BEAN_CACHE = new ConcurrentHashMap<>(256);
 
     public SimpleDefaultListableBeanFactory(Class<?> startClass) throws Throwable {
         super(ReflectUtils.getBasePackages(startClass));
@@ -102,7 +109,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     @Override
     protected void predictBeanType(Object bean) {
         if (bean instanceof SimpleFactoryBean) {
-            factoryBeanCache.put(ClassUtils.transformFactoryBeanName(bean.getClass()), (SimpleFactoryBean) bean);
+            FACTORY_BEAN_CACHE.put(ClassUtils.transformFactoryBeanName(bean.getClass()), (SimpleFactoryBean) bean);
         }
     }
 
@@ -118,7 +125,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     protected Object getFactoryObject(String name) {
-        return factoryBeanCache.get(name);
+        return FACTORY_BEAN_CACHE.get(name);
     }
 
     @Override
@@ -138,17 +145,43 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     protected void destroyFactoryBeanCache() {
-        factoryBeanCache.clear();
+        FACTORY_BEAN_CACHE.clear();
     }
 
 
     @Override
-    public <T> List<T> getBeanForType(Class<?> clazz, Class<?> type) throws Throwable {
+    public <T> List<T> getBeanForType(Class<?> clazz, Class<?> type) {
         List<Object> factoryObjects = getBeans().values().stream().filter(o -> type.isAssignableFrom(o.getClass())).collect(Collectors.toList());
         if (!CollectionUtil.isEmpty(factoryObjects)) {
             return (List<T>) factoryObjects;
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * 解析非容器管理bean和管理bean
+     * @param beanName
+     * @return
+     * @throws Throwable
+     */
+    @Override
+    public Object resolveDependency(Field type, String beanName) throws Throwable {
+        if (BEAN_FACTORY_MAP.containsKey(type.getType())){
+            return BEAN_FACTORY_MAP.get(type.getType());
+        }
+        if (ReflectUtils.resolveValueDependency(type)) {
+            if (log.isDebugEnabled()){
+                log.debug("====>>>>@SimpleValue set value begin<<<<<======");
+            }
+            List<SimplePropertySource<Properties>> resource = this.getResource();
+            String key = com.github.simple.core.utils.StringUtils.parsePlaceholder(type);
+            Object value = findValue(resource, key);
+            if (value == null) {
+                throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
+            }
+            return TypeConvertUtils.convert(type.getType(), (String) value);
+        }
+        return getBean(beanName);
     }
 
     @Override
@@ -160,4 +193,11 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     public void setClassLoader(ClassLoader classLoader) {
         super.setClassLoader(classLoader);
     }
+
+
+
+    private Object findValue(List<SimplePropertySource<Properties>> resource, String key) {
+        return resource.get(0).getValue().get(key);
+    }
+
 }

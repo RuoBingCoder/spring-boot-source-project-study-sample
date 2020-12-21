@@ -2,6 +2,7 @@ package com.github.simple.demo.service;
 
 import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponent;
+import com.github.simple.core.factory.SimpleBeanFactory;
 
 /**
  * @author: JianLei
@@ -15,11 +16,14 @@ public class C {
     @SimpleAutowired
     private B b;
 
+    @SimpleAutowired
+    private SimpleBeanFactory beanFactory;
 
-    public void sendCMsg(){
+    public void sendCMsg() throws Throwable {
         System.out.println("接收到 A 发来消息:");
         a.sendMsg();
         System.out.println("==>"+b.hello());
+        System.out.println("************* B beanFactory is :"+beanFactory);
     }
 
 

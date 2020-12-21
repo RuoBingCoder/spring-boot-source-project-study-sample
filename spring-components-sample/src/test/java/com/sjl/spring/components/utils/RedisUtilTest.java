@@ -82,5 +82,11 @@ public class RedisUtilTest {
     redisUtil.leftPushAll("subject","语文","数学","物理");
     }
 
+    @Test
+    public void addTest(){
+//        redisUtil.setKey("100000","watch:key","obejct");
+        redisUtil.modifyValueForKey("watch:key","object_modify_2");
+
+    }
    
 } 

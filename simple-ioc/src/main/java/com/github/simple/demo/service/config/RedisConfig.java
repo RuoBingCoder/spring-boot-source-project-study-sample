@@ -22,7 +22,7 @@ public class RedisConfig {
     private String redisName;
 
     @SimpleValue("${redis.maxConnect}")
-    private String redisMaxConnect;
+    private Integer redisMaxConnect;
 
     @SimpleBean
     public RedisTemplate redisTemplate() {

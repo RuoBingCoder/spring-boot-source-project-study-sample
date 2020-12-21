@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.simple.core.annotation.SimpleComponentScan;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
-import com.github.simple.demo.service.ConfigBeanTest;
-import com.github.simple.demo.service.ConfigBeanTest2;
-import com.github.simple.demo.service.Order;
-import com.github.simple.demo.service.RedisTemplate;
+import com.github.simple.demo.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +43,19 @@ public class StartIocApplication {
 
         RedisTemplate redisTemplate = beanFactory.getBean(RedisTemplate.class);
 
-        logger.info(" redisTemplate output:{}", redisTemplate.toString());
+        logger.info(" redisTemplate output:{}", redisTemplate.getMax());
 
 //         logger.info(a.tasks());
         logger.info("->beans size:{}", beanFactory.getBeans().size());
 
         Map<String, Order> beans = beanFactory.getBeansOfType(Order.class);
         logger.info("==>{}", JSONObject.toJSONString(beans));
+
+
+
+        C c = beanFactory.getBean(C.class);
+        c.sendCMsg();
+
 
     }
 }

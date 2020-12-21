@@ -4,20 +4,22 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.factory.SimpleBeanFactory;
 import com.github.simple.core.factory.SimpleBeanFactoryAware;
-import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ReflectUtils;
-import com.github.simple.core.utils.StringUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 /**
  * @author: JianLei
  * @date: 2020/12/12 1:56 下午
  * @description: SimpleAutowiredAnnotationBeanPostProcessor
+ * @see org.springframework.context.annotation.AnnotationConfigUtils#registerAnnotationConfigProcessors(BeanDefinitionRegistry)
  */
 @Slf4j
 @SimpleOrdered(-100)
@@ -42,12 +44,12 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
 
     @Override
     public void postProcessProperties(Object bean, String beanName) throws Throwable {
-        InjectMeta injectMeta = findAutowired(bean);
+        InjectMeta injectMeta = findAutowiredMetadata(bean);
         injectMeta.inject(bean);
 
     }
 
-    private InjectMeta findAutowired(Object bean) {
+    private InjectMeta findAutowiredMetadata(Object bean) {
         LinkedHashMap<String, Field> fieldLinkedHashMap = ReflectUtils.findAutowired(bean.getClass());
         return getInjectMeta(fieldLinkedHashMap, bean);
     }
@@ -98,23 +100,8 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
             }
 
             log.info("SimpleAutowiredAnnotationBeanPostProcessor get beanFactory is:{}", beanFactory);
-            if (ReflectUtils.resolveDependencies(this.member)) {
-                log.info("====>>>>value 赋值开始<<<<<======");
-                List<SimplePropertySource<Properties>> resource = beanFactory.getResource();
-                String key = StringUtils.parsePlaceholder((Field) member);
-                Object value = findValue(resource, key);
-                Field field = (Field) this.getMember();
-                checkTypeIsMatch(value, field);
-                ReflectUtils.makeAccessible(field);
-                if (value == null) {
-                    throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
-                }
-                field.set(target, value);
-                log.info("====>>>>value 赋值结束<<<<<======field name :{}",field.getName());
-                return;
-            }
             Field field = (Field) this.getMember();
-            Object dep = beanFactory.getBean(this.elementName);
+            Object dep = beanFactory.resolveDependency(field,this.elementName);
             if (dep != null) {
                 ReflectUtils.makeAccessible(field);
                 field.set(target, dep);
@@ -122,30 +109,7 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
 
         }
 
-        private void checkTypeIsMatch(Object value, Field field) {
-            if (value instanceof String) {
-                if (String.class.equals(field.getType())) {
-                    return;
-                }
-                throw new SimpleIOCBaseException("inject field type exception!field type:" + field.getType() + "->placeholder type: String");
-            }
-            if (value instanceof Integer) {
-                if (Integer.class.equals(field.getType())) {
-                    return;
-                }
-                throw new SimpleIOCBaseException("inject field type exception!field type:" + field.getType() + "->placeholder type: Integer");
-            }
-            if (value instanceof Long) {
-                if (Long.class.equals(field.getType())) {
-                    return;
-                }
-                throw new SimpleIOCBaseException("inject field type exception!field type:" + field.getType() + "->placeholder type: Long");
-            }
-        }
 
-        private Object findValue(List<SimplePropertySource<Properties>> resource, String key) {
-            return resource.get(0).getValue().get(key);
-        }
 
 
     }
