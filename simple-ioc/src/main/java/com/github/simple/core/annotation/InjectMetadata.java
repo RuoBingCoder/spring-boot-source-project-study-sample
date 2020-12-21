@@ -11,7 +11,7 @@ import java.util.Collection;
  * @description: InjectMeta
  */
 @Data
-public class InjectMeta {
+public class InjectMetadata {
 
     private Class<?> targetClass;
 

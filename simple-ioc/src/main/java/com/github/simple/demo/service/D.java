@@ -1,5 +1,6 @@
 package com.github.simple.demo.service;
 
+import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,7 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class D {
 
+    @SimpleAutowired
+    private String hello;
     public void dTest(){
-        log.info("-->>>> d test!");
+        log.info("-->>>> d test!->"+hello);
     }
 }

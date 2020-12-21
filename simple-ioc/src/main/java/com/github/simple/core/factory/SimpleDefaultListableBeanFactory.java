@@ -31,6 +31,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
      * simpleFactoryBean cache
      */
     private static final Map<String, SimpleFactoryBean> FACTORY_BEAN_CACHE = new ConcurrentHashMap<>(256);
+    private static final Map<Class<?>, Object> TYPE_CLASS_OBJECT_MAP = new ConcurrentHashMap<>(256);
 
     public SimpleDefaultListableBeanFactory(Class<?> startClass) throws Throwable {
         super(ReflectUtils.getBasePackages(startClass));
@@ -160,17 +161,18 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     /**
      * 解析非容器管理bean和管理bean
+     *
      * @param beanName
      * @return
      * @throws Throwable
      */
     @Override
     public Object resolveDependency(Field type, String beanName) throws Throwable {
-        if (BEAN_FACTORY_MAP.containsKey(type.getType())){
+        if (BEAN_FACTORY_MAP.containsKey(type.getType())) {
             return BEAN_FACTORY_MAP.get(type.getType());
         }
         if (ReflectUtils.resolveValueDependency(type)) {
-            if (log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("====>>>>@SimpleValue set value begin<<<<<======");
             }
             List<SimplePropertySource<Properties>> resource = this.getResource();
@@ -180,6 +182,10 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
                 throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
             }
             return TypeConvertUtils.convert(type.getType(), (String) value);
+        }
+        //String Integer 类型自动注入
+        if (TYPE_CLASS_OBJECT_MAP.get(type.getType()) != null) {
+            return TYPE_CLASS_OBJECT_MAP.get(type.getType());
         }
         return getBean(beanName);
     }
@@ -194,6 +200,10 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
         super.setClassLoader(classLoader);
     }
 
+    @Override
+    public void registerResolvableDependency(Class<?> dependencyType, Object autowiredValue) {
+        TYPE_CLASS_OBJECT_MAP.put(dependencyType, autowiredValue);
+    }
 
 
     private Object findValue(List<SimplePropertySource<Properties>> resource, String key) {

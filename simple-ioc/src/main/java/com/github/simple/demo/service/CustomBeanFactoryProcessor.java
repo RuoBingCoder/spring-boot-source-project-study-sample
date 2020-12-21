@@ -3,7 +3,7 @@ package com.github.simple.demo.service;
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleComponent;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
-import com.github.simple.core.factory.SimpleBeanFactory;
+import com.github.simple.core.factory.SimpleConfigBeanFactory;
 
 /**
  * @author: jianlei.shi
@@ -13,8 +13,9 @@ import com.github.simple.core.factory.SimpleBeanFactory;
 @SimpleComponent
 public class CustomBeanFactoryProcessor implements SimpleBeanFactoryPostProcessor {
     @Override
-    public void postProcessBeanFactory(SimpleBeanFactory factory) {
+    public void postProcessBeanFactory(SimpleConfigBeanFactory factory) {
         SimpleRootBeanDefinition subTwo = SimpleRootBeanDefinition.builder().beanName("beanFactoryRegistryBeanTest").isSingleton(true).rootClass(BeanFactoryRegistryBeanTest.class).build();
-        factory.registerSingleton("beanFactoryRegistryBeanTest",subTwo);
+        factory.registerSingleton("beanFactoryRegistryBeanTest", subTwo);
+        factory.registerResolvableDependency(String.class, "hello word!");
     }
 }

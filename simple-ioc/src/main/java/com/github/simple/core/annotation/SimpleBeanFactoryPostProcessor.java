@@ -1,6 +1,6 @@
 package com.github.simple.core.annotation;
 
-import com.github.simple.core.factory.SimpleBeanFactory;
+import com.github.simple.core.factory.SimpleConfigBeanFactory;
 
 /**
  * @author: JianLei
@@ -9,5 +9,5 @@ import com.github.simple.core.factory.SimpleBeanFactory;
  */
 public interface SimpleBeanFactoryPostProcessor {
 
-    void postProcessBeanFactory(SimpleBeanFactory factory);
+    void postProcessBeanFactory(SimpleConfigBeanFactory factory);
 }

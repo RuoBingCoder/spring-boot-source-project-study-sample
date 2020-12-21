@@ -53,12 +53,12 @@ public class ReflectUtils {
     }
 
     public static LinkedHashMap<String, Field> findAutowiredAnnotation(Class<?> clazz, Class<? extends Annotation> autowiredType) {
-        return matchType(clazz,autowiredType);
+        return matchType(clazz, autowiredType);
 
     }
 
-    private static LinkedHashMap<String, Field> matchType(Class<?> clazz,Class<? extends Annotation> autowiredType) {
-        return matchField(clazz.getDeclaredFields(),autowiredType);
+    private static LinkedHashMap<String, Field> matchType(Class<?> clazz, Class<? extends Annotation> autowiredType) {
+        return matchField(clazz.getDeclaredFields(), autowiredType);
     }
 
     private static LinkedHashMap<String, Field> matchField(Field[] declaredFields, Class<? extends Annotation> autowiredType) {
@@ -104,6 +104,9 @@ public class ReflectUtils {
 
     public static boolean resolveValueDependency(Member member) {
         Field field = (Field) member;
+        if (!field.isAnnotationPresent(SimpleValue.class)) {
+            return false;
+        }
         if (field.getType().equals(String.class)) {
             return true;
         }
@@ -135,11 +138,9 @@ public class ReflectUtils {
     }
 
 
-
     public static Boolean isAssignableFrom(Class<?> clazz, Class<?> type) {
         return type.isAssignableFrom(clazz);
     }
-
 
 
 }
