@@ -1,6 +1,6 @@
 package com.github.simple.core.annotation;
 
-import com.github.simple.core.factory.SimpleConfigBeanFactory;
+import com.github.simple.core.beans.factory.SimpleConfigBeanFactory;
 
 /**
  * @author: JianLei

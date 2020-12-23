@@ -1,19 +1,24 @@
 package com.github.simple.core.context;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.github.simple.core.annotation.SimpleBeanDefinitionRegistryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
+import com.github.simple.core.aop.SimpleAutoProxyCreator;
+import com.github.simple.core.beans.factory.SimpleAutowireCapableBeanFactory;
+import com.github.simple.core.beans.factory.SimpleBeanFactory;
+import com.github.simple.core.beans.factory.SimpleConfigBeanFactory;
+import com.github.simple.core.beans.factory.SimpleDefaultListableBeanFactory;
+import com.github.simple.core.beans.factory.config.SimpleEmbeddedValueResolver;
+import com.github.simple.core.beans.factory.support.SimpleBeanDefinitionRegistry;
 import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
-import com.github.simple.core.factory.SimpleAutowireCapableBeanFactory;
-import com.github.simple.core.factory.SimpleBeanFactory;
-import com.github.simple.core.factory.SimpleConfigBeanFactory;
-import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.core.resource.SimpleClassPathResource;
 import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
 import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
+import com.github.simple.core.utils.SimpleStringValueResolver;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -31,7 +36,12 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
 
     private final Class<?> sourceClass;
 
-    protected SimpleBeanFactory beanFactory;
+    protected SimpleDefaultListableBeanFactory beanFactory;
+
+    @Override
+    public void addEmbeddedValueResolver(SimpleStringValueResolver valueResolver) {
+       beanFactory.addEmbeddedValueResolver(valueResolver);
+    }
 
 
     protected AbsSimpleApplicationContext(Class<?> sourceClass) throws Throwable {
@@ -85,6 +95,8 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
         SimpleDefaultListableBeanFactory factory= (SimpleDefaultListableBeanFactory) beanFactory;
         List<SimpleBeanPostProcessor> sortedPostProcessors = new ArrayList<>();
         List<SimpleBeanPostProcessor> nonOrderPostprocessors = new ArrayList<>();
+        SimpleAutoProxyCreator spc = new SimpleAutoProxyCreator();
+        sortedPostProcessors.add(spc);
         for (Map.Entry<String, SimpleRootBeanDefinition> entry : factory.getBeanDefinitions().entrySet()) {
             if (SimpleBeanPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
                 SimpleBeanPostProcessor simplePostProcessor = factory.getBean(entry.getKey());
@@ -101,6 +113,11 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
         SimpleDefaultListableBeanFactory defaultListableBeanFactory= (SimpleDefaultListableBeanFactory) beanFactory;
         if (CollectionUtil.isNotEmpty(defaultListableBeanFactory.getFactoryPostProcessors())) {
                 for (SimpleBeanFactoryPostProcessor postProcessor : defaultListableBeanFactory.getFactoryPostProcessors()) {
+                    if (postProcessor instanceof SimpleBeanDefinitionRegistryPostProcessor){
+                        SimpleBeanDefinitionRegistryPostProcessor registryPostProcessor= (SimpleBeanDefinitionRegistryPostProcessor) postProcessor;
+                        registryPostProcessor.postProcessBeanDefinitionRegistry((SimpleBeanDefinitionRegistry) beanFactory);
+                        continue;
+                    }
                     postProcessor.postProcessBeanFactory(defaultListableBeanFactory);
                 }
         }
@@ -123,6 +140,7 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
         SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
         List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
         defaultListableBeanFactory.setSimplePropertiesPropertySourceLoader(simplePropertiesPropertySourceLoader);
+        defaultListableBeanFactory.addEmbeddedValueResolver(new SimpleEmbeddedValueResolver(defaultListableBeanFactory));
 
     }
 

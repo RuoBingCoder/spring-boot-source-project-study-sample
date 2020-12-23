@@ -2,7 +2,7 @@ package com.github.simple.demo.service;
 
 import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponent;
-import com.github.simple.core.factory.SimpleBeanFactory;
+import com.github.simple.core.beans.factory.SimpleBeanFactory;
 
 /**
  * @author: JianLei

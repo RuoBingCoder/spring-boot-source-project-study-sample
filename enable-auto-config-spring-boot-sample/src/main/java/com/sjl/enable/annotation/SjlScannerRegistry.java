@@ -1,13 +1,19 @@
 package com.sjl.enable.annotation;
 
 import com.sjl.enable.scan.SjlExploreScanner;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
@@ -22,16 +28,20 @@ import java.util.stream.Collectors;
 /**
  * @author: jianlei
  * @date: 2020/8/25
- * @description: SjlPostBeanDefitionRegistry
+ * @description: SjlPostBeanDefinitionRegistry
+ * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#findCandidateComponents(String)  //扫描.class文件 注册BeanDefinition
+ * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#scanCandidateComponents(String)
+ * @see org.springframework.context.annotation.ConfigurationClassPostProcessor#postProcessBeanDefinitionRegistry(BeanDefinitionRegistry)
  */
-
+@Slf4j
 public class SjlScannerRegistry implements ImportBeanDefinitionRegistrar, ApplicationContextAware, ResourceLoaderAware {
 
-private ApplicationContext applicationContext;
-    private ResourceLoader resourceLoader;
+    private ApplicationContext applicationContext;
+    private DefaultResourceLoader resourceLoader;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext=applicationContext;
+        this.applicationContext = applicationContext;
 
     }
 
@@ -43,16 +53,18 @@ private ApplicationContext applicationContext;
             registerBeanDefinitions(mapperScanAttrs, registry, generateBaseBeanName(annotationMetadata, 0));
         }
     }
+
     private static String generateBaseBeanName(AnnotationMetadata importingClassMetadata, int index) {
         return importingClassMetadata.getClassName() + "#" + SjlScannerRegistry.class.getSimpleName() + "#" + index;
     }
-    private void registerBeanDefinitions(AnnotationAttributes attributes,BeanDefinitionRegistry registry,String beanName){
-        SjlExploreScanner scanner=new SjlExploreScanner(registry);
+
+    private void registerBeanDefinitions(AnnotationAttributes attributes, BeanDefinitionRegistry registry, String beanName) {
+        SjlExploreScanner scanner = new SjlExploreScanner(registry);
         Class<? extends Annotation> annotationClass = attributes.getClass("annotationClass");
         if (!Annotation.class.equals(annotationClass)) {
             scanner.setAnnotationClass(annotationClass);
         }
-        List<String> basePackages=new ArrayList<>();
+        List<String> basePackages = new ArrayList<>();
         basePackages.addAll(
                 Arrays.stream(attributes.getStringArray("value")).filter(StringUtils::hasText).collect(Collectors.toList()));
 
@@ -66,11 +78,37 @@ private ApplicationContext applicationContext;
         scanner.scan(StringUtils.toStringArray(basePackages));
 
 
-
     }
 
+    /**
+     * @param null
+     * @return
+     * @author jianlei.shi
+     * @description
+     * @date 2:00 下午 2020/12/22
+     * @see netty-rpc
+     * ResourcePatternResolver resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(resourceLoader);
+     * resourcePatternResolver.getResources("");
+     */
+
+    @SneakyThrows
     @Override
     public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader=resourceLoader;
+        this.resourceLoader = (DefaultResourceLoader) resourceLoader;
+
+        Resource resource = this.resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX + "my-application.yml");
+        log.info("application is exists: {}", resource.getFile().exists());
+
+        YamlPropertySourceLoader loader=new YamlPropertySourceLoader();
+        List<PropertySource<?>> propertySources = loader.load("my-application", resource);
+        PropertySource<?> propertySource = propertySources.stream().findFirst().orElse(null);
+        assert propertySource != null;
+        String text = (String) propertySource.getProperty("test.name");
+        /*String text = new BufferedReader(
+                new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)).lines()
+                .collect(Collectors.joining("\n"));*/
+        log.info("==>text output :" + text);
+
+
     }
 }

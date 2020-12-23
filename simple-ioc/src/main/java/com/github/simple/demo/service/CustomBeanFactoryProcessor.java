@@ -3,7 +3,7 @@ package com.github.simple.demo.service;
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleComponent;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
-import com.github.simple.core.factory.SimpleConfigBeanFactory;
+import com.github.simple.core.beans.factory.SimpleConfigBeanFactory;
 
 /**
  * @author: jianlei.shi

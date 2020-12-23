@@ -17,7 +17,7 @@ public class StringUtils {
         return resolvePlaceHolder(placeholder);
 
     }
-    private static String resolvePlaceHolder(String value) {
+    public static String resolvePlaceHolder(String value) {
         int startInterceptionIndex = value.indexOf(VALUE_PREFIX);
         int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
         String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);

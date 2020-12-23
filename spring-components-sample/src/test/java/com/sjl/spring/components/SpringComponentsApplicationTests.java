@@ -1,13 +1,15 @@
 package com.sjl.spring.components;
 
 import com.alibaba.fastjson.JSONObject;
+import com.sjl.spring.components.transaction.dao.HeroMapper;
 import com.sjl.spring.components.transaction.dao.JdGoodsMapper;
 import com.sjl.spring.components.transaction.pojo.Hero;
+import com.sjl.spring.components.transaction.pojo.JdGoods;
 import com.sjl.spring.components.transaction.pojo.Team;
 import com.sjl.spring.components.transaction.service.CommonOperateService;
 import com.sjl.spring.components.transaction.service.JdGoodsService;
-import com.sjl.spring.components.transaction.pojo.JdGoods;
 import com.sjl.spring.components.transaction.service.TeamService;
+import com.sjl.spring.components.transaction.support.DaoSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
 @EnableAspectJAutoProxy(proxyTargetClass = true,exposeProxy = true)
@@ -30,13 +33,21 @@ class SpringComponentsApplicationTests {
     @Autowired
     private CommonOperateService<Team, Hero> commonOperateService;
 
+    @Resource
+    private DaoSupport support;
+
+    @Resource
+    private HeroMapper heroMapper;
     @Test
     void contextLoads() {
-        JdGoods jdGoods = JdGoods.builder().operate("insert").rate("12").shopName("森马").thumbnail("http://www.baidu.com").title("测试").build();
+        JdGoods jdGoods = JdGoods.builder().operate("insert").rate("14").shopName("森马_2").thumbnail("http://www.baidu.com").title("测试_2").build();
         int insert = jdGoodsService.insert(jdGoods);
         System.out.println("====>>" + insert);
     }
 
+    /**
+     * @see HeroMapper
+     */
     @Test
     void queryTest() {
         JdGoods jdGoods = jdGoodsMapper.selectByPrimaryKey(2);
@@ -70,6 +81,15 @@ class SpringComponentsApplicationTests {
         teamService.insert(getTeam());
 
 
+    }
+
+    @Test
+    public void daoSupportQueryTest() throws InstantiationException, IllegalAccessException {
+        Integer param=2;
+        List<Object> res = support.query(null, "com.sjl.spring.components.transaction.dao.JdGoodsMapper.selectByPrimaryKey",param);
+        for (Object o : res) {
+            System.out.println("==>hero :"+o.toString());
+        }
     }
 
 

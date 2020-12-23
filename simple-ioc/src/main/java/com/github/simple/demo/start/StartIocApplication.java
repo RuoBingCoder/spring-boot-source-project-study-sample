@@ -3,8 +3,9 @@ package com.github.simple.demo.start;
 import com.alibaba.fastjson.JSONObject;
 import com.github.simple.core.annotation.SimpleComponentScan;
 import com.github.simple.core.context.SimpleApplicationContext;
-import com.github.simple.core.factory.SimpleBeanFactory;
-import com.github.simple.core.factory.SimpleDefaultListableBeanFactory;
+import com.github.simple.core.beans.factory.SimpleBeanFactory;
+import com.github.simple.core.beans.factory.SimpleDefaultListableBeanFactory;
+import com.github.simple.demo.service.RegistryBean;
 import com.github.simple.demo.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,10 @@ public class StartIocApplication {
 
         D d = beanFactory.getBean(D.class);
         d.dTest();
+
+        RegistryBean registryBean=beanFactory.getBean(RegistryBean.class);
+
+        registryBean.test();
 
     }
 }
