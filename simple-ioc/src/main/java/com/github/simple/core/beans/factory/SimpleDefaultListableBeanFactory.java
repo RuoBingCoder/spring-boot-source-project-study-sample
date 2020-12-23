@@ -208,6 +208,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
         if (resolvableDependencies.containsKey(type.getType())) {
             return resolvableDependencies.get(type.getType());
         }
+        log.info("==> 解析字段name:{},字段类型:{}",beanName,type.getType());
         //接口
         if (ReflectUtils.resolveValueDependency(type)) {
             return resolveStringValue(type, null);

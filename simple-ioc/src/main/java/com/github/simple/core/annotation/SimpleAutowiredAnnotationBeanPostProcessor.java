@@ -2,10 +2,9 @@ package com.github.simple.core.annotation;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.beans.InjectFieldMetadataWrapper;
-import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.beans.factory.SimpleBeanFactory;
 import com.github.simple.core.beans.factory.SimpleBeanFactoryAware;
-import com.github.simple.core.utils.AnnotationUtils;
+import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.utils.ReflectUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -72,9 +71,9 @@ public class SimpleAutowiredAnnotationBeanPostProcessor implements SimpleInstant
     private List<InjectFieldMetadataWrapper> findAutowiredAnnotation(Class<?> aClass) {
         List<InjectFieldMetadataWrapper> injectFieldMetadataWrappers = new ArrayList<>();
         for (Class<? extends Annotation> annotationType : autowiredAnnotationTypes) {
-            if (!AnnotationUtils.isCandidateClass(aClass, annotationType)) {
+           /* if (!AnnotationUtils.isCandidateClass(aClass, annotationType)) {
                 return injectFieldMetadataWrappers;
-            }
+            }*/
             LinkedHashMap<String, Field> autowiredAnnotation = ReflectUtils.findAutowiredAnnotation(aClass, annotationType);
             autowiredAnnotation.forEach((key, value) -> {
                 InjectFieldMetadataWrapper metadataWrapper = InjectFieldMetadataWrapper.builder().fieldName(key).field(value).build();

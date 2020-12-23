@@ -129,7 +129,10 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         //填充属性
         //初始化
         SimpleRootBeanDefinition simpleRootBeanDefinition = beanDefinitions.get(beanName);
-        invokerBeforeInstance(simpleRootBeanDefinition.getRootClass(),simpleRootBeanDefinition.getBeanName());
+        Object bean = invokerBeforeInstantiation(simpleRootBeanDefinition.getRootClass(), simpleRootBeanDefinition.getBeanName());
+        if (ObjectUtil.isNotNull(bean)){
+            return bean;
+        }
 
         Object instance = null;
         if (simpleRootBeanDefinition.getIsSingleton()) {
@@ -144,7 +147,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         return initialization(beanName, exportObject);
     }
 
-    private Object invokerBeforeInstance(Class<?> rootClass, String beanName) {
+    private Object invokerBeforeInstantiation(Class<?> rootClass, String beanName) {
         if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
             return null;
         }
