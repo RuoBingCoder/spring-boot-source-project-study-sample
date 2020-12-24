@@ -62,7 +62,7 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
         try {
             postBeanFactory(beanFactory);
             invokerBeanFactoryPostProcessor(beanFactory);
-            invokerBeanPostProcessor(beanFactory);
+            registryBeanPostProcessor(beanFactory);
             finishBeanInstance(beanFactory);
         } catch (Exception e) {
             log.error("ioc create exception", e);
@@ -91,7 +91,7 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
 
     }
 
-    private void invokerBeanPostProcessor(SimpleConfigBeanFactory beanFactory) throws Throwable {
+    private void registryBeanPostProcessor(SimpleConfigBeanFactory beanFactory) throws Throwable {
         SimpleDefaultListableBeanFactory factory= (SimpleDefaultListableBeanFactory) beanFactory;
         List<SimpleBeanPostProcessor> sortedPostProcessors = new ArrayList<>();
         List<SimpleBeanPostProcessor> nonOrderPostprocessors = new ArrayList<>();
