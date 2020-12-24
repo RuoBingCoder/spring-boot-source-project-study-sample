@@ -15,7 +15,13 @@ import org.springframework.context.annotation.Configuration;
  * @author: jianlei
  * @date: 2020/4/8
  * @description: aop切面做全局日志处理
+ * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(Object, String)
+ * @see org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator#shouldSkip(Class, String)
  * @see BeanFactoryAspectJAdvisorsBuilder#buildAspectJAdvisors()
+ * @see org.springframework.beans.factory.BeanFactoryUtils#beanNamesForTypeIncludingAncestors 获取所有beanName
+ * @see org.springframework.aop.aspectj.annotation.ReflectiveAspectJAdvisorFactory#isAspect(Class)  获取Aspect beanName 添加打破List
+ *
+ * CglibAopProxy#getCallbacks 获取拦截器
  */
 @Aspect
 @Configuration

@@ -2,15 +2,12 @@ package com.github.simple.demo.start;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.simple.core.annotation.SimpleComponentScan;
-import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.core.beans.factory.SimpleBeanFactory;
-import com.github.simple.core.beans.factory.SimpleDefaultListableBeanFactory;
-import com.github.simple.demo.service.RegistryBean;
+import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.demo.service.*;
+import com.github.simple.demo.service.aop.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * @author: JianLei
@@ -23,7 +20,6 @@ public class StartIocApplication {
 
     public static void main(String[] args) throws Throwable {
         SimpleApplicationContext applicationContext = SimpleApplicationContext.run(StartIocApplication.class);
-        SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) applicationContext.getBeanFactory();
 //        A a = beanFactory.getBean(A.class);
         /**
          * bean 工厂 注册bean
@@ -36,35 +32,34 @@ public class StartIocApplication {
          * 获取代理bean
          */
 //        B b = beanFactory.getBean(B.class);
-        ConfigBeanTest configBeanTest = beanFactory.getBean(ConfigBeanTest.class);
+        ConfigBeanTest configBeanTest = applicationContext.getBean(ConfigBeanTest.class);
 
         logger.info(" configBeanTest output:{}", JSONObject.toJSONString(configBeanTest));
         logger.info("=================================**********=======================================");
-        ConfigBeanTest2 configBeanTest2 = beanFactory.getBean(ConfigBeanTest2.class);
+        ConfigBeanTest2 configBeanTest2 = applicationContext.getBean(ConfigBeanTest2.class);
 
         logger.info(" configBeanTest2 output:{}", JSONObject.toJSONString(configBeanTest2));
 
-        RedisTemplate redisTemplate = beanFactory.getBean(RedisTemplate.class);
+        RedisTemplate redisTemplate = applicationContext.getBean(RedisTemplate.class);
 
         logger.info(" redisTemplate output:{}", redisTemplate.getMax());
 
 //         logger.info(a.tasks());
-        logger.info("->beans size:{}", beanFactory.getBeans().size());
-
-        Map<String, Order> beans = beanFactory.getBeansOfType(Order.class);
-        logger.info("==>{}", JSONObject.toJSONString(beans));
 
 
 
-        C c = beanFactory.getBean(C.class);
+        C c = applicationContext.getBean(C.class);
         c.sendCMsg();
 
-        D d = beanFactory.getBean(D.class);
+        D d = applicationContext.getBean(D.class);
         d.dTest();
 
-        RegistryBean registryBean=beanFactory.getBean(RegistryBean.class);
+        RegistryBean registryBean=applicationContext.getBean(RegistryBean.class);
 
         registryBean.test();
+
+        LogService logService=applicationContext.getBean(LogService.class);
+        logger.info("==> aop logService output:{}",logService.testLog());
 
     }
 }

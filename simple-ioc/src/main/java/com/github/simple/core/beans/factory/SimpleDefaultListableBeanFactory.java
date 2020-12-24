@@ -64,8 +64,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     public String[] getBeanNames() {
-        Set<String> beanNamesSet = getBeans().keySet();
-        return StringUtils.toStringArray(beanNamesSet);
+       return beanDefinitionNames.toArray(new String[0]);
     }
 
     private <T> Map<String, T> getBeansOfType(Class<T> clazz, boolean needInit) throws Throwable {
@@ -281,6 +280,6 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     public String[] getBeanDefinitionNames() {
-        return beanDefinitions.keySet().toArray(new String[0]);
+        return beanDefinitionNames.toArray(new String[0]);
     }
 }

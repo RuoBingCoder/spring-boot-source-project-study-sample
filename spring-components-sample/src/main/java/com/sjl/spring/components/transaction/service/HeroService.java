@@ -8,4 +8,7 @@ public interface HeroService{
 
     int insertSelective(Hero record);
 
+
+    String init();
+
 }

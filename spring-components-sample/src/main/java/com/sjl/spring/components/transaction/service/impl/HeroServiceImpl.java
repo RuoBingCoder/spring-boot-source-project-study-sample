@@ -1,15 +1,21 @@
 package com.sjl.spring.components.transaction.service.impl;
 
-import com.sjl.spring.components.transaction.pojo.Team;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-
 import com.sjl.spring.components.transaction.dao.HeroMapper;
 import com.sjl.spring.components.transaction.pojo.Hero;
 import com.sjl.spring.components.transaction.service.HeroService;
-import org.springframework.transaction.annotation.Propagation;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
+
+/**
+ * @see org.springframework.transaction.annotation.SpringTransactionAnnotationParser 解析 {@link Transactional}
+ * @see  #CglibAopProxy DynamicAdvisedInterceptor#intercept}
+ * 有{@link Transactional} 则走{@link #CglibAopProxy CglibMethodInvocation#proceed()}
+ *
+ *
+ */
 
 @Service
 public class HeroServiceImpl implements HeroService {
@@ -18,7 +24,7 @@ public class HeroServiceImpl implements HeroService {
     private HeroMapper heroMapper;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public int insert(Hero record) {
         heroMapper.insert(record);
        /* try {
@@ -32,6 +38,11 @@ public class HeroServiceImpl implements HeroService {
     @Override
     public int insertSelective(Hero record) {
         return heroMapper.insertSelective(record);
+    }
+
+    @Override
+    public String init() {
+        return "init test";
     }
 
 

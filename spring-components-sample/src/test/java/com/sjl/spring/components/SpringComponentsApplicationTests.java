@@ -7,6 +7,7 @@ import com.sjl.spring.components.transaction.pojo.Hero;
 import com.sjl.spring.components.transaction.pojo.JdGoods;
 import com.sjl.spring.components.transaction.pojo.Team;
 import com.sjl.spring.components.transaction.service.CommonOperateService;
+import com.sjl.spring.components.transaction.service.HeroService;
 import com.sjl.spring.components.transaction.service.JdGoodsService;
 import com.sjl.spring.components.transaction.service.TeamService;
 import com.sjl.spring.components.transaction.support.DaoSupport;
@@ -38,6 +39,9 @@ class SpringComponentsApplicationTests {
 
     @Resource
     private HeroMapper heroMapper;
+
+    @Resource
+    private HeroService heroService;
     @Test
     void contextLoads() {
         JdGoods jdGoods = JdGoods.builder().operate("insert").rate("14").shopName("森马_2").thumbnail("http://www.baidu.com").title("测试_2").build();
@@ -92,6 +96,11 @@ class SpringComponentsApplicationTests {
         }
     }
 
+    @Test
+    public void heroInsertTest(){
+//        heroService.insert(Hero.builder().createTime(LocalDateTime.now()).money(100).name("马可波罗").build());
+        heroService.init();
+    }
 
 
 }

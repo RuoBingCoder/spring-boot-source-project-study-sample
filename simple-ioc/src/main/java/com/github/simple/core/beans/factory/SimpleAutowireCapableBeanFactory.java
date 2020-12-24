@@ -12,11 +12,13 @@ import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.init.SimpleInitializingBean;
 import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
-import com.github.simple.core.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author: JianLei
@@ -79,14 +81,9 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
 
     public void finishBeanInstance() throws Throwable {
-        Map<String, SimpleRootBeanDefinition> beanDefinitionMap = this.getBeanDefinitions();
-        List<String> beanNames = new ArrayList<>(beanDefinitionMap.keySet());
-
+        List<String> beanNames = this.beanDefinitionNames;
         for (String beanName : beanNames) {
             if (isFactoryBean(beanName)) {
-                getBean(beanName);
-            }
-            if (isAspect(beanName)){
                 getBean(beanName);
             }
         }
@@ -105,9 +102,6 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     }
 
-    private boolean isAspect(String beanName) {
-        return beanDefinitions.entrySet().stream().filter(s -> s.getKey().equals(beanName)).anyMatch(m -> ReflectUtils.matchAspect(m.getValue().getRootClass()));
-    }
 
     private boolean isFactoryBean(String beanName) {
         return beanDefinitions.entrySet().stream().filter(s -> s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getRootClass()));
@@ -164,7 +158,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     }
 
-    private Object initialization(String beanName, Object instance) {
+    private Object initialization(String beanName, Object instance) throws Throwable {
         invokerAware(beanName, instance);
         invokerBeforeInitialization(beanName, instance);
         try {
@@ -182,7 +176,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     }
 
-    private Object invokerAfterInitialization(String beanName, Object instance) {
+    private Object invokerAfterInitialization(String beanName, Object instance) throws Throwable {
         if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
             return instance;
         }
@@ -207,9 +201,9 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         }
     }
 
-    private void initMethods(String beanName, Object instance) {
-        if (instance instanceof SimpleInitializingBean) {
-            SimpleInitializingBean simpleInitializingBean = (SimpleInitializingBean) instance;
+    private void initMethods(String beanName, Object bean) {
+        if (bean instanceof SimpleInitializingBean) {
+            SimpleInitializingBean simpleInitializingBean = (SimpleInitializingBean) bean;
             simpleInitializingBean.afterPropertiesSet();
 
         }

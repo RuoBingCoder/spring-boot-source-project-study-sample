@@ -1,8 +1,7 @@
 package com.github.simple.core.beans.factory;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.*;
-import com.github.simple.core.aop.SimpleAdviseSupport;
+import com.github.simple.core.beans.factory.support.SimpleBeanFactorySupport;
 import com.github.simple.core.config.SimpleConfigBean;
 import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
@@ -16,7 +15,6 @@ import com.github.simple.core.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +34,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * bean 定义
      */
     protected final Map<String, SimpleRootBeanDefinition> beanDefinitions = new ConcurrentHashMap<>(128);
+
+    protected final List<String> beanDefinitionNames=new ArrayList<>();
 
     /**
      * bean后置处理器
@@ -139,10 +139,10 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     public void addBeanDefinition(String beanName, SimpleRootBeanDefinition rootBeanDefinition) {
         if (!this.beanDefinitions.containsKey(beanName)) {
             synchronized (this.beanDefinitions) {
+                this.beanDefinitionNames.add(beanName);
                 this.beanDefinitions.put(beanName, rootBeanDefinition);
             }
         }
-//        System.out.println("=====>>>beanDefinitionMap size:" + beanDefinitionMap.size());
     }
 
     /**
@@ -163,20 +163,17 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     public void doRegistryBeanDefinition(Set<Class<?>> classSet) {
-//        SimpleAutoProxyCreator spc = new SimpleAutoProxyCreator();
-        List<SimpleAdviseSupport> simpleAdviseSupports = new ArrayList<>();
+        SimpleRootBeanDefinition simpleRootBeanDefinitionSupport = buildRootBeanDefinition(SimpleBeanFactorySupport.class);
+        addBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
+        registrySystemPostProcessor();
         classSet.forEach(mbd -> {
             try {
                 configBeanRegistry(mbd);
                 generalRegistry(mbd);
-//                parseAspect(mbd, simpleAdviseSupports);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }
         });
-        registrySystemPostProcessor();
-//        spc.setSimpleAdviseSupports(simpleAdviseSupports);
-//        simplePostProcessors.add(spc);
     }
 
 
@@ -267,113 +264,10 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
         addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
 
-    }
-
-    /**
-     * 解析aop切面
-     *
-     * @param clazz
-     * @param simpleAdviseSupports
-     */
-    private void parseAspect(Class<?> clazz, List<SimpleAdviseSupport> simpleAdviseSupports) {
-        if (ReflectUtils.matchAspect(clazz)) {
-            List<SimpleAdviseSupport.MethodWrapper> methods = new ArrayList<>(3);
-            Map<Method, SimplePointCut> methodAndAnnotation = ReflectUtils.getMethodAndAnnotation(clazz, SimplePointCut.class);
-            if (CollectionUtil.isNotEmpty(methodAndAnnotation)) {
-                SimpleAdviseSupport.MethodWrapper methodWrapper = getMethodWrapper(methodAndAnnotation);
-                methods.add(methodWrapper);
-            }
-            Map<Method, SimpleBefore> beforeMethodAndAnnotation = ReflectUtils.getMethodAndAnnotation(clazz, SimpleBefore.class);
-            if (CollectionUtil.isNotEmpty(beforeMethodAndAnnotation)) {
-                SimpleAdviseSupport.MethodWrapper methodWrapper = getMethodWrapper(beforeMethodAndAnnotation);
-                methods.add(methodWrapper);
-            }
-            Map<Method, SimpleAfter> afterMethodAndAnnotation = ReflectUtils.getMethodAndAnnotation(clazz, SimpleAfter.class);
-            if (CollectionUtil.isNotEmpty(afterMethodAndAnnotation)) {
-                SimpleAdviseSupport.MethodWrapper methodWrapper = getMethodWrapper(afterMethodAndAnnotation);
-                methods.add(methodWrapper);
-            }
-            SimpleAdviseSupport simpleAdviseSupport = new SimpleAdviseSupport(methods);
-            simpleAdviseSupports.add(simpleAdviseSupport);
-        }
-    }
-
-    /**
-     * @param null
-     * @return
-     * @author jianlei.shi
-     * @description 获取切面方法包装
-     * @date 4:28 下午 2020/12/17
-     **/
-    private <T extends Annotation> SimpleAdviseSupport.MethodWrapper getMethodWrapper(Map<Method, T> methodAndAnnotation) {
-        Iterator<Method> iterator = methodAndAnnotation.keySet().iterator();
-        Method method = null;
-        while (iterator.hasNext()) {
-            method = iterator.next();
-        }
-        assert method != null;
-        T annotation = methodAndAnnotation.get(method);
-        String annotationMeta = null;
-        String annotationName = null;
-        if (annotation instanceof SimplePointCut) {
-            SimplePointCut spc = (SimplePointCut) annotation;
-            annotationMeta = spc.express();
-            annotationName = SimpleIOCConstant.SIMPLE_POINT_CUT;
-        } else if (annotation instanceof SimpleBefore) {
-            SimpleBefore spc = (SimpleBefore) annotation;
-            annotationMeta = spc.value();
-            annotationName = SimpleIOCConstant.SIMPLE_BEFORE;
-        } else if (annotation instanceof SimpleAfter) {
-            SimpleAfter spc = (SimpleAfter) annotation;
-            annotationMeta = spc.value();
-            annotationName = SimpleIOCConstant.SIMPLE_AFTER;
-
-        }
-
-        return new SimpleAdviseSupport.MethodWrapper(method.getName()
-                , annotationName
-                , annotationMeta, method);
-    }
-
-    /**
-     * @param null
-     * @return
-     * @author jianlei.shi
-     * @description 调用工厂后置处理器
-     * @date 4:29 下午 2020/12/17
-     **/
-    protected void postBeanFactory() throws Throwable {
-        for (Map.Entry<String, SimpleRootBeanDefinition> entry : this.getBeanDefinitions().entrySet()) {
-            if (SimpleBeanFactoryPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
-                SimpleBeanFactoryPostProcessor simpleBeanDefinitionRegistry = getBean(entry.getKey());
-                beanFactoryPostProcessors.add(simpleBeanDefinitionRegistry);
-            }
-        }
 
     }
 
-    /**
-     * @param null
-     * @return
-     * @author jianlei.shi
-     * @description 调用bean后置处理器
-     * @date 4:29 下午 2020/12/17
-     **/
-    protected void invokerBeanPostProcessor() throws Throwable {
-        List<SimpleBeanPostProcessor> sortedPostProcessors = new ArrayList<>();
-        List<SimpleBeanPostProcessor> nonOrderPostprocessors = new ArrayList<>();
-        for (Map.Entry<String, SimpleRootBeanDefinition> entry : getBeanDefinitions().entrySet()) {
-            if (SimpleBeanPostProcessor.class.isAssignableFrom(ClassUtils.getClass(entry.getValue()))) {
-                SimpleBeanPostProcessor simplePostProcessor = getBean(entry.getKey());
-                nonOrderPostprocessors.add(simplePostProcessor);
-            }
 
-        }
-        sortPostProcessors(nonOrderPostprocessors, sortedPostProcessors);
-        processInjectionBasedOnCurrentContext(sortedPostProcessors);
-        simplePostProcessors.addAll(sortedPostProcessors);
-
-    }
 
     /**
      * @param null

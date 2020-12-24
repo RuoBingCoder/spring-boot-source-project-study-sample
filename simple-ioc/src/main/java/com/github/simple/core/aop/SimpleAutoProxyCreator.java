@@ -3,18 +3,19 @@ package com.github.simple.core.aop;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.*;
 import com.github.simple.core.beans.factory.SimpleProxyFactory;
+import com.github.simple.core.beans.factory.support.SimpleBeanFactorySupport;
 import com.github.simple.core.constant.SimpleIOCConstant;
+import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.exception.SimpleProxyCreateException;
 import com.github.simple.core.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
+import org.springframework.aop.aspectj.annotation.BeanFactoryAspectJAdvisorsBuilder;
 import org.springframework.beans.BeansException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBeanPostProcessor {
 
-    private List<SimpleAdviseSupport> simpleAdviseSupports=new ArrayList<>();
+    private List<SimpleAdviseSupport> simpleAdviseSupports = new ArrayList<>();
+
+    private final Map<String, Boolean> aspectTypeCache = new ConcurrentHashMap<>(128);
 
     private final Map<String, Object> cacheBeans = new ConcurrentHashMap<>();
 
@@ -36,7 +39,7 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
     public Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
         if (isEligibleAdvisors(bean)) {
             Object proxyBean;
-            log.info("开始创建代理 beanName :{}",beanName);
+            log.info("开始创建代理 beanName :{}", beanName);
             try {
                 proxyBean = createProxy(bean);
                 cacheBeans.put(beanName, proxyBean);
@@ -66,7 +69,7 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
      * @return
      */
     private boolean isEligibleAdvisors(Object bean) {
-        if (CollectionUtil.isEmpty(getSimpleAdviseSupports())){
+        if (CollectionUtil.isEmpty(getSimpleAdviseSupports())) {
             return false;
         }
         for (SimpleAdviseSupport support : getSimpleAdviseSupports()) {
@@ -87,14 +90,48 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws Throwable {
         if (getCacheBeanByName(beanName) != null) {
             return getCacheBeanByName(beanName);
         }
-        if (isEligibleAdvisors(bean)) {
-            return createProxy(bean);
+        if (shouldSkip(bean, beanName)) {
+            return bean;
         }
-        return null;
+        return createProxy(bean);
+    }
+
+    /**
+     *
+     * @param bean
+     * @param beanName
+     * @return
+     * @throws Throwable
+     * @see org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator#shouldSkip
+     * @see AnnotationAwareAspectJAutoProxyCreator#findCandidateAdvisors
+     * @see org.springframework.aop.framework.autoproxy.BeanFactoryAdvisorRetrievalHelper#findAdvisorBeans
+     * @see BeanFactoryAspectJAdvisorsBuilder#buildAspectJAdvisors()
+     */
+    private boolean shouldSkip(Object bean, String beanName) throws Throwable {
+        if (SimpleBeanFactorySupport.getBeanFactory()==null){
+            return true;
+        }
+        String[] allBeanName = SimpleBeanFactorySupport.getAllBeanName();
+        if (allBeanName == null || allBeanName.length <= 0) {
+            throw new SimpleIOCBaseException("the beanNames is empty!");
+        }
+        for (String name : allBeanName) {
+            Class<?> aspectBeanClass = SimpleBeanFactorySupport.matchAspect(name);
+            if (aspectBeanClass != null) {
+                SimpleBeanFactorySupport.getBeanFactory().getBean(aspectBeanClass);
+                if (!aspectTypeCache.containsKey(name)) {
+                    parseAspect(aspectBeanClass);
+                    aspectTypeCache.put(name, Boolean.FALSE);
+                }
+            }
+
+        }
+
+        return !isEligibleAdvisors(bean);
     }
 
     public Object getCacheBeanByName(String beanName) {
@@ -104,7 +141,6 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
 
     @Override
     public Object postProcessBeforeInstantiation(Class<?> clazz, String beanName) {
-        parseAspect(clazz);
         return null;
     }
 

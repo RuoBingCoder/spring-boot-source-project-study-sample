@@ -18,7 +18,6 @@ import java.util.List;
  * @description: DaoSupport
  */
 @Component
-@Aspect
 public class DaoSupport implements InitializingBean {
 
     private SqlSessionTemplate sqlSession;

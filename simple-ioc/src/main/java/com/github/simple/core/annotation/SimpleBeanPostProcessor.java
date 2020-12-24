@@ -13,7 +13,7 @@ public interface SimpleBeanPostProcessor {
         return bean;
     }
 
-    default Object postProcessAfterInitialization(Object bean, String beanName) {
+    default Object postProcessAfterInitialization(Object bean, String beanName) throws Throwable {
         return bean;
     }
 
