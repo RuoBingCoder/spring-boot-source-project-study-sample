@@ -1,1 +1,0 @@
-org.springframework.boot.env.EnvironmentPostProcessor=com.sjl.bean.life.cycle.environment.CustomEnvironmentPostprocessor

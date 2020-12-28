@@ -1,5 +1,0 @@
-server:
-    port: 9092
-
-app:
-    name: spring-life-cycle

@@ -66,6 +66,7 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware, In
     @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+
     }
 
     /**

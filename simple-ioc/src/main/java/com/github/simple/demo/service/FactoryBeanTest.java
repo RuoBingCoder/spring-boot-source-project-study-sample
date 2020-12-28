@@ -34,9 +34,10 @@ public class FactoryBeanTest implements SimpleFactoryBean<FactoryBean> {
     public static void main(String[] args) {
         Type[] types = FactoryBeanTest.class.getGenericInterfaces();
         ParameterizedType type= (ParameterizedType) types[0];
+        System.out.println(type.getRawType());
         Type[] arguments = type.getActualTypeArguments();
-
-        System.out.println(arguments[0].getTypeName());
+        Type argument = arguments[0];
+        System.out.println(arguments[0]);
     }
 
 }

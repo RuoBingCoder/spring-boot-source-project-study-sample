@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 /spring-components-sample/.mvn/
+/spring-bean-explore-sample/.mvn/
+/spring-beans-explore-sample/.mvn/
+/spring-dependency-inject-sample/.mvn/

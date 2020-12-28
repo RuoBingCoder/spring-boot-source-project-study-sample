@@ -1,6 +1,5 @@
 package com.sjl.spring.components.event;
 
-import com.sjl.spring.components.listen.annotation.AnnotationCustomApplicationListener;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;

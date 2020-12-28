@@ -1,10 +1,11 @@
 package com.sjl.spring.components.transaction.dao;
 
 import com.sjl.spring.components.transaction.pojo.JdGoods;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
-public interface JdGoodsMapper {
+import java.util.List;
+
+public interface JdGoodsMapper  {
     int deleteByPrimaryKey(Integer id);
 
     int insert(JdGoods record);

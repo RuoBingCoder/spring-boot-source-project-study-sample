@@ -16,15 +16,14 @@
         <!-- lookup parent from repository -->
     </parent>
     <modules>
-        <module>autowired-inject-spring-boot-sample</module>
         <module>enable-auto-config-spring-boot-sample</module>
         <module>spi-serviceloader-sample</module>
-        <module>spring-bean-life-cycle-sample</module>
-        <module>custom-spring-boot-starter-sample</module>
+        <module>spring-beans-explore-sample</module>
+        <module>custom-starter-sample</module>
         <module>rocketmq-producers-spring-boot-sample</module>
         <module>rocketmq-consumer-spring-boot-sample</module>
-        <module>spring-boot-common</module>
-        <module>custom-spring-xml-spring-boot-sample</module>
+        <module>simple-common</module>
+        <module>custom-spring-xml-sample</module>
         <module>custom-aop-spring-boot-sample</module>
         <module>easy-tomcat-netty</module>
         <module>netty-channelHandler-sample</module>
@@ -33,6 +32,7 @@
         <module>spring-boot-kafka-sample</module>
         <module>spring-boot-es-sample</module>
         <module>spring-circular-dependency</module>
+        <module>spring-dependency-inject-sample</module>
         <module>simple-ioc</module>
     </modules>
     <dependencies>

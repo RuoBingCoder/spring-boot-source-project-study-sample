@@ -5,10 +5,8 @@ import org.apache.ibatis.executor.result.DefaultResultHandler;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.SqlSession;
-import org.aspectj.lang.annotation.Aspect;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -17,7 +15,8 @@ import java.util.List;
  * @date: 2020/12/22 5:09 下午
  * @description: DaoSupport
  */
-@Component
+//@Component
+@Deprecated
 public class DaoSupport implements InitializingBean {
 
     private SqlSessionTemplate sqlSession;

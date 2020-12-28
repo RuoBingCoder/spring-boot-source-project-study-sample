@@ -16,6 +16,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -74,7 +75,8 @@ public class SjlScannerRegistry implements ImportBeanDefinitionRegistrar, Applic
         basePackages.addAll(Arrays.stream(attributes.getClassArray("basePackagesClasses")).map(ClassUtils::getPackageName)
                 .collect(Collectors.toList()));
         scanner.setBasePackage(StringUtils.collectionToCommaDelimitedString(basePackages));
-        scanner.addIncludeFilter(((metadataReader, metadataReaderFactory) -> true));
+//        scanner.addIncludeFilter(((metadataReader, metadataReaderFactory) -> true));
+        scanner.addIncludeFilter(new AnnotationTypeFilter(SjlService.class));
         scanner.scan(StringUtils.toStringArray(basePackages));
 
 

@@ -1,5 +1,4 @@
 package com.github.simple.demo.service;
-
 import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleComponent;
 
@@ -28,4 +27,8 @@ public class A {
         System.out.println(b.hello());
         return Arrays.asList("数学", "英语", "语文");
     }
+
+
+
+
 }
