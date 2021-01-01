@@ -1,16 +1,15 @@
 package com.sjl.spring.components.transaction.service.impl;
 
-import com.sjl.spring.components.transaction.pojo.Hero;
-import com.sjl.spring.components.transaction.service.HeroService;
-import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.time.LocalDateTime;
-import java.util.List;
 import com.sjl.spring.components.transaction.dao.JdGoodsMapper;
+import com.sjl.spring.components.transaction.pojo.HeroDo;
 import com.sjl.spring.components.transaction.pojo.JdGoods;
+import com.sjl.spring.components.transaction.service.HeroService;
 import com.sjl.spring.components.transaction.service.JdGoodsService;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.annotation.Transactional;
+import com.sjl.spring.components.utils.DateUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class JdGoodsServiceImpl implements JdGoodsService{
@@ -34,8 +33,9 @@ public class JdGoodsServiceImpl implements JdGoodsService{
     @Override
     public int insert(JdGoods record) {
         jdGoodsMapper.insert(record);
-        Hero hero = Hero.builder().createTime(LocalDateTime.now()).money(20).name("孙悟空").type("法师").build();
+        HeroDo hero = HeroDo.builder().createTime(DateUtils.getCurrentTime()).money(20).name("孙悟空").type("法师").build();
         heroService.insert(hero);
+
         return 1;
     }
 

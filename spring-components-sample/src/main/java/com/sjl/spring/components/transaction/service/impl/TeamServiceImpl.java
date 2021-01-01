@@ -1,21 +1,13 @@
 package com.sjl.spring.components.transaction.service.impl;
 
-import com.sjl.spring.components.transaction.pojo.Hero;
-import com.sjl.spring.components.transaction.service.HeroService;
+import com.sjl.spring.components.mybatis.common.wrapper.QueryWrapper;
+import com.sjl.spring.components.transaction.dao.TeamMapper;
+import com.sjl.spring.components.transaction.pojo.TeamDo;
 import com.sjl.spring.components.transaction.service.TeamService;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
-import com.sjl.spring.components.transaction.dao.TeamMapper;
-
-import java.time.LocalDateTime;
 import java.util.List;
-
-import com.sjl.spring.components.transaction.pojo.Team;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JdkDynamicAopProxy
@@ -32,7 +24,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public int deleteByPrimaryKey(Integer teamId) {
-        return teamMapper.deleteByPrimaryKey(teamId);
+//        return teamMapper.deleteByPrimaryKey(teamId);
+        return 1;
     }
 
     /**
@@ -44,50 +37,64 @@ public class TeamServiceImpl implements TeamService {
      */
     @Override
 //    @Transactional(propagation = Propagation.REQUIRED)
-    public int insert(Team record) {
+    public int insert(TeamDo record) {
         //不捕获异常 两个事务都回滚
         //方法hero insert 捕获异常 只有hero insert 进行回滚 前提 team insert 不捕获异常
         teamMapper.insert(record);
-        Hero hero = Hero.builder().createTime(LocalDateTime.now()).money(20).name("百里守约").build();
-        //测试非事务方法调用事务方法获取代理对象
-        HeroServiceImpl heroService = (HeroServiceImpl) AopContext.currentProxy();
-        heroService.insert(hero);
+//        Hero hero = Hero.builder().createTime(LocalDateTime.now()).money(20).name("百里守约").build();
+//        //测试非事务方法调用事务方法获取代理对象
+//        HeroServiceImpl heroService = (HeroServiceImpl) AopContext.currentProxy();
+//        heroService.insert(hero);
         return 1;
     }
 
     @Override
-    public int insertSelective(Team record) {
-        return teamMapper.insertSelective(record);
+    public int insertSelective(TeamDo record) {
+        return 1;
     }
 
     @Override
-    public Team selectByPrimaryKey(Integer teamId) {
-        return teamMapper.selectByPrimaryKey(teamId);
+    public TeamDo selectByPrimaryKey(Integer teamId) {
+        return null;
     }
 
     @Override
-    public int updateByPrimaryKeySelective(Team record) {
-        return teamMapper.updateByPrimaryKeySelective(record);
+    public int updateByPrimaryKeySelective(TeamDo record) {
+        return 1;
     }
 
     @Override
-    public int updateByPrimaryKey(Team record) {
-        return teamMapper.updateByPrimaryKey(record);
+    public int updateByPrimaryKey(TeamDo record) {
+        return 1;
     }
 
     @Override
-    public int updateBatch(List<Team> list) {
-        return teamMapper.updateBatch(list);
+    public int updateBatch(List<TeamDo> list) {
+        return 1;
     }
 
     @Override
-    public int updateBatchSelective(List<Team> list) {
-        return teamMapper.updateBatchSelective(list);
+    public int updateBatchSelective(List<TeamDo> list) {
+        return 1;
     }
 
     @Override
-    public int batchInsert(List<Team> list) {
-        return teamMapper.batchInsert(list);
+    public int batchInsert(List<TeamDo> list) {
+        return 1;
+    }
+
+    @Override
+    public int update(TeamDo team, TeamDo whereTeam) {
+        QueryWrapper<TeamDo> teamQuery=new QueryWrapper<>();
+        teamQuery.setParams(whereTeam);
+        return teamMapper.updateBySelective(team,teamQuery);
+    }
+
+    @Override
+    public List<TeamDo> selTeamList(TeamDo team) {
+        QueryWrapper<TeamDo> teamQuery=new QueryWrapper<>();
+        teamQuery.setParams(team);
+        return teamMapper.selectList(teamQuery);
     }
 
 }

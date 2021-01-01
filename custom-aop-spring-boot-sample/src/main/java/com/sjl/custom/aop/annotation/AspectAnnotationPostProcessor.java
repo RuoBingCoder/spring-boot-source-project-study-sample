@@ -1,6 +1,6 @@
 package com.sjl.custom.aop.annotation;
 
-import com.sjl.custom.aop.definition.AopBeanDefinition;
+import com.sjl.custom.aop.definition.AopBeanMetaData;
 import com.sjl.custom.aop.bean.AopConfig;
 import com.sjl.custom.aop.factory.ProxyFactory;
 import com.sjl.custom.aop.support.AdvisedSupport;
@@ -31,7 +31,7 @@ import java.util.*;
 @DependsOn("springBeanUtil")
 public class AspectAnnotationPostProcessor implements BeanPostProcessor {
 
-    private static final List<AopBeanDefinition> AOP_BEAN_DEFINITIONS = new ArrayList<>();
+    private static final List<AopBeanMetaData> AOP_BEAN_DEFINITIONS = new ArrayList<>();
 
     /**
      * @param bean
@@ -65,7 +65,7 @@ public class AspectAnnotationPostProcessor implements BeanPostProcessor {
      */
     private void matchProxyClassAndCreateProxy()
             throws IllegalAccessException, InstantiationException {
-        for (AopBeanDefinition definition : AspectAnnotationPostProcessor.AOP_BEAN_DEFINITIONS) {
+        for (AopBeanMetaData definition : AspectAnnotationPostProcessor.AOP_BEAN_DEFINITIONS) {
             for (Object serviceBean : SpringBeanUtil.getServicesBeans()) {
                 if (serviceBean.getClass().getInterfaces().length > 0) {
                     AdvisedSupport advisedSupport = instantiationAopConfig(definition, serviceBean);
@@ -75,13 +75,13 @@ public class AspectAnnotationPostProcessor implements BeanPostProcessor {
         }
     }
 
-    private AdvisedSupport instantiationAopConfig(AopBeanDefinition definition, Object bean)
+    private AdvisedSupport instantiationAopConfig(AopBeanMetaData metaData, Object bean)
             throws InstantiationException, IllegalAccessException {
         AopConfig config = new AopConfig();
-        config.setPointCut(definition.getPointcut());
-        config.setAspectClass(definition.getAspectClass());
-        config.setAspectBefore(definition.getBeforeMethodName());
-        config.setAspectAfter(definition.getAfterMethodName());
+        config.setPointCut(metaData.getPointcut());
+        config.setAspectClass(metaData.getAspectClass());
+        config.setAspectBefore(metaData.getBeforeMethodName());
+        config.setAspectAfter(metaData.getAfterMethodName());
         AdvisedSupport support = new AdvisedSupport(config);
         support.setTarget(bean);
         support.setTargetClass(bean.getClass().getInterfaces()[0]);
@@ -114,7 +114,7 @@ public class AspectAnnotationPostProcessor implements BeanPostProcessor {
     private void parseAspectBean(Object bean) {
         synchronized (AOP_BEAN_DEFINITIONS) {
             if (bean.getClass().isAnnotationPresent(Aspect.class)) {
-                AopBeanDefinition aopBean = new AopBeanDefinition();
+                AopBeanMetaData aopBean = new AopBeanMetaData();
                 for (Method method : bean.getClass().getDeclaredMethods()) {
                     aopBean.setAspectClass(bean.getClass());
                     aopBean.setAspectTarget(bean);

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Primary;
  * @description: BeanConfig
  * @see ConfigurationClassPostProcessor#processConfigBeanDefinitions(BeanDefinitionRegistry)
  * @see org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader#loadBeanDefinitionsForBeanMethod
- * @see org.springframework.context.annotation.ConditionEvaluator#shouldSkip
+ * @see org.springframework.context.annotation.ConditionEvaluator#shouldSkip 条件注解 {@link org.springframework.boot.autoconfigure.condition.ConditionalOnBean}
  * @see org.springframework.boot.autoconfigure.condition.SpringBootCondition#matches
  * @see org.springframework.boot.autoconfigure.condition.OnBeanCondition#getMatchOutcome
  * @see org.springframework.boot.autoconfigure.condition.OnBeanCondition#getBeanNamesForType
@@ -30,6 +30,7 @@ public class BeanConfig {
     }
 
 
+
     @Bean
     @Primary
     public String hello(){
@@ -37,6 +38,7 @@ public class BeanConfig {
 
 
     }
+
 
     @Bean
     public String message(){

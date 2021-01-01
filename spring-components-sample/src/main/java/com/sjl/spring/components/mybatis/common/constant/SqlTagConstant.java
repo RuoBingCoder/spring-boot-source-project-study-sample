@@ -9,26 +9,30 @@ package com.sjl.spring.components.mybatis.common.constant;
 public class SqlTagConstant {
 
     public static final String DAO_SCAN_PACKAGES_PREFIX = "dao.scan.packages";
-    public static final String LEFT_PARENTHESIS = "(";
-    public static final String RIGHT_PARENTHESIS = ")";
+    public static final String LEFT_BRACKETS = "(";
+    public static final String RIGHT_BRACKETS = ")";
     public static final String SEGMENTATION = ",";
-    public static final String WHERE_START = "<where>\n";
-    public static final String WHERE = "where  \n";
-    public static final String IF_TAG_S = "<if test=\" %s !=null and %s !=''\"> and ";
-    public static final String IF_TAG_NA_S = "<if test=\" %s !=null and %s !=''\">";
-    public static final String IF_TAG_E = "</if>\n";
-    public static final String WHERE_END = "\n</where>\n";
-    public static final String LEFT_PLACE_HOLDER = "#{";
-    public static final String RIGHT_PLACE_HOLDER = "}";
-    public static final String LEFT_EQ_PLACE_HOLDER = "=#{";
+    public static final String WHERE_TAG_START = "<where>\n";
+    public static final String WHERE_NO_TAG = "where  \n";
+    public static final String IF_START_TAG = "<if test=\" %s !=null and %s !=''\"> and ";
+    public static final String IF_NON_AND_START_TAG = "<if test=\" %s !=null and %s !=''\">";
+    public static final String IF_END_TAG = "</if>\n";
+    public static final String WHERE_END_TAG = "\n</where>\n";
+    public static final String LEFT_PLACEHOLDER = "#{";
+    public static final String RIGHT_PLACEHOLDER = "}";
+    public static final String LEFT_EQ_PLACEHOLDER = "=#{";
     public static final String SET_START_TAG = "<set>";
     public static final String SET_END_TAG = "</set>";
     public static final String STAR_SYMBOL = "*";
     public static final String KEY_COLUMN = "id";
     public static final String KEY_PROPERTY = "id";
-    public static final String ET = "entity";
+    public static final String PARAMS_PREFIX = "entity.";
     public static final String QUERY = "query";
     public static final String POINT = ".";
+    public static final String QUERY_PARAMS_PREFIX = "query.params.";
+    public static final String SQL_UPDATE_OPERATE = "update";
+    public static final String SQL_INSERT_OPERATE = "insert";
+    public static final String PRIMARY_KEY = "id";
 
 
 }

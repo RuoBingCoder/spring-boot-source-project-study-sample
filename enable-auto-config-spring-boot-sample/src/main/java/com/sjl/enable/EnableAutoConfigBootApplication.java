@@ -1,7 +1,7 @@
 package com.sjl.enable;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sjl.enable.annotation.SjlScanner;
+import com.sjl.enable.config.ConfigProperties;
 import com.sjl.enable.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -16,15 +17,26 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.annotation.Resource;
 
+/**
+ * <P> {@link EnableConfigurationProperties }
+ * @see <a href="https://www.baeldung.com/configuration-properties-in-spring-boot"/>
+ * </p>
+ */
 @SpringBootApplication
 @SjlScanner(basePackages = "com.sjl.enable.service")
 @EnableScheduling
 @Slf4j
+@EnableConfigurationProperties
 public class EnableAutoConfigBootApplication implements CommandLineRunner, ApplicationRunner, ApplicationListener<ContextRefreshedEvent> {
 
     @Resource
     private HelloService helloService;
 
+//    @Value("${com.github.info}")
+//    private String info;
+
+    @Resource
+    private ConfigProperties configProperties;
 
     public static void main(String[] args) {
         SpringApplication.run(EnableAutoConfigBootApplication.class, args);
@@ -51,7 +63,7 @@ public class EnableAutoConfigBootApplication implements CommandLineRunner, Appli
      **/
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        if (event.getApplicationContext().getParent()==null) {
+        if (event.getApplicationContext().getParent() == null) {
             HelloService bean = event.getApplicationContext().getBean(HelloService.class);
             log.info("===>CommandLineRunner getBean :{}", bean.say());
         }
@@ -68,7 +80,7 @@ public class EnableAutoConfigBootApplication implements CommandLineRunner, Appli
      **/
     @Override
     public void run(ApplicationArguments args) {
-        log.info("===> ApplicationRunner output :{}", JSONObject.toJSONString(args.getOptionNames()));
+        log.info("===> ApplicationRunner output :{}", configProperties==null?"--":configProperties.toString());
 
     }
 }

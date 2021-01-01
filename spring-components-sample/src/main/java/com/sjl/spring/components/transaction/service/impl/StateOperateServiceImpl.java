@@ -1,8 +1,8 @@
 package com.sjl.spring.components.transaction.service.impl;
 
 import com.sjl.spring.components.transaction.custom.annotation.EasyTransactional;
-import com.sjl.spring.components.transaction.pojo.Hero;
-import com.sjl.spring.components.transaction.pojo.Team;
+import com.sjl.spring.components.transaction.pojo.HeroDo;
+import com.sjl.spring.components.transaction.pojo.TeamDo;
 import com.sjl.spring.components.transaction.service.CommonOperateService;
 import com.sjl.spring.components.transaction.service.HeroService;
 import com.sjl.spring.components.transaction.service.TeamService;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Service("com.sjl.spring.components.transaction.service.StateOperateServiceImpl")
 @Slf4j
-public class StateOperateServiceImpl implements CommonOperateService<Team, Hero> {
+public class StateOperateServiceImpl implements CommonOperateService<TeamDo, HeroDo> {
     @Resource
     private HeroService heroService;
 
@@ -28,7 +28,7 @@ public class StateOperateServiceImpl implements CommonOperateService<Team, Hero>
 
     @EasyTransactional(rollbackFor = Exception.class)
     @Override
-    public Integer operation(Team team, Hero hero) {
+    public Integer operation(TeamDo team, HeroDo hero) {
         try {
             teamService.insert(team);
             insertHero(hero);
@@ -41,7 +41,7 @@ public class StateOperateServiceImpl implements CommonOperateService<Team, Hero>
     }
 
     //    @Transactional(rollbackFor = Exception.class)
-    public void insertHero(Hero hero) {
+    public void insertHero(HeroDo hero) {
         try {
             heroService.insert(hero);
             List<String> list = null;

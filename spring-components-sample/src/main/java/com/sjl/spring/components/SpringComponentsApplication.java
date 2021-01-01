@@ -1,14 +1,13 @@
 package com.sjl.spring.components;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sjl.spring.components.event.CustomEvent;
 import com.sjl.spring.components.pojo.GeoHolder;
 import com.sjl.spring.components.service.FactoryBeanService;
 import com.sjl.spring.components.service.LazyService;
 import com.sjl.spring.components.transaction.dao.HeroMapper;
 import com.sjl.spring.components.transaction.dao.TeamMapper;
-import com.sjl.spring.components.transaction.pojo.Hero;
-import com.sjl.spring.components.transaction.pojo.Team;
+import com.sjl.spring.components.transaction.pojo.HeroDo;
+import com.sjl.spring.components.transaction.pojo.TeamDo;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -80,25 +79,27 @@ public class SpringComponentsApplication implements CommandLineRunner {
         System.out.println("====================CommandLineRunner========================");
         lazyService.testLazy();
 //        ReflectUtil.threadClassLoader("");
-        System.out.println("->>>>>>"+opGeoHolder.getIfAvailable());
-        Hero hero = Hero.builder().name("周瑜").build();
+        System.out.println("->>>>>>" + opGeoHolder.getIfAvailable());
+        HeroDo hero = HeroDo.builder().name("周瑜").build();
 //        List<Hero> heroes = heroMapper.queryHeroes(hero);
-        Team team = Team.builder().teamName("亚特兰大老鹰").build();
-        QueryWrapper<Hero> queryWrapper=new QueryWrapper(hero);
+        TeamDo team = TeamDo.builder().teamName("亚特兰大老鹰").build();
+//        QueryWrapper<Hero> queryWrapper = new QueryWrapper(hero);
 //        List<Hero> heroList = heroMapper.selectList(hero);
+//        System.out.println("====> teams :" + JSONObject.toJSONString(heroList));
+
 //        List<Hero> selectOne = heroMapper.queryHeroes(hero);
 //        List<Team> teams = teamMapper.selectByAll(team);
 //        List<Team> teams = teamMapper.selectList(team);
 //        System.out.println("====> teams :"+ JSONObject.toJSONString(teams));
 
 
-        Hero hero1 = Hero.builder().name("吕布").build();
-        Hero where = Hero.builder().id(5).build();
+        HeroDo hero1 = HeroDo.builder().name("吕布").build();
+        HeroDo where = HeroDo.builder().id(5).build();
 //        int insert = heroMapper.insert(hero1);
 //        System.out.println("===> res:"+insert);
-        int i = heroMapper.updateBySelective(hero1,where);
+//        int i = heroMapper.updateBySelective(hero1,where);
 //        int delete = heroMapper.delete(hero1);
-        System.out.println("====>>update res:"+i);
+//        System.out.println("====>>update res:" + i);
 
     }
 }

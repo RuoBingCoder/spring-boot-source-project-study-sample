@@ -36,10 +36,13 @@ spring:
     port: 6379
     password: 123456
 
-#mybatis:
-#  check-config-location: false
-#  mapper-locations: classpath*:/mappers/*.xml
-#  type-aliases-package: com.sjl.spring.components.transaction.pojo
+mybatis:
+  check-config-location: false
+  mapper-locations: classpath*:/mappers/*.xml
+  type-aliases-package: com.sjl.spring.components.transaction.pojo
+#  开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
 
 
 #配置代理接口全限定名即ioc中 beanDefinitionName
@@ -54,9 +57,9 @@ logging:
   level:
     com.sjl.spring.components.transaction.dao: debug
 
-mybatis-plus:
-  mapper-locations: classpath*:/mappers/*.xml
-  type-aliases-package: com.sjl.spring.components.transaction.pojo
+#mybatis-plus:
+#  mapper-locations: classpath*:/mappers/*.xml
+#  type-aliases-package: com.sjl.spring.components.transaction.pojo
 
 dao:
   scan:

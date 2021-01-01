@@ -1,7 +1,6 @@
 package com.sjl.enable.controller;
 
-import com.sjl.enable.service.HelloService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,7 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class TestController {
 
-  @Autowired private HelloService helloService;
+//  @Autowired private HelloService helloService;
+
+  @Value("${com.github.info}")
+  private String info;
+
 
  /* @Resource private ThreadPoolHolder threadPoolHolder;
   @GetMapping("/test")

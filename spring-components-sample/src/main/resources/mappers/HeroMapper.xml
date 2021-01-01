@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sjl.spring.components.transaction.dao.HeroMapper">
-  <resultMap id="BaseResultMap" type="com.sjl.spring.components.transaction.pojo.Hero">
+  <resultMap id="BaseResultMap" type="com.sjl.spring.components.transaction.pojo.HeroDo">
     <!--@mbg.generated-->
     <!--@Table `hero`-->
     <result column="id" jdbcType="INTEGER" property="id" />
@@ -21,7 +21,7 @@
 <!--    values (#{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},-->
 <!--      #{money,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})-->
 <!--  </insert>-->
-  <insert id="insertSelective" parameterType="com.sjl.spring.components.transaction.pojo.Hero">
+  <insert id="insertSelective" parameterType="com.sjl.spring.components.transaction.pojo.HeroDo">
     <!--@mbg.generated-->
     insert into `hero`
     <trim prefix="(" suffix=")" suffixOverrides=",">

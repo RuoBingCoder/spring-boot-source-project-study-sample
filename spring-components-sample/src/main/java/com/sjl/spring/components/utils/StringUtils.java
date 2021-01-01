@@ -14,7 +14,7 @@ public class StringUtils {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, source);
     }
 
-    public static String split(String source) {
+    public static String formatPlaceholder(String source) {
         String trim = source.trim();
         char[] chars = trim.toCharArray();
         String res=null;
@@ -32,6 +32,6 @@ public class StringUtils {
 
     public static void main(String[] args) {
         String str = "<if> (12,34,56,</if>";
-        System.out.println(split(str));
+        System.out.println(formatPlaceholder(str));
     }
 }

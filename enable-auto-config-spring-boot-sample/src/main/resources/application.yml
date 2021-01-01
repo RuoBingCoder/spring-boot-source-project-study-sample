@@ -1,8 +1,13 @@
 server:
-    port: 8096
+  port: 8096
 # 自定义线程池
 thread:
-    pool:
-        coreSize: 2
-        keepAliveTime: 4
-        maxSize: 4
+  pool:
+    coreSize: 2
+    keepAliveTime: 4
+    maxSize: 4
+com:
+  github:
+    info: this is test!
+    address: beijing
+    appName: EnableAutoConfigBootApplication

@@ -3,20 +3,20 @@ package com.sjl.spring.components;
 import com.alibaba.fastjson.JSONObject;
 import com.sjl.spring.components.transaction.dao.HeroMapper;
 import com.sjl.spring.components.transaction.dao.JdGoodsMapper;
-import com.sjl.spring.components.transaction.pojo.Hero;
+import com.sjl.spring.components.transaction.pojo.HeroDo;
 import com.sjl.spring.components.transaction.pojo.JdGoods;
-import com.sjl.spring.components.transaction.pojo.Team;
+import com.sjl.spring.components.transaction.pojo.TeamDo;
 import com.sjl.spring.components.transaction.service.CommonOperateService;
 import com.sjl.spring.components.transaction.service.HeroService;
 import com.sjl.spring.components.transaction.service.JdGoodsService;
 import com.sjl.spring.components.transaction.service.TeamService;
+import com.sjl.spring.components.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 
 @SpringBootTest
 @EnableAspectJAutoProxy(proxyTargetClass = true,exposeProxy = true)
@@ -30,7 +30,7 @@ class SpringComponentsApplicationTests {
     @Resource
     private TeamService teamService;
     @Autowired
-    private CommonOperateService<Team, Hero> commonOperateService;
+    private CommonOperateService<TeamDo, HeroDo> commonOperateService;
 
 
     @Resource
@@ -60,15 +60,15 @@ class SpringComponentsApplicationTests {
         commonOperateService.operation(getTeam(), getHero());
     }
 
-    private Hero getHero() {
-        return Hero.builder().createTime(LocalDateTime.now())
+    private HeroDo getHero() {
+        return HeroDo.builder().createTime(DateUtils.getCurrentTime())
                 .money(1000).name("安琪拉").type("法师").build();
 
     }
 
-    private Team getTeam() {
-        return Team.builder().createTime(LocalDateTime.now())
-                .teamName("斗地主").updateTime(LocalDateTime.now())
+    private TeamDo getTeam() {
+        return TeamDo.builder().createTime(DateUtils.getCurrentTime())
+                .teamName("斗地主").updateTime(DateUtils.getCurrentTime())
                 .build();
     }
 
@@ -94,7 +94,7 @@ class SpringComponentsApplicationTests {
 //        heroService.init();
 //        Hero hero = heroMapper.selectById(1);
 //        System.out.println("==>select hero :"+JSONObject.toJSONString(hero));
-        Hero hero = Hero.builder().name("周瑜").build();
+        HeroDo hero = HeroDo.builder().name("周瑜").build();
 //        List<Hero> heroes = heroMapper.selectByAll(hero);
 //        System.out.println("====> heroes :"+JSONObject.toJSONString(heroes));
     }

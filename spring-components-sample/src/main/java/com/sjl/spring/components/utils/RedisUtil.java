@@ -91,10 +91,23 @@ public class RedisUtil {
     }
 
 
+    /**
+     * pf计数
+     *
+     * @param k k
+     * @return {@link Long}
+     */
     public Long pfCount(String k) {
         return stringRedisTemplate.opsForHyperLogLog().size(k);
     }
 
+    /**
+     * pf添加
+     *
+     * @param k     k
+     * @param value 价值
+     * @return {@link Long}
+     */
     public Long pfAdd(String k, String... value) {
         return stringRedisTemplate.opsForHyperLogLog().add(k, value);
     }
@@ -114,12 +127,13 @@ public class RedisUtil {
         return stringRedisTemplate.execute(script, keys, expire);
     }
 
+
     /**
-     * zset
+     * z添加
      *
-     * @param key
-     * @param val
-     * @return
+     * @param key 关键
+     * @param val 瓦尔
+     * @return {@link Long}
      */
     public Long zAdd(String key, String... val) {
         return stringRedisTemplate.opsForSet().add(key, val);
@@ -148,6 +162,13 @@ public class RedisUtil {
         stringRedisTemplate.opsForHash().putIfAbsent(key, hashKey, value);
     }
 
+
+    /**
+     * 修改值的键
+     *
+     * @param key      关键
+     * @param newValue 新值
+     */
     public void modifyValueForKey(String key, String newValue) {
         String k = KEY_PREFIX + key;
         while (true) {

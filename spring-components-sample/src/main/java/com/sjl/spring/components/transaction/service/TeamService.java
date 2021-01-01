@@ -1,26 +1,31 @@
 package com.sjl.spring.components.transaction.service;
 
+import com.sjl.spring.components.transaction.pojo.TeamDo;
+
 import java.util.List;
-import com.sjl.spring.components.transaction.pojo.Team;
 public interface TeamService{
 
 
     int deleteByPrimaryKey(Integer teamId);
 
-    int insert(Team record);
+    int insert(TeamDo record);
 
-    int insertSelective(Team record);
+    int insertSelective(TeamDo record);
 
-    Team selectByPrimaryKey(Integer teamId);
+    TeamDo selectByPrimaryKey(Integer teamId);
 
-    int updateByPrimaryKeySelective(Team record);
+    int updateByPrimaryKeySelective(TeamDo record);
 
-    int updateByPrimaryKey(Team record);
+    int updateByPrimaryKey(TeamDo record);
 
-    int updateBatch(List<Team> list);
+    int updateBatch(List<TeamDo> list);
 
-    int updateBatchSelective(List<Team> list);
+    int updateBatchSelective(List<TeamDo> list);
 
-    int batchInsert(List<Team> list);
+    int batchInsert(List<TeamDo> list);
+
+    int update(TeamDo team, TeamDo whereTeam);
+
+    List<TeamDo> selTeamList(TeamDo team);
 
 }

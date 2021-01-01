@@ -12,6 +12,8 @@ import lombok.Data;
 @Data
 public class MapperMethodWrapper {
 
+    private String keyColumn;
+    private String keyProperties;
     private String ID;
     private String sql;
     private Class<?> returnType;

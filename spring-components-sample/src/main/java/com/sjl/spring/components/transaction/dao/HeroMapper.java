@@ -1,9 +1,12 @@
 package com.sjl.spring.components.transaction.dao;
 
 import com.sjl.spring.components.mybatis.common.mapper.SimpleBaseMapper;
-import com.sjl.spring.components.transaction.pojo.Hero;
+import com.sjl.spring.components.transaction.pojo.HeroDo;
 import org.apache.ibatis.binding.MapperMethod;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionFactoryBean;
 
 import javax.sql.DataSource;
@@ -27,11 +30,14 @@ import javax.sql.DataSource;
  * </P>
  * @see MapperMethod.SqlCommand#resolveMappedStatement(Class, String, Class, Configuration)  解析stament for example: ID: com.sjl.spring.components.transaction.dao.JdGoodsMapper.selectByPrimaryKey
  * @see org.apache.ibatis.logging.jdbc.ConnectionLogger#debug =>Preparing: sql
+ *
+ * 创建一级缓存
+ * @see org.apache.ibatis.executor.CachingExecutor#createCacheKey(MappedStatement, Object, RowBounds, BoundSql)
  */
-public interface HeroMapper extends SimpleBaseMapper<Hero,Hero> {
+public interface HeroMapper extends SimpleBaseMapper<HeroDo> {
 //    int insert(Hero record);
 
-    int insertSelective(Hero record);
+    int insertSelective(HeroDo record);
 
 
 //    Hero selectById(Integer id);

@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 public abstract class AbstractAspectAdvice implements Advice {
     private final Method aspectMethod;
     private final Object aspectTarget;
-    public AbstractAspectAdvice(Method aspectMethod, Object aspectTarget) {
+    protected AbstractAspectAdvice(Method aspectMethod, Object aspectTarget) {
         this.aspectMethod = aspectMethod;
         this.aspectTarget = aspectTarget;
     }
