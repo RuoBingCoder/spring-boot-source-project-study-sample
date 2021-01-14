@@ -16,11 +16,13 @@ import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.resource.SimpleClassPathResource;
 import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
 import com.github.simple.core.resource.SimplePropertySource;
+import com.github.simple.core.resource.SimpleYamlPropertySourceLoader;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
 import com.github.simple.core.utils.SimpleStringValueResolver;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -134,12 +136,20 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
 
     }
 
-    private void preparePropertiesSource(SimpleConfigBeanFactory beanFactory) {
+    private void preparePropertiesSource(SimpleConfigBeanFactory beanFactory) throws IOException {
         SimpleDefaultListableBeanFactory defaultListableBeanFactory= (SimpleDefaultListableBeanFactory) beanFactory;
         SimpleClassPathResource source = new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
-        SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
-        List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
-        defaultListableBeanFactory.setSimplePropertiesPropertySourceLoader(simplePropertiesPropertySourceLoader);
+        // yaml
+        if (source.fileAttribute()){
+            SimpleYamlPropertySourceLoader loader=new SimpleYamlPropertySourceLoader();
+            List<SimplePropertySource<Map<String, Object>>> propertySourceList = loader.load(source.getFilename(), source);
+            defaultListableBeanFactory.addPropertySource(propertySourceList);
+        }else {
+            // properties
+            SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
+            List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
+            defaultListableBeanFactory.addPropertySource(simplePropertiesPropertySourceLoader);
+        }
         defaultListableBeanFactory.addEmbeddedValueResolver(new SimpleEmbeddedValueResolver(defaultListableBeanFactory));
 
     }

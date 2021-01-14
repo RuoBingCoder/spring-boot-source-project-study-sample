@@ -59,12 +59,11 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
 
 
     /**
-     * @throws Exception
      * @see com.baomidou.mybatisplus.core.MybatisSqlSessionFactoryBuilder
      * @see
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         //TODO 后续改造成注解获取table 信息
         System.out.println("  _____ _                 _        __  __       _     _   _       _____  _           \n" +
                 " / ____(_)               | |      |  \\/  |     | |   | | (_)     |  __ \\| |          \n" +

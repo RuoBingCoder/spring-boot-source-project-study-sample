@@ -12,6 +12,7 @@
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- 2.2.6.RELEASE-->
         <version>2.2.6.RELEASE</version>
         <!-- lookup parent from repository -->
     </parent>
@@ -34,6 +35,7 @@
         <module>spring-circular-dependency</module>
         <module>spring-dependency-inject-sample</module>
         <module>simple-ioc</module>
+        <!--        <module>simple-dubbo</module>-->
     </modules>
     <dependencies>
         <dependency>
@@ -68,6 +70,10 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.xkzhangsan</groupId>
+            <artifactId>xk-time</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -100,6 +106,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.10</version>
+            </dependency>
+            <!-- 时间处理-->
+            <dependency>
+                <groupId>com.github.xkzhangsan</groupId>
+                <artifactId>xk-time</artifactId>
+                <version>3.0.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -9,6 +9,8 @@ import org.aspectj.lang.annotation.*;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.aspectj.annotation.BeanFactoryAspectJAdvisorsBuilder;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
+import org.springframework.stereotype.Component;
 
 /**
  * @author jianlei
@@ -27,10 +29,12 @@ import org.springframework.context.annotation.Configuration;
  * {@link AnnotationAwareAspectJAutoProxyCreator#findCandidateAdvisors()}
  * -> 3.返回 false｜true
  * </p>
+ *
+ *  @see ConfigurationClassPostProcessor#enhanceConfigurationClasses 加了此注解 {@link Configuration} 会被代理
  */
 @Aspect
-@Configuration
 @Slf4j
+@Component
 public class LogAspect {
     /**
      * execution(* com.savage.server..*.*(..))

@@ -1,10 +1,7 @@
 package com.github.simple.core.beans.factory;
 
-import com.github.simple.core.resource.SimplePropertySource;
-
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author: JianLei
@@ -21,7 +18,7 @@ public interface SimpleBeanFactory {
 
     }
 
-    default List<SimplePropertySource<Properties>> getResource(){
+    default <T> T getResource(){
         return null;
     }
 

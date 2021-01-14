@@ -1,13 +1,13 @@
 package com.sjl.enable.service;
 
-import com.sjl.enable.annotation.SjlService;
+import com.sjl.enable.annotation.SimpleService;
 
 /**
  * @author: jianlei
  * @date: 2020/8/25
  * @description: HelloService
  */
-@SjlService
+@SimpleService
 public class HelloService {
 
     public String say(){

@@ -1,6 +1,7 @@
 package com.sjl.spring.components;
 
 import com.sjl.spring.components.event.CustomEvent;
+import com.sjl.spring.components.pojo.ConfigBeanA;
 import com.sjl.spring.components.pojo.GeoHolder;
 import com.sjl.spring.components.service.FactoryBeanService;
 import com.sjl.spring.components.service.LazyService;
@@ -8,13 +9,16 @@ import com.sjl.spring.components.transaction.dao.HeroMapper;
 import com.sjl.spring.components.transaction.dao.TeamMapper;
 import com.sjl.spring.components.transaction.pojo.HeroDo;
 import com.sjl.spring.components.transaction.pojo.TeamDo;
+import com.sjl.spring.components.transaction.service.HeroService;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ContextAnnotationAutowireCandidateResolver;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
@@ -49,6 +53,21 @@ public class SpringComponentsApplication implements CommandLineRunner {
     @Resource
     private TeamMapper teamMapper;
 
+    @Resource
+    private ConfigBeanA configBeanA;
+    /**
+     * <p>
+     * {@code @Lazy}
+     *</p>
+     * @see org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.AutowiredFieldElement#inject
+     * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#resolveDependency
+     * @see ContextAnnotationAutowireCandidateResolver#getLazyResolutionProxyIfNecessary
+     *
+     */
+    @Lazy
+    @Autowired
+    private HeroService heroService;
+
 
 //@Resource
 //private FactoryBeanService factoryBeanService;
@@ -72,10 +91,21 @@ public class SpringComponentsApplication implements CommandLineRunner {
          *
          */
         applicationContext.getBean(FactoryBeanService.class);
+
+        //**********************************************************************************
+        /**
+         * @see org.springframework.context.annotation.AnnotatedBeanDefinitionReader#register(Class[])
+         */
+//        AnnotationConfigApplicationContext context=new AnnotationConfigApplicationContext(SpringComponentsApplication.class);
+//        context.register(null);
+
+        //**********************************************************************************
+
+
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         System.out.println("====================CommandLineRunner========================");
         lazyService.testLazy();
 //        ReflectUtil.threadClassLoader("");

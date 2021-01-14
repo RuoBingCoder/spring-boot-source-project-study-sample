@@ -20,7 +20,7 @@ public class SimpleConfigClassPostProcessor implements SimpleBeanDefinitionRegis
     }
 
     private SimpleRootBeanDefinition getRegistryBeanDef() {
-       return SimpleRootBeanDefinition.builder().beanName("registryBean").rootClass(RegistryBean.class).isSingleton(true).build();
+       return SimpleRootBeanDefinition.builder().beanName("registryBean").beanClass(RegistryBean.class).isSingleton(true).build();
     }
 
     @Override

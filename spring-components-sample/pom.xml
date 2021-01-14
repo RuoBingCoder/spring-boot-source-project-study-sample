@@ -22,6 +22,7 @@
         <spring-boot-common.version>1.0-SNAPSHOT</spring-boot-common.version>
         <spring.retry.version>1.2.4.RELEASE</spring.retry.version>
         <mybatis-plus>3.1.0</mybatis-plus>
+        <javassist.version>3.26.0-GA</javassist.version>
     </properties>
 
     <dependencies>
@@ -106,6 +107,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>${javassist.version}</version>
         </dependency>
 
     </dependencies>

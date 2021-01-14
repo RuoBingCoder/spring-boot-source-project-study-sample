@@ -33,9 +33,11 @@ import java.util.stream.Collectors;
  * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#findCandidateComponents(String)  //扫描.class文件 注册BeanDefinition
  * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#scanCandidateComponents(String)
  * @see org.springframework.context.annotation.ConfigurationClassPostProcessor#postProcessBeanDefinitionRegistry(BeanDefinitionRegistry)
+ * @see org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader#loadBeanDefinitions
+ * @see org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader#loadBeanDefinitionsFromRegistrars 
  */
 @Slf4j
-public class SjlScannerRegistry implements ImportBeanDefinitionRegistrar, ApplicationContextAware, ResourceLoaderAware {
+public class SimpleScannerRegistry implements ImportBeanDefinitionRegistrar, ApplicationContextAware, ResourceLoaderAware {
 
     private ApplicationContext applicationContext;
     private DefaultResourceLoader resourceLoader;
@@ -49,14 +51,14 @@ public class SjlScannerRegistry implements ImportBeanDefinitionRegistrar, Applic
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
         AnnotationAttributes mapperScanAttrs = AnnotationAttributes
-                .fromMap(annotationMetadata.getAnnotationAttributes(SjlScanner.class.getName()));
+                .fromMap(annotationMetadata.getAnnotationAttributes(SimpleScanner.class.getName()));
         if (mapperScanAttrs != null) {
             registerBeanDefinitions(mapperScanAttrs, registry, generateBaseBeanName(annotationMetadata, 0));
         }
     }
 
     private static String generateBaseBeanName(AnnotationMetadata importingClassMetadata, int index) {
-        return importingClassMetadata.getClassName() + "#" + SjlScannerRegistry.class.getSimpleName() + "#" + index;
+        return importingClassMetadata.getClassName() + "#" + SimpleScannerRegistry.class.getSimpleName() + "#" + index;
     }
 
     private void registerBeanDefinitions(AnnotationAttributes attributes, BeanDefinitionRegistry registry, String beanName) {
@@ -76,7 +78,7 @@ public class SjlScannerRegistry implements ImportBeanDefinitionRegistrar, Applic
                 .collect(Collectors.toList()));
         scanner.setBasePackage(StringUtils.collectionToCommaDelimitedString(basePackages));
 //        scanner.addIncludeFilter(((metadataReader, metadataReaderFactory) -> true));
-        scanner.addIncludeFilter(new AnnotationTypeFilter(SjlService.class));
+        scanner.addIncludeFilter(new AnnotationTypeFilter(SimpleService.class));
         scanner.scan(StringUtils.toStringArray(basePackages));
 
 

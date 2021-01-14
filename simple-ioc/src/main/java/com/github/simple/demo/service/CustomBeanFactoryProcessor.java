@@ -14,7 +14,7 @@ import com.github.simple.core.beans.factory.SimpleConfigBeanFactory;
 public class CustomBeanFactoryProcessor implements SimpleBeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(SimpleConfigBeanFactory factory) {
-        SimpleRootBeanDefinition subTwo = SimpleRootBeanDefinition.builder().beanName("beanFactoryRegistryBeanTest").isSingleton(true).rootClass(BeanFactoryRegistryBeanTest.class).build();
+        SimpleRootBeanDefinition subTwo = SimpleRootBeanDefinition.builder().beanName("beanFactoryRegistryBeanTest").isSingleton(true).beanClass(BeanFactoryRegistryBeanTest.class).build();
         factory.registerBeanDefinition("beanFactoryRegistryBeanTest", subTwo);
         factory.registerResolvableDependency(String.class, "hello word!");
     }

@@ -35,3 +35,4 @@ build/
 /spring-bean-explore-sample/.mvn/
 /spring-beans-explore-sample/.mvn/
 /spring-dependency-inject-sample/.mvn/
+/simple-dubbo/simple-dubbo-project-interface/target/

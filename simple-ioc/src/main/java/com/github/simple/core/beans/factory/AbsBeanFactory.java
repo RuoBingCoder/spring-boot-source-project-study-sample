@@ -165,7 +165,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     public void doRegistryBeanDefinition(Set<Class<?>> classSet) {
         SimpleRootBeanDefinition simpleRootBeanDefinitionSupport = buildRootBeanDefinition(SimpleBeanFactorySupport.class);
         addBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
-        registrySystemPostProcessor();
+        registryPostProcessor();
         classSet.forEach(mbd -> {
             try {
                 configBeanRegistry(mbd);
@@ -260,7 +260,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * @description 注册系统后置处理器
      * @date 4:28 下午 2020/12/17
      **/
-    private void registrySystemPostProcessor() {
+    private void registryPostProcessor() {
         SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
         addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
 
@@ -303,7 +303,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     private SimpleRootBeanDefinition buildRootBeanDefinition(Class<?> clazz, String beanName, Boolean isSingleton) {
-        return SimpleRootBeanDefinition.builder().rootClass(clazz)
+        return SimpleRootBeanDefinition.builder().beanClass(clazz)
                 .beanName(beanName)
                 .isSingleton(isSingleton).build();
     }

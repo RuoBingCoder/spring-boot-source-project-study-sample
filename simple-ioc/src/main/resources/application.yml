@@ -1,0 +1,7 @@
+app:
+  name: simple ioc
+redis:
+  maxConnect: 10
+  name: redis-6.12
+simple:
+  address: beijing

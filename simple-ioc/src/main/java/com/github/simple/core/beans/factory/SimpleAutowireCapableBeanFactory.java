@@ -13,7 +13,6 @@ import com.github.simple.core.init.SimpleInitializingBean;
 import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.ClassUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -30,54 +29,19 @@ import java.util.Set;
 public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
+    protected List<SimplePropertySource<Map<String, Object>>> simpleYamlPropertySourceLoader;
 
-    public void setSimplePropertiesPropertySourceLoader(List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader) {
-        this.simplePropertiesPropertySourceLoader = simplePropertiesPropertySourceLoader;
+    @Override
+    public <T> void addPropertySource(T source) {
+        List<SimplePropertySource> list = (List<SimplePropertySource>) source;
+        if (!(list.get(0).getValue() instanceof Properties)) {
+            this.simpleYamlPropertySourceLoader = (List<SimplePropertySource<Map<String, Object>>>) source;
+            return;
+        }
+        this.simplePropertiesPropertySourceLoader = (List<SimplePropertySource<Properties>>) source;
     }
 
-    /*protected SimpleAutowireCapableBeanFactory(String basePackages) throws Throwable {
-//        prepareBeanFactory();
-        preparePropertiesSource();
-        try {
-            registryBeanDefinition(basePackages);
-            postBeanFactory();
-            invokerBeanFactoryPostProcessor();
-            invokerBeanPostProcessor();
-            finishBeanInstance();
-        } catch (Exception e) {
-            log.error("ioc create exception", e);
-            destroyBeans();
-        }
-    }*/
-
-   /* protected void invokerBeanFactoryPostProcessor() {
-        if (CollectionUtil.isNotEmpty(beanFactoryPostProcessors)) {
-            for (SimpleBeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
-                postProcessor.postProcessBeanFactory(this);
-            }
-        }
-
-    }*/
-
-    /**
-     * 依赖注入非容器管理bean
-     *
-     * @see org.springframework.context.support.AbstractApplicationContext#prepareBeanFactory(ConfigurableListableBeanFactory)
-     */
-   /* private void prepareBeanFactory() {
-        BEAN_FACTORY_MAP.put(SimpleBeanFactory.class, this);
-        BEAN_FACTORY_MAP.put(SimpleAutowireCapableBeanFactory.class, this);
-        BEAN_FACTORY_MAP.put(SimpleDefaultListableBeanFactory.class, this);
-        //TODO 事件发布 ApplicationContext
-
-    }*/
-
-   /* private void preparePropertiesSource() {
-        SimpleClassPathResource source = new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
-        SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
-        simplePropertiesPropertySourceLoader = loader.load(source.getFilename(), source);
-
-    }*/
+  
 
 
     public void finishBeanInstance() throws Throwable {
@@ -104,7 +68,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
 
     private boolean isFactoryBean(String beanName) {
-        return beanDefinitions.entrySet().stream().filter(s -> s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getRootClass()));
+        return beanDefinitions.entrySet().stream().filter(s -> s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getBeanClass()));
     }
 
 
@@ -123,8 +87,8 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         //填充属性
         //初始化
         SimpleRootBeanDefinition simpleRootBeanDefinition = beanDefinitions.get(beanName);
-        Object bean = invokerBeforeInstantiation(simpleRootBeanDefinition.getRootClass(), simpleRootBeanDefinition.getBeanName());
-        if (ObjectUtil.isNotNull(bean)){
+        Object bean = invokerBeforeInstantiation(simpleRootBeanDefinition.getBeanClass(), simpleRootBeanDefinition.getBeanName());
+        if (ObjectUtil.isNotNull(bean)) {
             return bean;
         }
 
@@ -146,9 +110,9 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
             return null;
         }
         for (SimpleBeanPostProcessor simplePostProcessor : getBeanPostProcessor()) {
-            if (simplePostProcessor instanceof SimpleInstantiationAwareBeanPostProcessor){
-                SimpleInstantiationAwareBeanPostProcessor sip= (SimpleInstantiationAwareBeanPostProcessor) simplePostProcessor;
-                Object bean = sip.postProcessBeforeInstantiation(rootClass,beanName);
+            if (simplePostProcessor instanceof SimpleInstantiationAwareBeanPostProcessor) {
+                SimpleInstantiationAwareBeanPostProcessor sip = (SimpleInstantiationAwareBeanPostProcessor) simplePostProcessor;
+                Object bean = sip.postProcessBeforeInstantiation(rootClass, beanName);
                 if (bean != null) {
                     return bean;
                 }
@@ -215,9 +179,9 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
             simpleBeanFactoryAware.setBeanFactory(this);
 
         }
-        if (instance instanceof SimpleEmbeddedValueResolverAware){
-            SimpleEmbeddedValueResolverAware evr= (SimpleEmbeddedValueResolverAware) instance;
-            SimpleDefaultListableBeanFactory beanFactory= (SimpleDefaultListableBeanFactory) this;
+        if (instance instanceof SimpleEmbeddedValueResolverAware) {
+            SimpleEmbeddedValueResolverAware evr = (SimpleEmbeddedValueResolverAware) instance;
+            SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) this;
             evr.setEmbeddedValueResolver(beanFactory.getStringValueResolver());
         }
     }
@@ -250,13 +214,13 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         if (bean != null) {
             return bean;
         }
-        return ClassUtils.newInstance(mbd.getRootClass());
+        return ClassUtils.newInstance(mbd.getBeanClass());
 
     }
 
     private Object handlerIsConfigBean(SimpleRootBeanDefinition mbd) {
         try {
-            if (mbd.getRootClass().equals(SimpleConfigBean.class)) {
+            if (mbd.getBeanClass().equals(SimpleConfigBean.class)) {
                 return null;
             }
             SimpleConfigBean configBean = getBean(SimpleConfigBean.class);
@@ -285,10 +249,13 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
     }
 
     @Override
-    public List<SimplePropertySource<Properties>> getResource() {
-        if (simplePropertiesPropertySourceLoader == null) {
-            throw new SimpleIOCBaseException("resource is null!");
+    public <T> T getResource() {
+        if (simplePropertiesPropertySourceLoader != null) {
+            return (T) simplePropertiesPropertySourceLoader;
         }
-        return simplePropertiesPropertySourceLoader;
+        if (simpleYamlPropertySourceLoader != null) {
+            return (T) simpleYamlPropertySourceLoader;
+        }
+        throw new SimpleIOCBaseException("Error message is: 【 Resource is null! 】");
     }
 }

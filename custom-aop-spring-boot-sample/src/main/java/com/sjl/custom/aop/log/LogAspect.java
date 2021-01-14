@@ -7,7 +7,6 @@ import com.sjl.custom.aop.annotation.Before;
 import com.sjl.custom.aop.annotation.Pointcut;
 import com.sjl.custom.aop.aspect.JoinPoint;
 import lombok.extern.slf4j.Slf4j;
-import org.aopalliance.intercept.Joinpoint;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,9 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Slf4j
 public class LogAspect {
-
+    /**
+     * @see  org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor
+     */
     @Pointcut("public .* com.sjl.custom.aop.service..*Service..*(.*)")
     public void pointcut(){}
 

@@ -12,8 +12,9 @@ import java.util.Properties;
  * @description: SimplePropertiesPropertySourceLoader
  */
 
-public class SimplePropertiesPropertySourceLoader {
+public class SimplePropertiesPropertySourceLoader implements SimpleSourceLoader {
 
+    @Override
     public List<SimplePropertySource<Properties>> load(String fileName, SimpleResource resource){
         Properties properties = PropertyUtils.load(resource);
         return Collections.singletonList(new SimplePropertySource<>(fileName, properties));

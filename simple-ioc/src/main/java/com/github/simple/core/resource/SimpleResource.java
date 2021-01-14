@@ -12,4 +12,6 @@ public interface SimpleResource extends InputStreamSource {
 
     String getFilename();
 
+    Boolean fileAttribute();
+
 }

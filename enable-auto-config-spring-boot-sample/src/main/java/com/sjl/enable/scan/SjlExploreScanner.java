@@ -1,14 +1,12 @@
 package com.sjl.enable.scan;
 
-import com.sjl.enable.annotation.SjlService;
-import com.sjl.enable.filter.SjlTypeFilter;
+import com.sjl.enable.annotation.SimpleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -66,7 +64,7 @@ public class SjlExploreScanner extends ClassPathBeanDefinitionScanner {
     }
 
     public void registerFilters() {
-        super.addIncludeFilter(new AnnotationTypeFilter(SjlService.class));
+        super.addIncludeFilter(new AnnotationTypeFilter(SimpleService.class));
         // exclude package-info.java
 
     }

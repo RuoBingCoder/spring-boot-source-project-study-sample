@@ -13,8 +13,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(SjlScannerRegistry.class)
-public @interface SjlScanner {
+@Import(SimpleScannerRegistry.class)
+public @interface SimpleScanner {
 
     Class<?>[] basePackagesClasses() default {} ;
 

@@ -6,11 +6,14 @@ import com.github.simple.core.annotation.SimpleOrdered;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleIOCBaseException;
+import com.github.simple.core.resource.SimpleClassPathResource;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Set;
+
+import static org.springframework.util.ClassUtils.getAllInterfacesForClass;
 
 /**
  * @author: JianLei
@@ -54,7 +57,7 @@ public class ClassUtils {
         Assert.notNull(obj,"obj notNull");
         if (obj instanceof SimpleRootBeanDefinition){
             SimpleRootBeanDefinition srb= (SimpleRootBeanDefinition) obj;
-            return srb.getRootClass();
+            return srb.getBeanClass();
         }
         return obj.getClass();
     }
@@ -91,6 +94,10 @@ public class ClassUtils {
         }
         return cl;
     }
+    
+    public static Class<?>[] getAllInterfaces(Class<?> defaultClassType){
+      return   getAllInterfacesForClass(defaultClassType);
+    }
     public static String transformFactoryBeanName(Class<?> clazz) {
         Type[] types = clazz.getGenericInterfaces();
         ParameterizedType type = (ParameterizedType) types[0];
@@ -98,6 +105,13 @@ public class ClassUtils {
         String typeName = arguments[0].getTypeName();
         String substring = typeName.substring(typeName.lastIndexOf(".")+1);
         return ClassUtils.toLowerBeanName(substring);
+    }
+
+    public static void main(String[] args) {
+        Class<?>[] allInterfacesForClass = getAllInterfacesForClass(SimpleClassPathResource.class);
+        for (Class<?> interfacesForClass : allInterfacesForClass) {
+            System.out.println(interfacesForClass.getName());
+        }
     }
 
 }

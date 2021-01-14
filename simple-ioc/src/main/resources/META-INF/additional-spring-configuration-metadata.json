@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "redis.maxConnect",
+      "type": "java.lang.String",
+      "description": "Description for redis.maxConnect."
+  }
+] }

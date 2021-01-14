@@ -16,7 +16,7 @@ public class SimpleRootBeanDefinition {
 
     private String beanName;
 
-    private Class<?> rootClass;
+    private Class<?> beanClass;
 
     private String alias;
 

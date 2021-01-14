@@ -26,12 +26,17 @@ public interface SimpleConfigBeanFactory extends SimpleBeanFactory {
     void addBeanFactoryPostProcessor(SimpleBeanFactoryPostProcessor beanFactoryPostProcessor);
 
 
-    default void addEmbeddedValueResolver(SimpleStringValueResolver valueResolver){
+    default void addEmbeddedValueResolver(SimpleStringValueResolver valueResolver) {
         return;
     }
 
-    default String resolveEmbeddedValue(String value){
+    default String resolveEmbeddedValue(String value) {
         return null;
+    }
+
+
+    default <T> void addPropertySource(T source) {
+        return;
     }
 
 

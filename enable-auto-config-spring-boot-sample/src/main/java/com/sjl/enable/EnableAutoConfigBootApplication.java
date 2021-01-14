@@ -1,6 +1,6 @@
 package com.sjl.enable;
 
-import com.sjl.enable.annotation.SjlScanner;
+import com.sjl.enable.annotation.SimpleScanner;
 import com.sjl.enable.config.ConfigProperties;
 import com.sjl.enable.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import javax.annotation.Resource;
  * </p>
  */
 @SpringBootApplication
-@SjlScanner(basePackages = "com.sjl.enable.service")
+@SimpleScanner(basePackages = "com.sjl.enable.service")
 @EnableScheduling
 @Slf4j
 @EnableConfigurationProperties

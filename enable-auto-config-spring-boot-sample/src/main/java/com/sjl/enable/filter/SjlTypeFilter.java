@@ -1,6 +1,6 @@
 package com.sjl.enable.filter;
 
-import com.sjl.enable.annotation.SjlService;
+import com.sjl.enable.annotation.SimpleService;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
@@ -15,6 +15,6 @@ import java.io.IOException;
 public class SjlTypeFilter implements TypeFilter {
     @Override
     public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
-        return metadataReader.getAnnotationMetadata().getClassName().equals(SjlService.class.getName());
+        return metadataReader.getAnnotationMetadata().getClassName().equals(SimpleService.class.getName());
     }
 }

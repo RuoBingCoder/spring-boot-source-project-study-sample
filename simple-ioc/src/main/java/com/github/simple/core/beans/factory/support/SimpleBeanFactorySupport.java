@@ -24,8 +24,8 @@ public class SimpleBeanFactorySupport implements SimpleBeanFactoryAware {
     public static Class<?> matchAspect(String name) {
         SimpleRootBeanDefinition mbd = beanFactory.getBeanDefinitions().get(name);
         Assert.notNull(mbd);
-        if (mbd.getRootClass().isAnnotationPresent(SimpleAspect.class)) {
-            return mbd.getRootClass();
+        if (mbd.getBeanClass().isAnnotationPresent(SimpleAspect.class)) {
+            return mbd.getBeanClass();
         }
         return null;
     }

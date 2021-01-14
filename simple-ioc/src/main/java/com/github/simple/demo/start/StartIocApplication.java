@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
  * @author: JianLei
  * @date: 2020/12/12 3:47 下午
  * @description: StartIocApplication
+ * @see com.github.simple.core.beans.factory.AbsBeanFactory#doGetBean(String)
  */
 @SimpleComponentScan(basePackages = "com.github.simple.demo")
 public class StartIocApplication {

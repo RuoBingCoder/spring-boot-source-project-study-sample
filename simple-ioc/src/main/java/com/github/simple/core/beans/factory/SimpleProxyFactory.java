@@ -1,10 +1,7 @@
 package com.github.simple.core.beans.factory;
 
 import com.github.simple.core.interceptor.CglibMethodInterceptor;
-import org.springframework.cglib.proxy.CallbackFilter;
 import org.springframework.cglib.proxy.Enhancer;
-
-import java.lang.reflect.Method;
 
 /**
  * @author: jianlei.shi
@@ -23,12 +20,7 @@ public class SimpleProxyFactory implements SimpleProxy {
     private <T> T createProxy(Class<?> clazz) {
         en.setSuperclass(clazz);
         en.setCallback(new CglibMethodInterceptor());
-        en.setCallbackFilter(new CallbackFilter() {
-            @Override
-            public int accept(Method method) {
-                return 0;
-            }
-        });
+        en.setCallbackFilter(method -> 0);
         return (T) en.create();
     }
 
