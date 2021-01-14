@@ -1,1 +1,1 @@
-http\://www.sjl.com/schema/rocket=com.sjl.custom.spring.xml.handle.SimpleBeansNamespaceHandler
+http\://www.sjl.com/schema/rocket=com.github.custom.spring.xml.handle.SimpleBeansNamespaceHandler

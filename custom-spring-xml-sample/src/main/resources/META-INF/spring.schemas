@@ -1,1 +1,1 @@
-http\://www.sjl.com/schema/rocket/sjl-beans.xsd=com/sjl/custom/xml/sjl-beans.xsd
+http\://www.sjl.com/schema/rocket/sjl-beans.xsd=../com/github/custom/xml/sjl-beans.xsd

@@ -1,0 +1,2 @@
+com.github.spi.service.impl.DubboInvokeImpl
+com.github.spi.service.impl.HttpInvokeImpl

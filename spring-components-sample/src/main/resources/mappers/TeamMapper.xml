@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sjl.spring.components.transaction.dao.TeamMapper">
-  <resultMap id="BaseResultMap" type="com.sjl.spring.components.transaction.pojo.TeamDo">
+<mapper namespace="com.github.spring.components.transaction.dao.TeamMapper">
+  <resultMap id="BaseResultMap" type="com.github.spring.components.transaction.pojo.TeamDo">
     <!--@mbg.generated-->
     <!--@Table `team`-->
     <id column="id" jdbcType="INTEGER" property="id" />
