@@ -6,6 +6,8 @@ import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleInstantiationAwareBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.config.SimpleConfigBean;
+import com.github.simple.core.context.SimpleApplicationContext;
+import com.github.simple.core.context.SimpleApplicationContextAware;
 import com.github.simple.core.context.SimpleEmbeddedValueResolverAware;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.exception.SimpleIOCBaseException;
@@ -30,7 +32,13 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
     protected List<SimplePropertySource<Map<String, Object>>> simpleYamlPropertySourceLoader;
+    protected SimpleApplicationContext applicationContext;
 
+    /**
+     * 增加资源配置文件
+     *
+     * @param source 源
+     */
     @Override
     public <T> void addPropertySource(T source) {
         List<SimplePropertySource> list = (List<SimplePropertySource>) source;
@@ -41,9 +49,22 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         this.simplePropertiesPropertySourceLoader = (List<SimplePropertySource<Properties>>) source;
     }
 
-  
 
+    /**
+     * 设置应用程序上下文
+     *
+     * @param simpleApplicationContext 简单的应用程序上下文
+     */
+    @Override
+    public void setApplicationContext(SimpleApplicationContext simpleApplicationContext) {
+        this.applicationContext = simpleApplicationContext;
+    }
 
+    /**
+     * 完成bean实例
+     *
+     * @throws Throwable throwable
+     */
     public void finishBeanInstance() throws Throwable {
         List<String> beanNames = this.beanDefinitionNames;
         for (String beanName : beanNames) {
@@ -67,11 +88,22 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
     }
 
 
+    /**
+     * 是工厂bean
+     *
+     * @param beanName bean的名字
+     * @return boolean
+     */
     private boolean isFactoryBean(String beanName) {
         return beanDefinitions.entrySet().stream().filter(s -> s.getKey().equals(beanName)).anyMatch(m -> SimpleFactoryBean.class.isAssignableFrom(m.getValue().getBeanClass()));
     }
 
 
+    /**
+     * 注册表的bean定义
+     *
+     * @param basePackages 基本包
+     */
     public void registryBeanDefinition(String basePackages) {
         Set<Class<?>> classSet = ClassUtils.scannerBasePackages(basePackages);
         doRegistryBeanDefinition(classSet);
@@ -82,6 +114,13 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         return doCreateBean(beanName);
     }
 
+    /**
+     * 做创建bean
+     *
+     * @param beanName bean的名字
+     * @return {@link Object}
+     * @throws Throwable throwable
+     */
     private Object doCreateBean(String beanName) throws Throwable {
         //创建bean
         //填充属性
@@ -105,6 +144,13 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         return initialization(beanName, exportObject);
     }
 
+    /**
+     * 调用程序实例化之前
+     *
+     * @param rootClass 根类
+     * @param beanName  bean的名字
+     * @return {@link Object}
+     */
     private Object invokerBeforeInstantiation(Class<?> rootClass, String beanName) {
         if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
             return null;
@@ -122,6 +168,14 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     }
 
+    /**
+     * 初始化
+     *
+     * @param beanName bean的名字
+     * @param instance 实例
+     * @return {@link Object}
+     * @throws Throwable throwable
+     */
     private Object initialization(String beanName, Object instance) throws Throwable {
         invokerAware(beanName, instance);
         invokerBeforeInitialization(beanName, instance);
@@ -140,6 +194,14 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     }
 
+    /**
+     * 调用程序初始化后
+     *
+     * @param beanName bean的名字
+     * @param instance 实例
+     * @return {@link Object}
+     * @throws Throwable throwable
+     */
     private Object invokerAfterInitialization(String beanName, Object instance) throws Throwable {
         if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
             return instance;
@@ -153,6 +215,12 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         return instance;
     }
 
+    /**
+     * 调用程序之前初始化
+     *
+     * @param beanName bean的名字
+     * @param instance 实例
+     */
     private void invokerBeforeInitialization(String beanName, Object instance) {
         if (CollectionUtil.isEmpty(getBeanPostProcessor())) {
             return;
@@ -165,6 +233,12 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         }
     }
 
+    /**
+     * init方法
+     *
+     * @param beanName bean的名字
+     * @param bean     豆
+     */
     private void initMethods(String beanName, Object bean) {
         if (bean instanceof SimpleInitializingBean) {
             SimpleInitializingBean simpleInitializingBean = (SimpleInitializingBean) bean;
@@ -183,6 +257,10 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
             SimpleEmbeddedValueResolverAware evr = (SimpleEmbeddedValueResolverAware) instance;
             SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) this;
             evr.setEmbeddedValueResolver(beanFactory.getStringValueResolver());
+        }
+        if (instance instanceof SimpleApplicationContextAware) {
+            SimpleApplicationContextAware simpleApplicationContext = (SimpleApplicationContextAware) instance;
+            simpleApplicationContext.setApplicationContext(this.applicationContext);
         }
     }
 

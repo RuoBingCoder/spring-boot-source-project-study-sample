@@ -8,12 +8,11 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.cglib.proxy.MethodProxy;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ConfigurationClassPostProcessor;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
+import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * @author: JianLei
@@ -21,6 +20,10 @@ import java.lang.reflect.Method;
  * @description: BeanConfig
  * @see ConfigurationClassPostProcessor#enhanceConfigurationClasses(ConfigurableListableBeanFactory) 加了此注解 {@link Configuration} BeanConfig 会被代理
  * @see ConfigurationClassPostProcessor#processConfigBeanDefinitions
+ * @see ConfigurationClassParser#parse(Set)
+ * @see ConfigurationClassParser#parse(AnnotationMetadata, String) 
+ * @see ConfigurationClassParser#processConfigurationClass
+ * @see ConfigurationClassParser#doProcessConfigurationClass
  * @see org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader#loadBeanDefinitionsForBeanMethod
  * @see org.springframework.context.annotation.ConditionEvaluator#shouldSkip 条件注解 {@link org.springframework.boot.autoconfigure.condition.ConditionalOnBean}
  * @see org.springframework.boot.autoconfigure.condition.SpringBootCondition#matches

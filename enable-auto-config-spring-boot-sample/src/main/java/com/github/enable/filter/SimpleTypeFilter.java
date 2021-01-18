@@ -10,9 +10,9 @@ import java.io.IOException;
 /**
  * @author: jianlei
  * @date: 2020/8/25
- * @description: SjlTypeFilter
+ * @description: SimpleTypeFilter 自定义注解类型过滤器
  */
-public class SjlTypeFilter implements TypeFilter {
+public class SimpleTypeFilter implements TypeFilter {
     @Override
     public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
         return metadataReader.getAnnotationMetadata().getClassName().equals(SimpleService.class.getName());

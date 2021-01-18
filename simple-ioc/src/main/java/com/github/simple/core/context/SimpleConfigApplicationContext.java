@@ -8,13 +8,15 @@ import com.github.simple.core.beans.factory.SimpleConfigBeanFactory;
  * @date: 2020/12/21 3:04 下午
  * @description: SimpleApplicationContext
  */
-public interface SimpleConfigApplicationContext extends SimpleConfigBeanFactory {
+public interface SimpleConfigApplicationContext extends SimpleConfigBeanFactory  {
 
 
     SimpleBeanFactory getBeanFactory();
 
 
     void refresh() throws Throwable;
+
+    void addApplicationListener(SimpleApplicationListener<?> listener);
 
 
 

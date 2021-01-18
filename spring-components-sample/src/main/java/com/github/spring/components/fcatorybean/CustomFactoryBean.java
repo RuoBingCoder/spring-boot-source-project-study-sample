@@ -1,4 +1,4 @@
-package com.github.spring.components.pojo;
+package com.github.spring.components.fcatorybean;
 
 import com.github.spring.components.service.FactoryBeanService;
 import lombok.extern.slf4j.Slf4j;

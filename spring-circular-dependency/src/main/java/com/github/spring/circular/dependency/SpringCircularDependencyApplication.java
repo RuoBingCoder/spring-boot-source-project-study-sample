@@ -1,6 +1,6 @@
 package com.github.spring.circular.dependency;
 
-import com.github.spring.circular.dependency.pojo.A;
+import com.github.spring.circular.dependency.circular.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;

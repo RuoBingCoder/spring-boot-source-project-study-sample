@@ -3,16 +3,18 @@ package com.github.spring.components.mybatis.registry;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ClassUtil;
+import com.github.spring.components.SpringComponentsApplication;
+import com.github.spring.components.exception.MapperException;
 import com.github.spring.components.interceptor.MapperInterceptor;
 import com.github.spring.components.mybatis.common.constant.SqlMethodEnums;
-import com.github.spring.components.mybatis.common.mapper.SimpleBaseMapper;
-import com.github.spring.components.utils.SpringUtil;
-import com.github.spring.components.utils.StringUtils;
-import com.github.spring.components.exception.MapperException;
 import com.github.spring.components.mybatis.common.constant.SqlTagConstant;
+import com.github.spring.components.mybatis.common.mapper.SimpleBaseMapper;
 import com.github.spring.components.mybatis.common.wrapper.MapperMethodWrapper;
 import com.github.spring.components.transaction.pojo.HeroDo;
 import com.github.spring.components.utils.AnnotationUtils;
+import com.github.spring.components.utils.ClassUtils;
+import com.github.spring.components.utils.SpringUtil;
+import com.github.spring.components.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
@@ -25,15 +27,15 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import utils.ReflectUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -108,7 +110,8 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
             throw new MapperException("获取SqlSession 异常");
 
         }
-        String daoScan = environment.getProperty(SqlTagConstant.DAO_SCAN_PACKAGES_PREFIX);
+
+        String daoScan = ClassUtils.getMapperScanAnnotationValue(SpringComponentsApplication.class, MapperScan.class);
         Assert.notNull(daoScan, "dao 包路径不能为空!");
         Set<Class<?>> scanPackage = ClassUtil.scanPackage(daoScan);
         Map<Class<?>, List<MapperMethodWrapper>> handleSqlMethod = handleSqlMethod(scanPackage);
@@ -342,32 +345,28 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
     private Map<Class<?>, List<MapperMethodWrapper>> handleSqlMethod(Set<Class<?>> scanPackage) {
         Map<Class<?>, List<MapperMethodWrapper>> commonMethodMap = new LinkedHashMap<>();
         if (CollectionUtil.isNotEmpty(scanPackage)) {
-            List<MapperMethodWrapper> methodWrappers;
+            List<MapperMethodWrapper> methodWrappers = null;
             for (Class<?> inf : scanPackage) {
                 if (SimpleBaseMapper.class.isAssignableFrom(inf)) {
                     methodWrappers = new ArrayList<>();
-                    Type[] genericInterfaces = inf.getGenericInterfaces();
-                    Type type = genericInterfaces[0];
-                    if (type instanceof ParameterizedType) {
-                        ParameterizedType pt = (ParameterizedType) type;
-                        Type[] typeArguments = pt.getActualTypeArguments();
-                        //insert
-                        MapperMethodWrapper selMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.INSERT_ONE.getMethod()).entityType((Class<?>) typeArguments[0])
+                    final Object typeArguments = ReflectUtils.getGenericSingleType(inf);
+                    //insert
+                        MapperMethodWrapper selMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.INSERT_ONE.getMethod()).entityType((Class<?>) typeArguments)
                                 .sql(SqlMethodEnums.INSERT_ONE.getSql())
                                 .returnType(int.class).build();
                         methodWrappers.add(selMethodWrapper);
                         //selectList
-                        MapperMethodWrapper selListMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.SELECT_LIST.getMethod()).entityType((Class<?>) typeArguments[0])
+                        MapperMethodWrapper selListMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.SELECT_LIST.getMethod()).entityType((Class<?>) typeArguments)
                                 .sql(SqlMethodEnums.SELECT_LIST.getSql())
-                                .returnType((Class<?>) typeArguments[0]).build();
+                                .returnType((Class<?>) typeArguments).build();
                         methodWrappers.add(selListMethodWrapper);
                         //updateBySelective
-                        MapperMethodWrapper updateBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.UPDATE.getMethod()).entityType((Class<?>) typeArguments[0])
+                        MapperMethodWrapper updateBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.UPDATE.getMethod()).entityType((Class<?>) typeArguments)
                                 .sql(SqlMethodEnums.UPDATE.getSql())
                                 .returnType(int.class).build();
                         methodWrappers.add(updateBySelectiveMethodWrapper);
                         //delete
-                        MapperMethodWrapper deleteBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.DELETE.getMethod()).entityType((Class<?>) typeArguments[0])
+                        MapperMethodWrapper deleteBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.DELETE.getMethod()).entityType((Class<?>) typeArguments)
                                 .sql(SqlMethodEnums.DELETE.getSql())
                                 .returnType(int.class).build();
                         methodWrappers.add(deleteBySelectiveMethodWrapper);
@@ -376,7 +375,6 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
                 }
             }
 
-        }
         return commonMethodMap;
     }
 

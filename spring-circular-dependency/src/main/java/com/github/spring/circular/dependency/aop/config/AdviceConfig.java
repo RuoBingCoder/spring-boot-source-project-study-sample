@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AdviceConfig {
 
-    @Pointcut("execution(public * com.sjl.spring.circular.dependency.aop.controller.*.*(..))")
+    @Pointcut("execution(public * com.github.spring.circular.dependency.circular.*.*(..))")
     public void pointcut(){
 
     }

@@ -95,7 +95,7 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
             return getCacheBeanByName(beanName);
         }
         if (shouldSkip(bean, beanName)) {
-            return bean;
+            return null;
         }
         return createProxy(bean);
     }

@@ -55,7 +55,7 @@ match:
 
 logging:
   level:
-    com.sjl.spring.components.transaction.dao: debug
+    com.github.spring.components.transaction.dao: debug
 
 #mybatis-plus:
 #  mapper-locations: classpath*:/mappers/*.xml
@@ -63,4 +63,4 @@ logging:
 
 dao:
   scan:
-    packages: com.sjl.spring.components.transaction.dao
+    packages: com.github.spring.components.transaction.dao

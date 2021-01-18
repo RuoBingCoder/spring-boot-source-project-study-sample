@@ -12,6 +12,8 @@ import com.github.simple.core.beans.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.core.beans.factory.config.SimpleEmbeddedValueResolver;
 import com.github.simple.core.beans.factory.support.SimpleBeanDefinitionRegistry;
 import com.github.simple.core.constant.SimpleIOCConstant;
+import com.github.simple.core.context.event.SimpleApplicationEventMulticaster;
+import com.github.simple.core.context.event.StandardSimpleApplicationEventMulticaster;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.resource.SimpleClassPathResource;
 import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
@@ -34,17 +36,22 @@ import java.util.Properties;
  * @description: SimpleApplicationContext
  */
 @Slf4j
-public abstract class AbsSimpleApplicationContext implements SimpleConfigApplicationContext {
+public abstract class AbsSimpleApplicationContext implements SimpleConfigApplicationContext  {
 
     private final Class<?> sourceClass;
 
     protected SimpleDefaultListableBeanFactory beanFactory;
 
+    protected SimpleApplicationEventMulticaster applicationEventMulticaster;
     @Override
     public void addEmbeddedValueResolver(SimpleStringValueResolver valueResolver) {
        beanFactory.addEmbeddedValueResolver(valueResolver);
     }
 
+    @Override
+    public void addApplicationListener(SimpleApplicationListener<?> listener) {
+        this.applicationEventMulticaster.addApplicationListener(listener);
+    }
 
     protected AbsSimpleApplicationContext(Class<?> sourceClass) throws Throwable {
         this.sourceClass = sourceClass;
@@ -65,6 +72,7 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
             postBeanFactory(beanFactory);
             invokerBeanFactoryPostProcessor(beanFactory);
             registryBeanPostProcessor(beanFactory);
+            initApplicationEventMulticaster();
             finishBeanInstance(beanFactory);
         } catch (Exception e) {
             log.error("ioc create exception", e);
@@ -73,10 +81,21 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
 
     }
 
+    @Override
+    public void publishEvent(SimpleApplicationEvent event) {
+        this.applicationEventMulticaster.multicastEvent(event);
+    }
+
+    private void initApplicationEventMulticaster() {
+        this.applicationEventMulticaster = new StandardSimpleApplicationEventMulticaster(this);
+            
+    }
+
     private SimpleConfigBeanFactory obtainFreshBeanFactory() {
         SimpleDefaultListableBeanFactory beanFactory=new SimpleDefaultListableBeanFactory();
         beanFactory.registryBeanDefinition(ReflectUtils.getBasePackages(sourceClass));
         this.beanFactory=beanFactory;
+        beanFactory.setApplicationContext((SimpleApplicationContext) this);
         return beanFactory;
 
     }

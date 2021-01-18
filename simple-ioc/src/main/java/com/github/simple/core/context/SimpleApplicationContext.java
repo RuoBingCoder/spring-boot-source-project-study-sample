@@ -16,6 +16,8 @@ import java.lang.reflect.Field;
 public class SimpleApplicationContext extends AbsSimpleApplicationContext{
 
 
+
+
     public static SimpleApplicationContext run(Class<?> clazz) throws Throwable {
         return new SimpleApplicationContext(clazz);
     }
@@ -28,6 +30,12 @@ public class SimpleApplicationContext extends AbsSimpleApplicationContext{
     public SimpleBeanFactory getBeanFactory() {
         return super.getBeanFactory();
     }
+
+    @Override
+    public void addApplicationListener(SimpleApplicationListener<?> listener) {
+        super.applicationEventMulticaster.addApplicationListener(listener);
+    }
+
 
     @Override
     public <T> T getBean(Class<?> clazz) throws Throwable {

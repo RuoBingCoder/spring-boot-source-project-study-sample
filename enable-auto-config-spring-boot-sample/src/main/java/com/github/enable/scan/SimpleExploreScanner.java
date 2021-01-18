@@ -14,11 +14,11 @@ import java.util.Set;
 /**
  * @author: jianlei
  * @date: 2020/8/25
- * @description: SjlBtaisScanner
+ * @description: 包扫描
  *
  */
 @Slf4j
-public class SjlExploreScanner extends ClassPathBeanDefinitionScanner {
+public class SimpleExploreScanner extends ClassPathBeanDefinitionScanner {
     private String basePackage;
     private String beanName;
     private Class<? extends Annotation> annotationClass;
@@ -47,7 +47,7 @@ public class SjlExploreScanner extends ClassPathBeanDefinitionScanner {
         this.annotationClass = annotationClass;
     }
 
-    public SjlExploreScanner(BeanDefinitionRegistry registry) {
+    public SimpleExploreScanner(BeanDefinitionRegistry registry) {
         super(registry);
     }
 

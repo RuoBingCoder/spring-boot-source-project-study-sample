@@ -6,6 +6,7 @@ import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.beans.factory.support.SimpleBeanDefinitionRegistry;
+import com.github.simple.core.context.SimpleApplicationEvent;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.resource.SimplePropertySource;
@@ -27,6 +28,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanFactory implements SimpleListableBeanFactory, SimpleBeanDefinitionRegistry {
 
+    @Override
+    public void publishEvent(SimpleApplicationEvent event) {
+
+    }
 
     /**
      * simpleFactoryBean cache

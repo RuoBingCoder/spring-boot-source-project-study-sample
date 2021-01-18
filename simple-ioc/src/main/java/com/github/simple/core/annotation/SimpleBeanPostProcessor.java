@@ -14,7 +14,7 @@ public interface SimpleBeanPostProcessor {
     }
 
     default Object postProcessAfterInitialization(Object bean, String beanName) throws Throwable {
-        return bean;
+        return null;
     }
 
 }

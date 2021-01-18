@@ -1,6 +1,6 @@
 package com.github.enable.annotation;
 
-import com.github.enable.scan.SjlExploreScanner;
+import com.github.enable.scan.SimpleExploreScanner;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -16,6 +16,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -48,6 +49,18 @@ public class SimpleScannerRegistry implements ImportBeanDefinitionRegistrar, App
 
     }
 
+    /**
+     * 注册的bean定义
+     *
+     * @param annotationMetadata 元数据注释
+     * @param registry           注册表
+     * springboot 准备context {@link AnnotationMetadata } 添加注解源数据 from {@link org.springframework.boot.SpringApplication#load(ApplicationContext, Object[])}
+     *                           ->{@link org.springframework.context.annotation.AnnotatedBeanDefinitionReader#register(Class[])}
+     *                           ->{@link org.springframework.context.annotation.AnnotatedBeanDefinitionReader#doRegisterBean}
+     *
+     * 注解源信息 {@link org.springframework.core.type.StandardAnnotationMetadata}
+     * <code>BeanDefinitionReaderUtils.registerBeanDefinition();</code>
+     */
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
         AnnotationAttributes mapperScanAttrs = AnnotationAttributes
@@ -62,7 +75,7 @@ public class SimpleScannerRegistry implements ImportBeanDefinitionRegistrar, App
     }
 
     private void registerBeanDefinitions(AnnotationAttributes attributes, BeanDefinitionRegistry registry, String beanName) {
-        SjlExploreScanner scanner = new SjlExploreScanner(registry);
+        SimpleExploreScanner scanner = new SimpleExploreScanner(registry);
         Class<? extends Annotation> annotationClass = attributes.getClass("annotationClass");
         if (!Annotation.class.equals(annotationClass)) {
             scanner.setAnnotationClass(annotationClass);
@@ -78,6 +91,11 @@ public class SimpleScannerRegistry implements ImportBeanDefinitionRegistrar, App
                 .collect(Collectors.toList()));
         scanner.setBasePackage(StringUtils.collectionToCommaDelimitedString(basePackages));
 //        scanner.addIncludeFilter(((metadataReader, metadataReaderFactory) -> true));
+        /**
+         * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#findCandidateComponents(String)
+         * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#scanCandidateComponents(String) 
+         * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#isCandidateComponent(MetadataReader)
+         */
         scanner.addIncludeFilter(new AnnotationTypeFilter(SimpleService.class));
         scanner.scan(StringUtils.toStringArray(basePackages));
 

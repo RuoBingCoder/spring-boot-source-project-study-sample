@@ -35,6 +35,7 @@
         <module>spring-circular-dependency</module>
         <module>spring-dependency-inject-sample</module>
         <module>simple-ioc</module>
+        <module>spring-security-sample</module>
         <!--        <module>simple-dubbo</module>-->
     </modules>
     <dependencies>

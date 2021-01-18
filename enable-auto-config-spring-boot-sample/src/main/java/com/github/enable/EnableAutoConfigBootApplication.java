@@ -1,9 +1,10 @@
 package com.github.enable;
 
 import com.github.enable.annotation.SimpleScanner;
-import com.github.enable.service.HelloService;
 import com.github.enable.config.ConfigProperties;
+import com.github.enable.service.HelloService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
@@ -23,7 +24,7 @@ import javax.annotation.Resource;
  * </p>
  */
 @SpringBootApplication
-@SimpleScanner(basePackages = "com.sjl.enable.service")
+@SimpleScanner(basePackages = "com.github.enable.service")
 @EnableScheduling
 @Slf4j
 @EnableConfigurationProperties
@@ -31,6 +32,11 @@ public class EnableAutoConfigBootApplication implements CommandLineRunner, Appli
 
     @Resource
     private HelloService helloService;
+
+    @Resource
+    private DefaultListableBeanFactory beanFactory;
+
+
 
 //    @Value("${com.github.info}")
 //    private String info;
@@ -80,7 +86,6 @@ public class EnableAutoConfigBootApplication implements CommandLineRunner, Appli
      **/
     @Override
     public void run(ApplicationArguments args) {
-        log.info("===> ApplicationRunner output :{}", configProperties==null?"--":configProperties.toString());
-
+//        log.info("===> ApplicationRunner output :{}", configProperties==null?"--":configProperties.toString());
     }
 }

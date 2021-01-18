@@ -4,6 +4,7 @@ import com.github.simple.core.annotation.*;
 import com.github.simple.core.beans.factory.support.SimpleBeanFactorySupport;
 import com.github.simple.core.config.SimpleConfigBean;
 import com.github.simple.core.constant.SimpleIOCConstant;
+import com.github.simple.core.context.SimpleListenerMulticasterPostProcessor;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleBeanCreateException;
@@ -263,6 +264,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     private void registryPostProcessor() {
         SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
         addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
+        SimpleRootBeanDefinition listenerMulticasterBeanDefinition = buildRootBeanDefinition(SimpleListenerMulticasterPostProcessor.class);
+        addBeanDefinition(listenerMulticasterBeanDefinition.getBeanName(), listenerMulticasterBeanDefinition);
 
 
     }

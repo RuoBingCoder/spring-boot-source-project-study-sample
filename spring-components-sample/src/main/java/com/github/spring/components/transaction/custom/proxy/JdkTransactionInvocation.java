@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  *
  */
 
-public class JdkTransactionInvocation implements InvocationHandler {
+public class JdkTransactionInvocation implements InvocationHandler{
 
 
     @Override
@@ -21,4 +21,6 @@ public class JdkTransactionInvocation implements InvocationHandler {
         MethodInvocation methodInvocation = new MethodInvocation(method, args);
         return methodInvocation.proceed();
     }
+
+
 }

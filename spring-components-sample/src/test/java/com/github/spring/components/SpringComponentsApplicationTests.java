@@ -12,14 +12,16 @@ import com.github.spring.components.transaction.service.JdGoodsService;
 import com.github.spring.components.transaction.service.TeamService;
 import com.github.spring.components.utils.DateUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.framework.Advised;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
 
 @SpringBootTest
-@EnableAspectJAutoProxy(proxyTargetClass = true,exposeProxy = true)
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 class SpringComponentsApplicationTests {
 
 
@@ -38,6 +40,7 @@ class SpringComponentsApplicationTests {
 
     @Resource
     private HeroService heroService;
+
     @Test
     void contextLoads() {
         JdGoods jdGoods = JdGoods.builder().operate("insert").rate("14").shopName("森马_2").thumbnail("http://www.baidu.com").title("测试_2").build();
@@ -76,7 +79,7 @@ class SpringComponentsApplicationTests {
      * 事务传播机制测试
      */
     @Test
-    public void propagationAttrTest(){
+    public void propagationAttrTest() {
 
         teamService.insert(getTeam());
 
@@ -89,7 +92,7 @@ class SpringComponentsApplicationTests {
     }
 
     @Test
-    public void heroInsertTest(){
+    public void heroInsertTest() {
 //        heroService.insert(Hero.builder().createTime(LocalDateTime.now()).money(100).name("马可波罗").build());
 //        heroService.init();
 //        Hero hero = heroMapper.selectById(1);
@@ -97,6 +100,25 @@ class SpringComponentsApplicationTests {
         HeroDo hero = HeroDo.builder().name("周瑜").build();
 //        List<Hero> heroes = heroMapper.selectByAll(hero);
 //        System.out.println("====> heroes :"+JSONObject.toJSONString(heroes));
+    }
+
+    /**
+     * @see org.springframework.aop.framework.CglibAopProxy.DynamicAdvisedInterceptor#advised->BeanFactoryTransactionAttributeSourceAdvisor
+     * @see org.springframework.aop.framework.AdvisedSupport#getInterceptorsAndDynamicInterceptionAdvice
+     * @see org.springframework.aop.framework.DefaultAdvisorChainFactory#getInterceptorsAndDynamicInterceptionAdvice(Advised, Method, Class) 
+     * @see org.springframework.transaction.interceptor.TransactionAttributeSourcePointcut#matches(Method, Class)
+     * @see org.springframework.transaction.interceptor.AbstractFallbackTransactionAttributeSource#getTransactionAttribute(Method, Class)
+     * @see org.springframework.transaction.interceptor.AbstractFallbackTransactionAttributeSource#computeTransactionAttribute(Method, Class)
+     * @see org.springframework.transaction.annotation.AnnotationTransactionAttributeSource#findTransactionAttribute(Method)  //find @Transactional注解获取属性
+     * 最后 	this.attributeCache.put(cacheKey, txAttr);
+     * 调用方法时会从attributeCache 获取没有则走普通方法
+     * 如果获取chain 为空,则进行普通处理
+     */
+    @Test
+    public void heroSelectListTest() {
+        HeroDo hero = getHero();
+        heroService.selectList(hero);
+
     }
 
 

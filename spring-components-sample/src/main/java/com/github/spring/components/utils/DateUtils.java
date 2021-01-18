@@ -24,8 +24,4 @@ public class DateUtils {
         return DateUtil.now();
     }
 
-    public static void main(String[] args) {
-//        System.out.println(getCurrentTime());
-        System.out.println(getNow());
-    }
 }

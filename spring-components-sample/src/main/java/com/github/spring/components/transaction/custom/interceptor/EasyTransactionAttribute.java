@@ -4,8 +4,9 @@ package com.github.spring.components.transaction.custom.interceptor;
  * @author: JianLei
  * @date: 2020/11/8 1:36 下午
  * @description: EasyTransactionAttribute
+ * @see com.github.spring.components.transaction.service.impl.HeroServiceImpl
  */
-public interface EasyTransactionAttribute {
+public interface EasyTransactionAttribute extends EasyTransactionDefinition{
 
     /**
      * @Author jianlei.shi

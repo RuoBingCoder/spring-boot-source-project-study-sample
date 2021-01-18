@@ -1,7 +1,7 @@
 package com.github.spring.circular.dependency.aop.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.spring.circular.dependency.pojo.A;
+import com.github.spring.circular.dependency.circular.A;
 import com.github.spring.circular.dependency.pojo.LogModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

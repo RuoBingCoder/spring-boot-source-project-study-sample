@@ -1,6 +1,6 @@
 package com.github.enable.config;
 
-import com.github.enable.scan.SjlExploreScanner;
+import com.github.enable.scan.SimpleExploreScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
@@ -47,7 +47,7 @@ public class SjlBatisConfig implements BeanDefinitionRegistryPostProcessor, Init
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-        SjlExploreScanner scanner=new SjlExploreScanner(registry);
+        SimpleExploreScanner scanner=new SimpleExploreScanner(registry);
        // scanner.setAnnotationClass(annotationClass);
         scanner.registerFilters();
         final Set<BeanDefinition> candidateComponents = scanner.findCandidateComponents(this.basePackage);

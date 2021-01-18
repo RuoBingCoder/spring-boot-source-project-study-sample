@@ -2,6 +2,8 @@ package com.github.simple.core.beans.factory;
 
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
+import com.github.simple.core.context.SimpleApplicationContext;
+import com.github.simple.core.context.SimpleApplicationEventPublisher;
 import com.github.simple.core.utils.SimpleStringValueResolver;
 import org.springframework.lang.Nullable;
 
@@ -10,7 +12,7 @@ import org.springframework.lang.Nullable;
  * @date: 2020/12/19 8:29 下午
  * @description: SimpleConfigBeanFactory
  */
-public interface SimpleConfigBeanFactory extends SimpleBeanFactory {
+public interface SimpleConfigBeanFactory extends SimpleBeanFactory, SimpleApplicationEventPublisher {
 
     String SCOPE_SINGLETON = "singleton";
 
@@ -36,6 +38,10 @@ public interface SimpleConfigBeanFactory extends SimpleBeanFactory {
 
 
     default <T> void addPropertySource(T source) {
+        return;
+    }
+    
+    default void setApplicationContext(SimpleApplicationContext applicationContext){
         return;
     }
 

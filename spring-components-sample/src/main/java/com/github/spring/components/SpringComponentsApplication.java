@@ -26,9 +26,10 @@ import org.springframework.retry.annotation.EnableRetry;
 
 import javax.annotation.Resource;
 
+
 @SpringBootApplication
-@MapperScan("com.sjl.spring.components.transaction.dao")
-@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
+@MapperScan("com.github.spring.components.transaction.dao")
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)  //exposeProxy=true  即可以通过AopContext.currentProxy() 获取当前代理类
 @Order
 @EnableRetry
 public class SpringComponentsApplication implements CommandLineRunner {

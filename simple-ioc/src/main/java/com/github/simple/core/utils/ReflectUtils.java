@@ -9,6 +9,7 @@ import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.enums.SimpleIOCEnum;
 import com.github.simple.core.exception.SimpleFieldTypeException;
 import com.github.simple.core.exception.SimpleIOCBaseException;
+import com.github.simple.demo.test.PrepareSimpleApplicationListener;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -137,10 +138,27 @@ public class ReflectUtils {
         return null;
     }
 
+    public static <T> T getGenericSingleType(Class<?> source){
+        final Type[] genericInterfaces = source.getGenericInterfaces();
+        if (genericInterfaces.length>0){
+            final Type genericInterface = genericInterfaces[0];
+            if (genericInterface instanceof ParameterizedType){
+                ParameterizedType parameterizedType= (ParameterizedType) genericInterface;
+                final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+                return (T) actualTypeArguments[0];
+            }
+        }
+        return null;
+    }
 
     public static Boolean isAssignableFrom(Class<?> clazz, Class<?> type) {
         return type.isAssignableFrom(clazz);
     }
 
 
+    public static void main(String[] args) {
+        final Object genericSingleType = getGenericSingleType(PrepareSimpleApplicationListener.class);
+        System.out.println(genericSingleType);
+    }
 }

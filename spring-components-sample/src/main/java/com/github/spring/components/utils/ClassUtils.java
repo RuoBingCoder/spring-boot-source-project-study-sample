@@ -1,7 +1,14 @@
 package com.github.spring.components.utils;
 
+import org.mybatis.spring.annotation.MapperScan;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author jianlei.shi
@@ -111,6 +118,24 @@ public class ClassUtils {
         return Class.forName(className.endsWith("[]")
                 ? "[L" + className.substring(0, className.length() - 2) + ";"
                 : className, true, Thread.currentThread().getContextClassLoader());
+    }
+    
+    public static List<Annotation> getAllAnnotationMetadata(Class<?> sourClass){
+        List<Annotation> annotationList=new ArrayList<>();
+        Annotation[] declaredAnnotations = sourClass.getDeclaredAnnotations();
+        if (declaredAnnotations.length > 0){
+            annotationList.addAll(Arrays.asList(declaredAnnotations));
+        }
+        return annotationList;
+    }
+    
+    public static String getMapperScanAnnotationValue(Class<?> sourClass, Class< ? extends Annotation> annotationType){
+        List<Annotation> allAnnotationMetadata = getAllAnnotationMetadata(sourClass);
+        List<Annotation> matchAnnotationList = allAnnotationMetadata.stream().filter(a -> a.annotationType().equals(annotationType)).collect(Collectors.toList());
+        Annotation annotation = matchAnnotationList.get(0);
+        MapperScan mapperScan= (MapperScan) annotation;
+        return mapperScan.value()[0];
+
     }
 
 

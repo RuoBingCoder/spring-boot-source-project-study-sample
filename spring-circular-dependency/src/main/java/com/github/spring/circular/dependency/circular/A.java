@@ -1,5 +1,6 @@
-package com.github.spring.circular.dependency.pojo;
+package com.github.spring.circular.dependency.circular;
 
+import com.github.spring.circular.dependency.pojo.B;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

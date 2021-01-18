@@ -5,9 +5,7 @@ import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -16,7 +14,7 @@ import java.util.*;
  * @description:
  */
 @Slf4j
-public class ReflectUtil {
+public class ReflectUtils {
 
     public static Map<Object, List<Object>> parseBeanAndMethodsAnnotationInfo(
             Object obj, Class<? extends Annotation> annotationTypes) {
@@ -98,6 +96,27 @@ public class ReflectUtil {
         return MethodIntrospector.selectMethods(bean.getClass(),
                 (MethodIntrospector.MetadataLookup<T>) method -> AnnotatedElementUtils
                         .findMergedAnnotation(method, annotation));
+    }
+
+
+    /**
+     * 得到通用的单一类型
+     *
+     * @param source 源
+     * @return {@link T}
+     */
+    public static <T> T getGenericSingleType(Class<?> source){
+        final Type[] genericInterfaces = source.getGenericInterfaces();
+        if (genericInterfaces.length>0){
+            final Type genericInterface = genericInterfaces[0];
+            if (genericInterface instanceof ParameterizedType){
+                ParameterizedType parameterizedType= (ParameterizedType) genericInterface;
+                final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+
+                return (T) actualTypeArguments[0];
+            }
+        }
+        return null;
     }
 
 }

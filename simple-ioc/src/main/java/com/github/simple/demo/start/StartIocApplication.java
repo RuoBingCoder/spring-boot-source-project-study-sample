@@ -21,6 +21,8 @@ public class StartIocApplication {
 
     public static void main(String[] args) throws Throwable {
         SimpleApplicationContext applicationContext = SimpleApplicationContext.run(StartIocApplication.class);
+        //自定义事件广播机制
+        applicationContext.publishEvent(new com.github.simple.demo.test.SayHelloEvent("haha","jdjdjdjj"));
 //        A a = beanFactory.getBean(A.class);
         /**
          * bean 工厂 注册bean
