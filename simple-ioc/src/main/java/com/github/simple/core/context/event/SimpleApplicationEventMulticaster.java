@@ -22,6 +22,6 @@ public interface SimpleApplicationEventMulticaster {
      *standard
      * @param event 事件
      */
-    void multicastEvent(SimpleApplicationEvent event);
+    void multicastEvent(SimpleApplicationEvent event) throws Throwable;
 
 }

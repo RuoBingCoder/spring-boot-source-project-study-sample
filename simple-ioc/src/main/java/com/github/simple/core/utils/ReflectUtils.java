@@ -19,6 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cn.hutool.core.util.ReflectUtil.getMethods;
+
 /**
  * @author: JianLei
  * @date: 2020/12/12 2:10 下午
@@ -156,6 +158,25 @@ public class ReflectUtils {
         return type.isAssignableFrom(clazz);
     }
 
+    public static boolean matchMethodParameterType(Class<?> clazz, Class<?> tyClass){
+        final Method[] methods = getMethods(clazz);
+        int count = 0;
+        for (Method method : methods) {
+            if ("onApplicationEvent".equals(method.getName())) {
+                count++;
+                
+            }
+        }
+        return count == 1;
+    }
+    public static Class<?> getMethodParameter(Method method) {
+        method.setAccessible(false);
+        return getMethodParameters(method)[0];
+    }
+    public static Class<?>[] getMethodParameters(Method method) {
+        method.setAccessible(false);
+        return method.getParameterTypes();
+    }
 
     public static void main(String[] args) {
         final Object genericSingleType = getGenericSingleType(PrepareSimpleApplicationListener.class);

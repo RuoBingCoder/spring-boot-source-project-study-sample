@@ -7,7 +7,6 @@ import com.github.simple.core.context.SimpleApplicationListener;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.utils.ReflectUtils;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ public class StandardSimpleApplicationEventMulticaster implements SimpleApplicat
      * @param event 事件
      */
     @Override
-    public void multicastEvent(SimpleApplicationEvent event) {
+    public void multicastEvent(SimpleApplicationEvent event) throws Throwable {
         doInvokerListeners(event);
     }
 
@@ -54,9 +53,9 @@ public class StandardSimpleApplicationEventMulticaster implements SimpleApplicat
      *
      * @param event 事件
      */
-    private void doInvokerListeners(SimpleApplicationEvent event) {
+    private void doInvokerListeners(SimpleApplicationEvent event) throws Throwable {
         final Set<SimpleApplicationListener<?>> appListeners = getAppListeners(event);
-        if (CollectionUtil.isNotEmpty(appListeners)){
+        if (CollectionUtil.isNotEmpty(appListeners)) {
             for (SimpleApplicationListener appListener : appListeners) {
                 appListener.onApplicationEvent(event);
             }
@@ -67,14 +66,20 @@ public class StandardSimpleApplicationEventMulticaster implements SimpleApplicat
      * 让应用程序侦听器
      *
      * @param event 事件
-     * @return {@link Set<SimpleApplicationListener<?>>}
+     * @return {@link Set<SimpleApplicationListener<?>}
      */
     private Set<SimpleApplicationListener<?>> getAppListeners(SimpleApplicationEvent event) {
-        if (CollectionUtil.isNotEmpty(simpleApplicationListeners)) {
-            return simpleApplicationListeners.stream().filter(s ->
-                    matchEventType(s, event)).collect(Collectors.toSet());
+        if (CollectionUtil.isEmpty(simpleApplicationListeners)){
+            throw new SimpleIOCBaseException("simpleApplicationListeners is empty!");
         }
-        return Collections.emptySet();
+        //注解事件发布 @EventListener
+        final Object source = event.getSource();
+
+//        if (event.getClass().equals(SimpleApplicationEvent.class)) {
+//            return simpleApplicationListeners.stream().filter(s -> isMatchMethodParamType(s, event)).collect(Collectors.toSet());
+//        }
+        return simpleApplicationListeners.stream().filter(s ->
+                matchEventType(s, event)).collect(Collectors.toSet());
     }
 
     /**
@@ -86,7 +91,15 @@ public class StandardSimpleApplicationEventMulticaster implements SimpleApplicat
      */
     private boolean matchEventType(SimpleApplicationListener<?> listener, SimpleApplicationEvent event) {
         Class<?> eventClass = getGenericParamType(listener);
-        return eventClass == event.getClass();
+        if (eventClass==SimpleApplicationEvent.class){
+            return true;
+        }
+        return eventClass == (event.getClass());
+        //方法注解处理 todo
+    }
+
+    private boolean isMatchMethodParamType(SimpleApplicationListener<?> listener, SimpleApplicationEvent event) {
+        return ReflectUtils.matchMethodParameterType(listener.getClass(), SimpleApplicationEvent.class);
     }
 
     /**
@@ -102,4 +115,6 @@ public class StandardSimpleApplicationEventMulticaster implements SimpleApplicat
         }
         throw new SimpleIOCBaseException("no such event!");
     }
+
+
 }

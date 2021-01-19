@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @SimpleComponent
-public class PrepareSimpleApplicationListener implements SimpleApplicationListener<SayHelloEvent> {
+public class PrepareSimpleApplicationListener implements SimpleApplicationListener<HelloEvent> {
 
     @Override
-    public void onApplicationEvent(SayHelloEvent event) {
+    public void onApplicationEvent(HelloEvent event) {
         log.info("event say :{}",event.getMsg());
     }
 }

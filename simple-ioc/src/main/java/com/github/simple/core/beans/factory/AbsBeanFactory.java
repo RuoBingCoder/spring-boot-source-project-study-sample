@@ -90,6 +90,11 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         return (T) bean;
     }
 
+    /**
+     * 预测bean类型
+     *
+     * @param beanName bean的名字
+     */
     protected abstract void predictBeanType(Object beanName);
 
     protected abstract Object getFactoryBeanInnerInstance(Object singleton, String beanName);
@@ -137,15 +142,6 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
 
-    public void addBeanDefinition(String beanName, SimpleRootBeanDefinition rootBeanDefinition) {
-        if (!this.beanDefinitions.containsKey(beanName)) {
-            synchronized (this.beanDefinitions) {
-                this.beanDefinitionNames.add(beanName);
-                this.beanDefinitions.put(beanName, rootBeanDefinition);
-            }
-        }
-    }
-
     /**
      * @param finalInstance
      * @param wrapperInstance
@@ -165,7 +161,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     public void doRegistryBeanDefinition(Set<Class<?>> classSet) {
         SimpleRootBeanDefinition simpleRootBeanDefinitionSupport = buildRootBeanDefinition(SimpleBeanFactorySupport.class);
-        addBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
+//        addBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
+        this.registerBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
         registryPostProcessor();
         classSet.forEach(mbd -> {
             try {
@@ -189,7 +186,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         if (ReflectUtils.matchAnnotationComponent(bdClazz, SimpleConfig.class)) {
             checkType(bdClazz, null);
             SimpleRootBeanDefinition configBeanDefinition = buildRootBeanDefinition(bdClazz);
-            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+            registerBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+//            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
             doParseAndRegistryConfigBean(bdClazz);
         }
     }
@@ -207,7 +205,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         Map<Method, SimpleBean> methodAndAnnotation = ReflectUtils.getMethodAndAnnotation(bdClazz, SimpleBean.class);
         SimpleRootBeanDefinition configMbd = buildRootBeanDefinition(SimpleConfigBean.class);
         if (!beanDefinitions.containsKey(configMbd.getBeanName())) {
-            addBeanDefinition(configMbd.getBeanName(), configMbd);
+//            addBeanDefinition(configMbd.getBeanName(), configMbd);
+            registerBeanDefinition(configMbd.getBeanName(), configMbd);
         }
         for (Map.Entry<Method, SimpleBean> entry : methodAndAnnotation.entrySet()) {
             SimpleRootBeanDefinition configBeanDefinition;
@@ -217,7 +216,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
             } else {
                 configBeanDefinition = buildRootBeanDefinition(entry.getKey().getReturnType());
             }
-            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+//            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+            registerBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
             SimpleConfigBean simpleBean = getBean(ClassUtils.toLowerBeanName(SimpleConfigBean.class.getSimpleName()));
             if (simpleBean != null) {
                 if (!simpleBean.matchConfigClass(bdClazz)) {
@@ -250,7 +250,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     private void generalRegistry(Class<?> cb) {
         if (ReflectUtils.matchAnnotationComponent(cb, SimpleComponent.class) || ReflectUtils.matchAnnotationComponent(cb, SimpleService.class)) {
             SimpleRootBeanDefinition rootBeanDefinition = buildRootBeanDefinition(cb);
-            addBeanDefinition(rootBeanDefinition.getBeanName(), rootBeanDefinition);
+//            addBeanDefinition(rootBeanDefinition.getBeanName(), rootBeanDefinition);
+            this.registerBeanDefinition(rootBeanDefinition.getBeanName(), rootBeanDefinition);
         }
     }
 
@@ -263,9 +264,12 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      **/
     private void registryPostProcessor() {
         SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
-        addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
+        this.registerBeanDefinition(autowiredBeanDefinition.getBeanName(),autowiredBeanDefinition);
+//        addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
         SimpleRootBeanDefinition listenerMulticasterBeanDefinition = buildRootBeanDefinition(SimpleListenerMulticasterPostProcessor.class);
-        addBeanDefinition(listenerMulticasterBeanDefinition.getBeanName(), listenerMulticasterBeanDefinition);
+//        addBeanDefinition(listenerMulticasterBeanDefinition.getBeanName(), listenerMulticasterBeanDefinition);
+        this.registerBeanDefinition(listenerMulticasterBeanDefinition.getBeanName(), listenerMulticasterBeanDefinition);
+
 
 
     }
@@ -319,9 +323,14 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         return beanDefinitions;
     }
 
-    @Override
-    public void registerBeanDefinition(String beanName, Object singletonObject) {
-        this.beanDefinitions.put(beanName, (SimpleRootBeanDefinition) singletonObject);
+    public void registerBeanDefinition(String beanName, SimpleRootBeanDefinition singletonObject) {
+        if (!this.beanDefinitions.containsKey(beanName)) {
+            synchronized (this.beanDefinitions) {
+                this.beanDefinitionNames.add(beanName);
+                this.beanDefinitions.put(beanName, singletonObject);
+            }
+        }
+//        this.beanDefinitions.put(beanName, (SimpleRootBeanDefinition) singletonObject);
     }
 
     public void destroyBeans() {

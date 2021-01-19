@@ -9,11 +9,11 @@ import lombok.Getter;
  * @description SayHelloEvent
  */
 @Getter
-public class SayHelloEvent extends SimpleApplicationEvent {
-    
+public class MockEvent extends SimpleApplicationEvent {
+
     private String msg;
 
-    public SayHelloEvent(Object source, String msg) {
+    public MockEvent(Object source, String msg) {
         super(source);
         this.msg = msg;
     }

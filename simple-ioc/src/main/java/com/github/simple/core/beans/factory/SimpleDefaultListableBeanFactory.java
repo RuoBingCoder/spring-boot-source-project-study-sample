@@ -1,7 +1,6 @@
 package com.github.simple.core.beans.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.github.simple.core.annotation.SimpleAutowiredAnnotationBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
@@ -152,9 +151,9 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     @Override
     public void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors) {
         for (SimpleBeanPostProcessor sortedPostProcessor : sortedPostProcessors) {
-            if (sortedPostProcessor instanceof SimpleAutowiredAnnotationBeanPostProcessor) {
-                SimpleAutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = (SimpleAutowiredAnnotationBeanPostProcessor) sortedPostProcessor;
-                autowiredAnnotationBeanPostProcessor.setBeanFactory(this);
+            if (sortedPostProcessor instanceof SimpleBeanFactoryAware) {
+                SimpleBeanFactoryAware beanFactory= (SimpleBeanFactoryAware) sortedPostProcessor;
+                beanFactory.setBeanFactory(this);
             }
         }
     }
@@ -174,6 +173,13 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
         return Collections.emptyList();
     }
 
+    /**
+     * 解决字符串值
+     *
+     * @param type        类型
+     * @param placeHolder 占位符
+     * @return {@link Object}
+     */
     public Object resolveStringValue(Field type, String placeHolder) {
         if (log.isDebugEnabled()) {
             log.debug("====>>>>@SimpleValue set value begin<<<<<======");
@@ -275,7 +281,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     @Override
     public void registerBeanDefinition(String beanName, SimpleRootBeanDefinition beanDefinition) {
-        beanDefinitions.put(beanName, beanDefinition);
+        super.registerBeanDefinition(beanName, beanDefinition);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.github.simple.core.beans.factory.SimpleBeanFactory;
 import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.demo.service.*;
 import com.github.simple.demo.service.aop.LogService;
+import com.github.simple.demo.test.MockEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,8 @@ public class StartIocApplication {
     public static void main(String[] args) throws Throwable {
         SimpleApplicationContext applicationContext = SimpleApplicationContext.run(StartIocApplication.class);
         //自定义事件广播机制
-        applicationContext.publishEvent(new com.github.simple.demo.test.SayHelloEvent("haha","jdjdjdjj"));
+        applicationContext.publishEvent(new MockEvent("MockEvent test","MockEvent"));
+//        applicationContext.publishEvent(new HelloEvent("@@@@hello event test","我是hello我在测试"));
 //        A a = beanFactory.getBean(A.class);
         /**
          * bean 工厂 注册bean

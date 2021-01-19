@@ -5,9 +5,13 @@ import com.github.simple.core.beans.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.core.utils.SimpleStringValueResolver;
 
 /**
+ * 简单的值解析器
+ *
+ * @author
  * @author: jianlei.shi
  * @date: 2020/12/23 4:09 下午
  * @description: SimpleEmbeddedValueResolver
+ * @date
  */
 
 public class SimpleEmbeddedValueResolver implements SimpleStringValueResolver {

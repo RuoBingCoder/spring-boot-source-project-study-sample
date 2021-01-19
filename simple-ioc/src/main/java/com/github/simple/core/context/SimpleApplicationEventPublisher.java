@@ -9,6 +9,6 @@ package com.github.simple.core.context;
 public interface SimpleApplicationEventPublisher {
 
 
-    void publishEvent(SimpleApplicationEvent event);
+    void publishEvent(SimpleApplicationEvent event) throws Throwable;
 
 }

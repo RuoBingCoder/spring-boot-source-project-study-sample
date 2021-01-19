@@ -10,6 +10,7 @@ import org.springframework.beans.BeansException;
 public interface SimpleSmartInstantiationAwareBeanPostProcessor extends SimpleInstantiationAwareBeanPostProcessor {
 
     default Object getEarlyBeanReference(Object bean, String beanName) throws BeansException {
+
         return bean;
     }
 }

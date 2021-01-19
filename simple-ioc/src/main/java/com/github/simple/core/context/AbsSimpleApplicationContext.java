@@ -82,7 +82,7 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
     }
 
     @Override
-    public void publishEvent(SimpleApplicationEvent event) {
+    public void publishEvent(SimpleApplicationEvent event) throws Throwable {
         this.applicationEventMulticaster.multicastEvent(event);
     }
 

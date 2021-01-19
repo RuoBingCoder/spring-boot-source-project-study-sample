@@ -9,6 +9,6 @@ package com.github.simple.core.context;
 public interface SimpleApplicationListener<E extends  SimpleApplicationEvent> extends SimpleEventListener {
 
 
-    void onApplicationEvent(E event);
+    void onApplicationEvent(E event) throws Throwable;
 
 }
