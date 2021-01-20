@@ -32,6 +32,11 @@ public class SimpleApplicationContext extends AbsSimpleApplicationContext{
     }
 
     @Override
+    protected void finishRefresh() throws Throwable {
+        publishEvent(new SimpleContextRefreshEvent(this));
+    }
+
+    @Override
     public void addApplicationListener(SimpleApplicationListener<?> listener) {
         super.applicationEventMulticaster.addApplicationListener(listener);
     }

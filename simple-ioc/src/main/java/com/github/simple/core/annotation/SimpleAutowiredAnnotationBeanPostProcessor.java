@@ -3,7 +3,7 @@ package com.github.simple.core.annotation;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.beans.InjectFieldMetadataWrapper;
 import com.github.simple.core.beans.factory.SimpleBeanFactory;
-import com.github.simple.core.beans.factory.SimpleBeanFactoryAware;
+import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.utils.ReflectUtils;
 import lombok.Data;

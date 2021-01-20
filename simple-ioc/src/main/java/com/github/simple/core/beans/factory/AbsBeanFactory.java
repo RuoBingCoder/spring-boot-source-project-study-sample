@@ -221,10 +221,10 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
             SimpleConfigBean simpleBean = getBean(ClassUtils.toLowerBeanName(SimpleConfigBean.class.getSimpleName()));
             if (simpleBean != null) {
                 if (!simpleBean.matchConfigClass(bdClazz)) {
-                    SimpleBeanMethod method = new SimpleBeanMethod(createMethodMeta(entry.getKey()), bdClazz);
+                    SimpleMethodBean method = new SimpleMethodBean(createMethodMeta(entry.getKey()), bdClazz);
                     simpleBean.setBeanMethods(method);
                 } else {
-                    SimpleBeanMethod beanMethod = simpleBean.getBeanMethodByConfig(bdClazz);
+                    SimpleMethodBean beanMethod = simpleBean.getBeanMethodByConfig(bdClazz);
                     beanMethod.getMethodMetadata().add(new SimpleMethodMeta(entry.getKey().getName(), entry.getKey()));
 
                 }

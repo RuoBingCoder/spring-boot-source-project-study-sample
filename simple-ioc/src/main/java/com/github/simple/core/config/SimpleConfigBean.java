@@ -1,9 +1,9 @@
 package com.github.simple.core.config;
 
-import com.github.simple.core.annotation.SimpleBeanMethod;
+import com.github.simple.core.annotation.SimpleMethodBean;
 import com.github.simple.core.annotation.SimpleMethodMetadata;
 import com.github.simple.core.beans.factory.SimpleBeanFactory;
-import com.github.simple.core.beans.factory.SimpleBeanFactoryAware;
+import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -19,7 +19,7 @@ public class SimpleConfigBean extends SimpleConfigBeanMetadata implements Simple
     private SimpleBeanFactory beanFactory;
 
     public Object invoker(String name) throws Throwable {
-        SimpleBeanMethod beanMethods = getBeanMethodByMethodName(name);
+        SimpleMethodBean beanMethods = getBeanMethodByMethodName(name);
         List<SimpleMethodMetadata> simpleMethodMetadata = beanMethods.getMethodMetadata().stream().filter(m -> m.getMethodName().equals(name)).collect(Collectors.toList());
         Object bean = beanFactory.getBean(beanMethods.getConfigClazz());
         Method method = simpleMethodMetadata.get(0).getMethod();

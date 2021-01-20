@@ -8,10 +8,10 @@ import java.util.List;
  * @description: SimpleBeanMethod
  */
 
-public class SimpleBeanMethod extends ConfigSimpleMethod{
+public class SimpleMethodBean extends ConfigSimpleMethod{
 
 
-    public SimpleBeanMethod(List<SimpleMethodMetadata> methodMetadata, Class<?> configClazz) {
+    public SimpleMethodBean(List<SimpleMethodMetadata> methodMetadata, Class<?> configClazz) {
         super(methodMetadata, configClazz);
     }
 }

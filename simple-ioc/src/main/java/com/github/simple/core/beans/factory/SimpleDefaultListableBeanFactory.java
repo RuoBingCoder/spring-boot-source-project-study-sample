@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
+import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
 import com.github.simple.core.beans.factory.support.SimpleBeanDefinitionRegistry;
 import com.github.simple.core.context.SimpleApplicationEvent;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;

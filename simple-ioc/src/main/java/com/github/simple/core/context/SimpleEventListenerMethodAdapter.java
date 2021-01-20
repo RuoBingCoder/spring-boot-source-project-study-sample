@@ -3,6 +3,8 @@ package com.github.simple.core.context;
 import java.lang.reflect.Method;
 
 /**
+ * 简单的事件监听器方法适配器
+ *
  * @author jianlei.shi
  * @date 2021/1/19 5:25 下午
  * @description SimpleDelegateEventListener

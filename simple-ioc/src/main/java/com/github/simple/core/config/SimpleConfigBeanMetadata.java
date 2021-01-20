@@ -1,6 +1,6 @@
 package com.github.simple.core.config;
 
-import com.github.simple.core.annotation.SimpleBeanMethod;
+import com.github.simple.core.annotation.SimpleMethodBean;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -15,17 +15,17 @@ import java.util.stream.Collectors;
 
 public abstract class SimpleConfigBeanMetadata {
 
-    protected List<SimpleBeanMethod> beanMethods=new ArrayList<>();
+    protected List<SimpleMethodBean> beanMethods=new ArrayList<>();
 
-    protected SimpleBeanMethod getBeanMethodByMethodName(String methodBeanName) {
+    protected SimpleMethodBean getBeanMethodByMethodName(String methodBeanName) {
         return getBeanMethods().stream().filter(m -> m.getMethodMetadata().stream().anyMatch(n -> n.getMethodName().equals(methodBeanName))).collect(Collectors.toList()).get(0);
     }
 
-    public List<SimpleBeanMethod> getBeanMethods() {
+    public List<SimpleMethodBean> getBeanMethods() {
         return beanMethods;
     }
 
-    public void setBeanMethods(SimpleBeanMethod beanMethod) {
+    public void setBeanMethods(SimpleMethodBean beanMethod) {
         this.beanMethods.add(beanMethod);
     }
 
@@ -41,7 +41,7 @@ public abstract class SimpleConfigBeanMetadata {
         return getBeanMethods().stream().anyMatch(s -> s.getConfigClazz().equals(clazz));
     }
 
-    public SimpleBeanMethod getBeanMethodByConfig(Class<?> configClass){
+    public SimpleMethodBean getBeanMethodByConfig(Class<?> configClass){
         return getBeanMethods().stream().filter(m->m.getConfigClazz().equals(configClass)).findFirst().orElse(null);
     }
 }

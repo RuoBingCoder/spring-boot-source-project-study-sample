@@ -74,12 +74,15 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
             registryBeanPostProcessor(beanFactory);
             initApplicationEventMulticaster();
             finishBeanInstance(beanFactory);
+            finishRefresh();
         } catch (Exception e) {
             log.error("ioc create exception", e);
             destroyBeans(beanFactory);
         }
 
     }
+
+    protected abstract void finishRefresh() throws Throwable;
 
     @Override
     public void publishEvent(SimpleApplicationEvent event) throws Throwable {

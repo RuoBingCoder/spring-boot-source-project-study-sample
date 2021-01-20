@@ -3,7 +3,7 @@ package com.github.simple.core.beans.factory.support;
 import cn.hutool.core.lang.Assert;
 import com.github.simple.core.annotation.SimpleAspect;
 import com.github.simple.core.beans.factory.SimpleBeanFactory;
-import com.github.simple.core.beans.factory.SimpleBeanFactoryAware;
+import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
 import com.github.simple.core.beans.factory.SimpleDefaultListableBeanFactory;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 

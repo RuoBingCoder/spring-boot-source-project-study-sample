@@ -1,4 +1,6 @@
-package com.github.simple.core.beans.factory;
+package com.github.simple.core.beans.aware;
+
+import com.github.simple.core.beans.factory.SimpleBeanFactory;
 
 /**
  * @author: JianLei

@@ -3,6 +3,7 @@ package com.github.simple.core.context;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.EventListener;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
+import com.github.simple.core.context.aware.SimpleApplicationContextAware;
 import com.github.simple.core.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,6 +11,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
+ * 简单的侦听器多播后处理器
+ *
  * @author jianlei.shi
  * @date 2021/1/18 3:12 下午
  * @description EventMulticasterPostProcessor
@@ -17,16 +20,15 @@ import java.util.Map;
 @Slf4j
 public class SimpleListenerMulticasterPostProcessor implements SimpleBeanPostProcessor, SimpleApplicationContextAware {
     private SimpleApplicationContext simpleApplicationContext;
-
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws Throwable {
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
         if (bean instanceof SimpleApplicationListener) {
             SimpleApplicationListener simpleApplicationListener = (SimpleApplicationListener) bean;
             simpleApplicationContext.addApplicationListener(simpleApplicationListener);
         }
-        final Map<Method, EventListener> methodAndAnnotation = ReflectUtils.getMethodAndAnnotation(bean.getClass(), EventListener.class);
-        if (CollectionUtil.isNotEmpty(methodAndAnnotation)){
-            final SimpleEventListenerMethodAdapter simpleEventListenerMethodAdapter = new SimpleEventListenerMethodAdapter(simpleApplicationContext, getMethod(methodAndAnnotation), beanName,getEventType(getMethod(methodAndAnnotation)));
+        final Map<Method, EventListener> methodEventListenerMap = ReflectUtils.getMethodAndAnnotation(bean.getClass(), EventListener.class);
+        if (CollectionUtil.isNotEmpty(methodEventListenerMap)){
+            final SimpleEventListenerMethodAdapter simpleEventListenerMethodAdapter = new SimpleEventListenerMethodAdapter(simpleApplicationContext, getMethod(methodEventListenerMap), beanName,getEventType(getMethod(methodEventListenerMap)));
             simpleApplicationContext.addApplicationListener(simpleEventListenerMethodAdapter);
         }
         return null;

@@ -4,7 +4,7 @@ import com.github.simple.core.annotation.SimpleComponent;
 import com.github.simple.core.annotation.SimpleOrdered;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.factory.SimpleBeanFactory;
-import com.github.simple.core.beans.factory.SimpleBeanFactoryAware;
+import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
 import lombok.extern.slf4j.Slf4j;
 
 /**
