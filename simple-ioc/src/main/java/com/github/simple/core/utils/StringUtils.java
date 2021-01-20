@@ -14,10 +14,10 @@ public class StringUtils {
 
     public static String parsePlaceholder(Field field){
         String placeholder = ReflectUtils.parseValue(field);
-        return resolvePlaceHolder(placeholder);
+        return resolvePlaceholder(placeholder);
 
     }
-    public static String resolvePlaceHolder(String value) {
+    public static String resolvePlaceholder(String value) {
         int startInterceptionIndex = value.indexOf(VALUE_PREFIX);
         int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
         String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);

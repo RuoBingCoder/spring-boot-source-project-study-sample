@@ -53,21 +53,21 @@ public class ClassUtils {
         return clazz.newInstance();
     }
 
-    public static Class<?> getClass(Object obj){
-        Assert.notNull(obj,"obj notNull");
-        if (obj instanceof SimpleRootBeanDefinition){
-            SimpleRootBeanDefinition srb= (SimpleRootBeanDefinition) obj;
+    public static Class<?> getClass(Object obj) {
+        Assert.notNull(obj, "obj notNull");
+        if (obj instanceof SimpleRootBeanDefinition) {
+            SimpleRootBeanDefinition srb = (SimpleRootBeanDefinition) obj;
             return srb.getBeanClass();
         }
         return obj.getClass();
     }
 
-    public static boolean matchOrdered(Object obj){
+    public static boolean matchOrdered(Object obj) {
         return obj.getClass().isAnnotationPresent(SimpleOrdered.class);
 
     }
 
-    public static Integer getOrderedValue(Object obj){
+    public static Integer getOrderedValue(Object obj) {
         SimpleOrdered ordered = obj.getClass().getAnnotation(SimpleOrdered.class);
         return ordered.value();
     }
@@ -76,34 +76,33 @@ public class ClassUtils {
         ClassLoader cl;
         try {
             cl = Thread.currentThread().getContextClassLoader();
-        }
-        catch (Exception ex) {
-            throw new SimpleIOCBaseException("getDefaultClassLoader exception!"+ex.getMessage());
+        } catch (Exception ex) {
+            throw new SimpleIOCBaseException("getDefaultClassLoader exception!" + ex.getMessage());
         }
         if (cl == null) {
             cl = ClassUtils.class.getClassLoader();
             if (cl == null) {
                 try {
                     cl = ClassLoader.getSystemClassLoader();
-                }
-                catch (Exception ex) {
-                    throw new SimpleIOCBaseException("getSystemClassLoader exception!"+ex.getMessage());
+                } catch (Exception ex) {
+                    throw new SimpleIOCBaseException("getSystemClassLoader exception!" + ex.getMessage());
 
                 }
             }
         }
         return cl;
     }
-    
-    public static Class<?>[] getAllInterfaces(Class<?> defaultClassType){
-      return   getAllInterfacesForClass(defaultClassType);
+
+    public static Class<?>[] getAllInterfaces(Class<?> defaultClassType) {
+        return getAllInterfacesForClass(defaultClassType);
     }
+
     public static String transformFactoryBeanName(Class<?> clazz) {
         Type[] types = clazz.getGenericInterfaces();
         ParameterizedType type = (ParameterizedType) types[0];
         Type[] arguments = type.getActualTypeArguments();
         String typeName = arguments[0].getTypeName();
-        String substring = typeName.substring(typeName.lastIndexOf(".")+1);
+        String substring = typeName.substring(typeName.lastIndexOf(".") + 1);
         return ClassUtils.toLowerBeanName(substring);
     }
 

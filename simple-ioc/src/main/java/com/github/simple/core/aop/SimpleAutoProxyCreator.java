@@ -27,11 +27,20 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBeanPostProcessor {
 
+    /**
+     * 简单的通知支持集合
+     */
     private List<SimpleAdviseSupport> simpleAdviseSupports = new ArrayList<>();
 
+    /**
+     * aspect类型缓存
+     */
     private final Map<String, Boolean> aspectTypeCache = new ConcurrentHashMap<>(128);
 
-    private final Map<String, Object> cacheBeans = new ConcurrentHashMap<>();
+    /**
+     * 缓存代理bean
+     */
+    private final Map<String, Object> cacheProxyBeans = new ConcurrentHashMap<>();
 
     public static final String POINT_CUT = "SimplePointCut";
 
@@ -42,9 +51,9 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
             log.info("开始创建代理 beanName :{}", beanName);
             try {
                 proxyBean = createProxy(bean);
-                cacheBeans.put(beanName, proxyBean);
+                cacheProxyBeans.put(beanName, proxyBean);
             } catch (Exception e) {
-                cacheBeans.clear();
+                cacheProxyBeans.clear();
                 throw new SimpleProxyCreateException("createProxy exception info : " + e.getMessage());
             }
             return proxyBean;
@@ -91,8 +100,8 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws Throwable {
-        if (getCacheBeanByName(beanName) != null) {
-            return getCacheBeanByName(beanName);
+        if (hasCacheBean(beanName)) {
+            return getCacheBean(beanName);
         }
         if (shouldSkip(bean, beanName)) {
             return null;
@@ -100,29 +109,30 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
         return createProxy(bean);
     }
 
+    private Object getCacheBean(String beanName) {
+        return cacheProxyBeans.get(beanName);
+    }
+
     /**
-     *
-     * @param bean
-     * @param beanName
-     * @return
-     * @throws Throwable
+     * @param bean instance
+     * @param beanName bean name
+     * @return proxy
      * @see org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator#shouldSkip
      * @see AnnotationAwareAspectJAutoProxyCreator#findCandidateAdvisors
      * @see org.springframework.aop.framework.autoproxy.BeanFactoryAdvisorRetrievalHelper#findAdvisorBeans
      * @see BeanFactoryAspectJAdvisorsBuilder#buildAspectJAdvisors()
      */
-    private boolean shouldSkip(Object bean, String beanName) throws Throwable {
-        if (SimpleBeanFactorySupport.getBeanFactory()==null){
+    private boolean shouldSkip(Object bean, String beanName) {
+        if (SimpleBeanFactorySupport.getBeanFactory() == null) {
             return true;
         }
-        String[] allBeanName = SimpleBeanFactorySupport.getAllBeanName();
-        if (allBeanName == null || allBeanName.length <= 0) {
+        String[] allBeanNames = SimpleBeanFactorySupport.getAllBeanNames();
+        if (allBeanNames == null || allBeanNames.length <= 0) {
             throw new SimpleIOCBaseException("the beanNames is empty!");
         }
-        for (String name : allBeanName) {
+        for (String name : allBeanNames) {
             Class<?> aspectBeanClass = SimpleBeanFactorySupport.matchAspect(name);
             if (aspectBeanClass != null) {
-                SimpleBeanFactorySupport.getBeanFactory().getBean(aspectBeanClass);
                 if (!aspectTypeCache.containsKey(name)) {
                     parseAspect(aspectBeanClass);
                     aspectTypeCache.put(name, Boolean.FALSE);
@@ -134,8 +144,14 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
         return !isEligibleAdvisors(bean);
     }
 
-    public Object getCacheBeanByName(String beanName) {
-        return cacheBeans.get(beanName);
+    /**
+     * 是否有缓存bean
+     *
+     * @param beanName bean的名字
+     * @return boolean
+     */
+    public boolean hasCacheBean(String beanName) {
+        return getCacheBean(beanName) == null;
     }
 
 
@@ -145,6 +161,11 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
     }
 
 
+    /**
+     * 解析切面
+     *
+     * @param clazz clazz
+     */
     private void parseAspect(Class<?> clazz) {
         if (ReflectUtils.matchAspect(clazz)) {
             List<SimpleAdviseSupport.MethodWrapper> methods = new ArrayList<>(3);
@@ -168,6 +189,12 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
         }
     }
 
+    /**
+     * get方法包装
+     *
+     * @param methodAndAnnotation 法和注释
+     * @return {@link MethodWrapper}
+     */
     private <T extends Annotation> SimpleAdviseSupport.MethodWrapper getMethodWrapper(Map<Method, T> methodAndAnnotation) {
         Iterator<Method> iterator = methodAndAnnotation.keySet().iterator();
         Method method = null;
@@ -180,7 +207,7 @@ public class SimpleAutoProxyCreator implements SimpleSmartInstantiationAwareBean
         String annotationName = null;
         if (annotation instanceof SimplePointCut) {
             SimplePointCut spc = (SimplePointCut) annotation;
-            annotationMeta = spc.express();
+            annotationMeta = spc.expression();
             annotationName = SimpleIOCConstant.SIMPLE_POINT_CUT;
         } else if (annotation instanceof SimpleBefore) {
             SimpleBefore spc = (SimpleBefore) annotation;

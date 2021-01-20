@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface SimplePointCut {
 
-    String express() default "";
+    String expression() default "";
 }

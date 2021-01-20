@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class StreamTest {
     public static void createStream_whenFindAnyResultIsPresent_thenCorrect() {
         List<String> list = Arrays.asList("A","B","C","D");
-
+//dup 复制最高操作数堆栈值
         Optional<String> result = list.stream().findAny();
         final String s = result.get();
         System.out.println("s->"+s);  //s->A

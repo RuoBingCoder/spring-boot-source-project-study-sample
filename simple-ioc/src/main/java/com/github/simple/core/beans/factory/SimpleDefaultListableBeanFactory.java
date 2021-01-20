@@ -199,7 +199,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
             return TypeConvertUtils.convert(type.getType(), (String) value);
         }
         if (placeHolder != null) {
-            String key = com.github.simple.core.utils.StringUtils.resolvePlaceHolder(placeHolder);
+            String key = com.github.simple.core.utils.StringUtils.resolvePlaceholder(placeHolder);
             return findValue(resource1, key, flag);
 
         }

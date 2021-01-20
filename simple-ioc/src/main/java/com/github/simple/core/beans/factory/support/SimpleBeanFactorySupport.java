@@ -30,7 +30,7 @@ public class SimpleBeanFactorySupport implements SimpleBeanFactoryAware {
         return null;
     }
 
-    public static String[] getAllBeanName() {
+    public static String[] getAllBeanNames() {
         return beanFactory.getBeanDefinitionNames();
     }
 

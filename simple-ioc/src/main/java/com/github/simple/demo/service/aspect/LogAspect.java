@@ -13,7 +13,7 @@ import com.github.simple.core.annotation.SimplePointCut;
 @SimpleAspect
 public class LogAspect {
 
-    @SimplePointCut(express = "com.github.simple.demo.service.aop")
+    @SimplePointCut(expression = "com.github.simple.demo.service.aop")
     public void pointCut(){
     }
 }
