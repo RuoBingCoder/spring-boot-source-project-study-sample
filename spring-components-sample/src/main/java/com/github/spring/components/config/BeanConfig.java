@@ -1,6 +1,7 @@
 package com.github.spring.components.config;
 
 import com.github.spring.components.cglib.test.Test;
+import com.github.spring.components.condition.SimpleCondition;
 import com.github.spring.components.pojo.AnnotationBean;
 import com.github.spring.components.pojo.ConfigBeanA;
 import com.github.spring.components.pojo.ConfigBeanB;
@@ -77,8 +78,10 @@ public class BeanConfig {
      * @see Test 演示了原理
      */
     @Bean
+    @Conditional(SimpleCondition.class)
     public ConfigBeanB configBeanB(){
          configBeanA();
         return new ConfigBeanB();
     }
+
 }

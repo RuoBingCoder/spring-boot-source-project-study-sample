@@ -8,7 +8,7 @@ import com.github.tomcat.core.annotation.EasyTomcatScan;
  * @date: 2020/10/8 8:15 下午
  * @description: EasyTomcatApplication
  */
-@EasyTomcatScan(basePackageName = "com.sjl.demo")
+@EasyTomcatScan(basePackageName = "com.github.demo")
 public class EasyTomcatApplication {
 
   public static void main(String[] args) throws Exception {

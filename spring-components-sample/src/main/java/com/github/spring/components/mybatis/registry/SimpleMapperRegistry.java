@@ -110,7 +110,6 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
             throw new MapperException("获取SqlSession 异常");
 
         }
-
         String daoScan = ClassUtils.getMapperScanAnnotationValue(SpringComponentsApplication.class, MapperScan.class);
         Assert.notNull(daoScan, "dao 包路径不能为空!");
         Set<Class<?>> scanPackage = ClassUtil.scanPackage(daoScan);
@@ -133,13 +132,13 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
                             SqlSource sqlSource = languageDriver.createSqlSource(configuration, String.format(methodWrapper.getSql(), AnnotationUtils.getTableName(methodWrapper.getEntityType()), whereIfWrapper(methodWrapper.getEntityType())), methodWrapper.getEntityType());
                             addMappedStatement(builderAssistant, methodWrapper.getID(), sqlSource, SqlCommandType.DELETE, methodWrapper.getReturnType(), NoKeyGenerator.INSTANCE, languageDriver, SqlTagConstant.KEY_COLUMN, SqlTagConstant.KEY_PROPERTY);
                         } else if (methodWrapper.getSql().equals(SqlMethodEnums.UPDATE.getSql())) {
-                            SqlSource sqlSource = languageDriver.createSqlSource(configuration, String.format(methodWrapper.getSql(),AnnotationUtils.getTableName(methodWrapper.getEntityType()), updateSetColumn(methodWrapper.getEntityType()), whereIfWrapper(methodWrapper.getEntityType())), null);
+                            SqlSource sqlSource = languageDriver.createSqlSource(configuration, String.format(methodWrapper.getSql(), AnnotationUtils.getTableName(methodWrapper.getEntityType()), updateSetColumn(methodWrapper.getEntityType()), whereIfWrapper(methodWrapper.getEntityType())), null);
                             addMappedStatement(builderAssistant, methodWrapper.getID(), sqlSource, SqlCommandType.UPDATE, methodWrapper.getReturnType(), NoKeyGenerator.INSTANCE, languageDriver, SqlTagConstant.KEY_COLUMN, SqlTagConstant.KEY_PROPERTY);
 
                         }
                     }
                 } catch (Exception e) {
-                    log.error("添加addMappedStatement 异常!",e);
+                    log.error("添加addMappedStatement 异常!", e);
                     throw new MapperException("添加addMappedStatement 异常");
 
                 }
@@ -329,7 +328,7 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
             commonSqlFormat(whereScript, field);
         }
         whereScript.append(SqlTagConstant.WHERE_END_TAG);
-        if (log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("===>>where sql:{}", whereScript.toString());
         }
         return whereScript.toString();
@@ -350,32 +349,45 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
                 if (SimpleBaseMapper.class.isAssignableFrom(inf)) {
                     methodWrappers = new ArrayList<>();
                     final Object typeArguments = ReflectUtils.getGenericSingleType(inf);
-                    //insert
-                        MapperMethodWrapper selMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.INSERT_ONE.getMethod()).entityType((Class<?>) typeArguments)
-                                .sql(SqlMethodEnums.INSERT_ONE.getSql())
-                                .returnType(int.class).build();
-                        methodWrappers.add(selMethodWrapper);
-                        //selectList
-                        MapperMethodWrapper selListMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.SELECT_LIST.getMethod()).entityType((Class<?>) typeArguments)
-                                .sql(SqlMethodEnums.SELECT_LIST.getSql())
-                                .returnType((Class<?>) typeArguments).build();
-                        methodWrappers.add(selListMethodWrapper);
-                        //updateBySelective
-                        MapperMethodWrapper updateBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.UPDATE.getMethod()).entityType((Class<?>) typeArguments)
-                                .sql(SqlMethodEnums.UPDATE.getSql())
-                                .returnType(int.class).build();
-                        methodWrappers.add(updateBySelectiveMethodWrapper);
-                        //delete
-                        MapperMethodWrapper deleteBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.DELETE.getMethod()).entityType((Class<?>) typeArguments)
-                                .sql(SqlMethodEnums.DELETE.getSql())
-                                .returnType(int.class).build();
-                        methodWrappers.add(deleteBySelectiveMethodWrapper);
-                    }
+                    doBuildMethodWrapper(methodWrappers,typeArguments);
                     commonMethodMap.put(inf, methodWrappers);
                 }
             }
+        }
 
         return commonMethodMap;
+    }
+
+    /**
+     * 构建方法包装
+     *
+     * @param methodWrappers 包装方法
+     * @param typeArguments  类型参数
+     * @return void
+     * @author jianlei.shi
+     * @date 2021-01-25 17:33:25
+     */
+    private void doBuildMethodWrapper(List<MapperMethodWrapper> methodWrappers, Object typeArguments) {
+        //insert
+        MapperMethodWrapper selMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.INSERT_ONE.getMethod()).entityType((Class<?>) typeArguments)
+                .sql(SqlMethodEnums.INSERT_ONE.getSql())
+                .returnType(int.class).build();
+        methodWrappers.add(selMethodWrapper);
+        //selectList
+        MapperMethodWrapper selListMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.SELECT_LIST.getMethod()).entityType((Class<?>) typeArguments)
+                .sql(SqlMethodEnums.SELECT_LIST.getSql())
+                .returnType((Class<?>) typeArguments).build();
+        methodWrappers.add(selListMethodWrapper);
+        //updateBySelective
+        MapperMethodWrapper updateBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.UPDATE.getMethod()).entityType((Class<?>) typeArguments)
+                .sql(SqlMethodEnums.UPDATE.getSql())
+                .returnType(int.class).build();
+        methodWrappers.add(updateBySelectiveMethodWrapper);
+        //delete
+        MapperMethodWrapper deleteBySelectiveMethodWrapper = MapperMethodWrapper.builder().ID(SqlMethodEnums.DELETE.getMethod()).entityType((Class<?>) typeArguments)
+                .sql(SqlMethodEnums.DELETE.getSql())
+                .returnType(int.class).build();
+        methodWrappers.add(deleteBySelectiveMethodWrapper);
     }
 
     @Override

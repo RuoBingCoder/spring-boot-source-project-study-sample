@@ -24,7 +24,7 @@ public class LogAspect {
     /**
      * @see  org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor
      */
-    @Pointcut("public .* com.sjl.custom.aop.service..*Service..*(.*)")
+    @Pointcut("public .* com.github.custom.aop.service..*Service..*(.*)")
     public void pointcut(){}
 
     @Before(value = "pointcut()")

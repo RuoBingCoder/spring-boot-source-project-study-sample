@@ -33,12 +33,28 @@ public class TxSourceController {
     @Resource
     private TeamService teamService;
 
+    /**
+     * 得到的英雄
+     *
+     * @param hero 英雄
+     * @return {@link ModelResult<List<HeroDo>> }
+     * @author jianlei.shi
+     * @date 2021-01-25 17:02:36
+     */
     @PostMapping(value = "/getHero")
     public ModelResult<List<HeroDo>> getHero(@RequestBody HeroDo hero) {
         List<HeroDo> heroes = heroService.selectList(hero);
         return ModelResult.success(heroes);
     }
 
+    /**
+     * 删除的英雄
+     *
+     * @param hero 英雄
+     * @return {@link ModelResult<String> }
+     * @author jianlei.shi
+     * @date 2021-01-25 17:02:40
+     */
     @PostMapping("/deleteHero")
     public ModelResult<String> deleteHero(@RequestBody HeroDo hero) {
         int delete = heroService.delete(hero);
@@ -48,6 +64,14 @@ public class TxSourceController {
         return ModelResult.error("删除失败!");
     }
 
+    /**
+     * 得到团队
+     *
+     * @param team 团队
+     * @return {@link ModelResult<List<TeamDo>> }
+     * @author jianlei.shi
+     * @date 2021-01-25 17:02:43
+     */
     @PostMapping(value = "/getTeam")
     public ModelResult<List<TeamDo>> getTeam(@RequestBody TeamDo team) {
         List<TeamDo> teams = teamService.selTeamList(team);
@@ -56,6 +80,14 @@ public class TxSourceController {
 
     }
 
+    /**
+     * 更新团队
+     *
+     * @param team 团队
+     * @return {@link ModelResult<Integer> }
+     * @author jianlei.shi
+     * @date 2021-01-25 17:02:48
+     */
     @PostMapping(value = "/updateTeam")
     public ModelResult<Integer> updateTeam(@RequestBody TeamDo team) {
         TeamDo where = TeamDo.builder().id(team.getId()).build();
@@ -65,6 +97,14 @@ public class TxSourceController {
 
     }
 
+    /**
+     * 更新的英雄
+     *
+     * @param hero 英雄
+     * @return {@link ModelResult<Integer> }
+     * @author jianlei.shi
+     * @date 2021-01-25 17:02:54
+     */
     @PostMapping(value = "/updateHero")
     public ModelResult<Integer> updateHero(@RequestBody HeroDo hero) {
         HeroDo build = HeroDo.builder().type(hero.getType()).build();
@@ -73,6 +113,15 @@ public class TxSourceController {
 
 
     }
+
+    /**
+     * 插入的团队
+     *
+     * @param team 团队
+     * @return {@link ModelResult<Integer> }
+     * @author jianlei.shi
+     * @date 2021-01-25 17:02:56
+     */
     @PostMapping(value = "/insertTeam")
     public ModelResult<Integer> insertTeam(@RequestBody TeamDo team) {
         team.setCreateTime(DateUtils.getCurrentTime());

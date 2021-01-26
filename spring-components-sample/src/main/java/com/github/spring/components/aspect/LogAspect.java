@@ -40,7 +40,7 @@ public class LogAspect {
      * execution(* com.savage.server..*.*(..))
      */
 
-    @Pointcut("execution(* com.sjl.spring.components.controller..*.*(..))")
+    @Pointcut("execution(* com.github.spring.components.controller..*.*(..))")
     public void controllerCut() {
     }
 

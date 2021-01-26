@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @date: 2020/9/22 7:22 下午
  * @description:
  */
-@Component("com.sjl.custom.aop.service.impl.HelloServiceImpl")
+@Component("com.github.custom.aop.service.impl.HelloServiceImpl")
 public class HelloServiceImpl implements HelloService {
     @Override
     public void sayHello(String params) {

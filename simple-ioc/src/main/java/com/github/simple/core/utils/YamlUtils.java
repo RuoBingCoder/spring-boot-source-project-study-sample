@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author jianlei.shi
  * @date 2021/1/13 8:20 下午
  * @description yaml工具类
+ * @see org.springframework.beans.factory.config.YamlPropertiesFactoryBean
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

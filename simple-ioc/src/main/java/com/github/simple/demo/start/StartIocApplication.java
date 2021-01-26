@@ -20,6 +20,14 @@ import org.slf4j.LoggerFactory;
 public class StartIocApplication {
     private static final Logger logger = LoggerFactory.getLogger(StartIocApplication.class);
 
+    /**
+     * 启动类
+     *
+     * @param args arg
+     * @return void
+     * @author jianlei.shi
+     * @date 2021-01-25 17:41:22
+     */
     public static void main(String[] args) throws Throwable {
         SimpleApplicationContext applicationContext = SimpleApplicationContext.run(StartIocApplication.class);
         //自定义事件广播机制

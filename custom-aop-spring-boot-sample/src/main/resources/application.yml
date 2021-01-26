@@ -2,7 +2,7 @@ server:
   port: 8999
 #配置代理接口全限定名即ioc中 beanDefinitionName
 service:
-  namespace: com.sjl.custom.aop.service
+  namespace: com.github.custom.aop.service
 #配置依赖注入bean后缀
 match:
   controller: Controller

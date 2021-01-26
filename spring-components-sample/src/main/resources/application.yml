@@ -39,8 +39,8 @@ spring:
 mybatis:
   check-config-location: false
   mapper-locations: classpath*:/mappers/*.xml
-  type-aliases-package: com.sjl.spring.components.transaction.pojo
-#  开启驼峰命名
+  type-aliases-package: com.github.spring.components.transaction.pojo
+  #  开启驼峰命名
   configuration:
     map-underscore-to-camel-case: true
 
@@ -64,3 +64,6 @@ logging:
 dao:
   scan:
     packages: com.github.spring.components.transaction.dao
+#    condition config
+os:
+  name: mac

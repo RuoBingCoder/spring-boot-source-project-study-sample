@@ -11,7 +11,7 @@ import java.io.File;
  * @description: FileServiceImpl
  */
 
-@Component("com.sjl.custom.aop.service.impl.FileServiceImpl")
+@Component("com.github.custom.aop.service.impl.FileServiceImpl")
 public class FileServiceImpl implements FileService {
     @Override
     public void readFile(File file) {

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource("classpath:sjl.xml")
+@ImportResource("classpath:simple-bean.xml")
 public class CustomSpringXmlSpringBootSampleApplication {
 
   public static void main(String[] args) {

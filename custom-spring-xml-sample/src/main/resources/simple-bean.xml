@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:rocket="http://www.sjl.com/schema/rocket"
+       xmlns:rocket="http://www.github.com/schema/rocket"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.sjl.com/schema/rocket
-       http://www.sjl.com/schema/rocket/sjl-beans.xsd">
 
-    <rocket:registry className="com.sjl.spring.xml.config.parse.beans.CustomBean" id="123" name="test"/>
+       http://www.github.com/schema/rocket
+       http://www.github.com/schema/rocket/simple-beans.xsd">
+
+    <rocket:registry className="com.github.custom.spring.xml.beans.CustomBean" id="123" name="test"/>
 
 </beans>
