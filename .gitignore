@@ -36,3 +36,5 @@ build/
 /spring-beans-explore-sample/.mvn/
 /spring-dependency-inject-sample/.mvn/
 /simple-dubbo/simple-dubbo-project-interface/target/
+/spring-components-learning/target/
+/spring-components-learning/.mvn/

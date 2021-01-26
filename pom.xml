@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github</groupId>
-    <artifactId>spring-boot-project-example</artifactId>
+    <artifactId>learning-spring-sample</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <parent>
@@ -20,15 +20,14 @@
         <module>enable-auto-config-spring-boot-sample</module>
         <module>spi-serviceloader-sample</module>
         <module>spring-beans-explore-sample</module>
-        <module>custom-starter-sample</module>
+        <module>custom-spring-boot-starter-sample</module>
         <module>rocketmq-producers-spring-boot-sample</module>
         <module>rocketmq-consumer-spring-boot-sample</module>
-        <module>simple-common</module>
-        <module>custom-spring-xml-sample</module>
+        <module>spring-boot-common</module>
+        <module>custom-spring-xml-spring-boot-sample</module>
         <module>custom-aop-spring-boot-sample</module>
         <module>easy-tomcat-netty</module>
         <module>netty-channelHandler-sample</module>
-        <module>spring-components-sample</module>
         <module>zk-framework-sample</module>
         <module>spring-boot-kafka-sample</module>
         <module>spring-boot-es-sample</module>
@@ -36,6 +35,7 @@
         <module>spring-dependency-inject-sample</module>
         <module>simple-ioc</module>
         <module>spring-security-sample</module>
+        <module>spring-components-learning</module>
         <!--        <module>simple-dubbo</module>-->
     </modules>
     <dependencies>
