@@ -22,7 +22,7 @@ public class SimpleEmbeddedValueResolver implements SimpleStringValueResolver {
     }
 
     @Override
-    public String resolveStringValue(String strVal) {
+    public String resolveStringValue(String strVal) throws Throwable {
         Object resolveStringValue = beanFactory.resolveStringValue(null, strVal);
         if (ObjectUtil.isNull(resolveStringValue)){
             return "";

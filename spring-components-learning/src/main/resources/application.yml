@@ -61,9 +61,23 @@ logging:
 #  mapper-locations: classpath*:/mappers/*.xml
 #  type-aliases-package: com.sjl.spring.components.transaction.pojo
 
+#自定义通用mapper 注册器包扫描路经
 dao:
   scan:
     packages: com.github.spring.components.learning.transaction.dao
 #    condition config
 os:
   name: mac
+#xxl-job 配置
+xxl:
+  job:
+#    accessToken: ''
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+#      address: ''
+      appname: xxl-job-executor-sample
+      ip: 127.0.0.1
+      logpath: /Users/shijianlei/logs/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+      port: 9999

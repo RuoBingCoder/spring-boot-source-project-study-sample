@@ -12,6 +12,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * @author jianlei
  * @date: 2020/4/8
@@ -55,7 +61,11 @@ public class LogAspect {
     @Around("controllerCut()")
     public Object around(ProceedingJoinPoint pjp) throws Throwable {
         log.info("===>  around get params:{}", pjp.getArgs());
-        return pjp.proceed();
+        final Object[] args = pjp.getArgs();
+        final List<Object> argsList = Arrays.stream(args).filter(t -> (!(t instanceof HttpServletResponse))).filter(t -> !(t instanceof HttpServletRequest)).collect(Collectors.toList());
+        //进行json转换的的时候 JSONObject.toJSONString(argsList);
+        return pjp.proceed(args);
+//        return pjp.proceed();
 
     }
 

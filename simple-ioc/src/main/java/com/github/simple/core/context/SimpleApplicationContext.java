@@ -31,6 +31,7 @@ public class SimpleApplicationContext extends AbsSimpleApplicationContext{
         return super.getBeanFactory();
     }
 
+
     @Override
     protected void finishRefresh() throws Throwable {
         publishEvent(new SimpleContextRefreshEvent(this));

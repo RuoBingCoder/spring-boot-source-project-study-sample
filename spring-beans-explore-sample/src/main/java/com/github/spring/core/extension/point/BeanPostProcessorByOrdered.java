@@ -1,4 +1,4 @@
-package com.github.spring.core.bean;
+package com.github.spring.core.extension.point;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Component
-public class BeanPostProcessorImplTestOrdered implements BeanPostProcessor, Ordered {
+public class BeanPostProcessorByOrdered implements BeanPostProcessor, Ordered {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {

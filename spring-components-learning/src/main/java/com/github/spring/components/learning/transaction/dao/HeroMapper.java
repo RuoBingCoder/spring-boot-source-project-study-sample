@@ -44,7 +44,7 @@ public interface HeroMapper extends SimpleBaseMapper<HeroDo> {
 //    Hero selectById(Integer id);
     /**
      * @author jianlei.shi
-     * @description mybatis解析优先级 xml->注解
+     * @description mybatis解析优先级 xml>注解
      * @date 11:04 上午 2020/12/28
      * @param null
      * @return

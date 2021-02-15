@@ -14,6 +14,8 @@ public class CollectionsTest {
 
     public static void main(String[] args) {
         Set<String> set = Collections.singleton("default");
+        System.out.println(0&2);
+
 
     }
 }

@@ -22,5 +22,6 @@ public class MainTest {
         List<String> valueList=new ArrayList<>(orginalMap.values());
         System.out.println("==>"+keyList.toString().replace("[","【").replace("]","】"));
         System.out.println("==>"+valueList.toString());
+        System.out.println(MainTest.class instanceof Class);
     }
 }

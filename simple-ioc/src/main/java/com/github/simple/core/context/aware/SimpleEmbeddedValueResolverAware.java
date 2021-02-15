@@ -10,6 +10,6 @@ import com.github.simple.core.utils.SimpleStringValueResolver;
  */
 public interface SimpleEmbeddedValueResolverAware {
 
-    void setEmbeddedValueResolver(SimpleStringValueResolver resolver);
+    void setEmbeddedValueResolver(SimpleStringValueResolver resolver) throws Throwable;
 
 }

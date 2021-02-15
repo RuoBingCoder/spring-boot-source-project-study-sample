@@ -1,0 +1,17 @@
+package com.github.spring.components.learning;
+
+/**
+ * @author jianlei.shi
+ * @date 2021/1/26 4:28 下午
+ * @description Hello
+ */
+
+public class Hello {
+
+    public String output(String param){
+        if (param==null){
+            throw new IllegalArgumentException("param is not null");
+        }
+        return "test:->"+param;
+    }
+}

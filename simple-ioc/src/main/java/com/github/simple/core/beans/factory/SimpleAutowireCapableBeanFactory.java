@@ -11,6 +11,8 @@ import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.core.context.aware.SimpleApplicationContextAware;
 import com.github.simple.core.context.aware.SimpleEmbeddedValueResolverAware;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
+import com.github.simple.core.env.SimpleEnvironment;
+import com.github.simple.core.env.aware.SimpleEnvironmentAware;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.init.SimpleInitializingBean;
 import com.github.simple.core.resource.SimplePropertySource;
@@ -41,6 +43,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
      * @param source 源
      */
     @Override
+    @Deprecated
     public <T> void addPropertySource(T source) {
         List<SimplePropertySource> list = (List<SimplePropertySource>) source;
         if (!(list.get(0).getValue() instanceof Properties)) {
@@ -248,7 +251,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         }
     }
 
-    private void invokerAware(String beanName, Object instance) {
+    private void invokerAware(String beanName, Object instance) throws Throwable {
         if (instance instanceof SimpleBeanFactoryAware) {
             SimpleBeanFactoryAware simpleBeanFactoryAware = (SimpleBeanFactoryAware) instance;
             simpleBeanFactoryAware.setBeanFactory(this);
@@ -262,6 +265,11 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         if (instance instanceof SimpleApplicationContextAware) {
             SimpleApplicationContextAware simpleApplicationContext = (SimpleApplicationContextAware) instance;
             simpleApplicationContext.setApplicationContext(this.applicationContext);
+        }
+        if (instance instanceof SimpleEnvironmentAware){
+            SimpleEnvironmentAware simpleEnvAware= (SimpleEnvironmentAware) instance;
+            SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) this;
+            simpleEnvAware.setEnv((SimpleEnvironment) beanFactory.getEnvironment());
         }
     }
 
@@ -328,6 +336,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
     }
 
     @Override
+    @Deprecated
     public <T> T getResource() {
         if (simplePropertiesPropertySourceLoader != null) {
             return (T) simplePropertiesPropertySourceLoader;

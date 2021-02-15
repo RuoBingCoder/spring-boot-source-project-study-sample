@@ -32,7 +32,7 @@ public interface SimpleConfigBeanFactory extends SimpleBeanFactory, SimpleApplic
         return;
     }
 
-    default String resolveEmbeddedValue(String value) {
+    default String resolveEmbeddedValue(String value) throws Throwable {
         return null;
     }
 

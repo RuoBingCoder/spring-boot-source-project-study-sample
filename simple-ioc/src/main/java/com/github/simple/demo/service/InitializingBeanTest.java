@@ -20,7 +20,7 @@ public class InitializingBeanTest implements SimpleInitializingBean, SimpleEmbed
     }
 
     @Override
-    public void setEmbeddedValueResolver(SimpleStringValueResolver resolver) {
+    public void setEmbeddedValueResolver(SimpleStringValueResolver resolver) throws Throwable {
         String value = resolver.resolveStringValue("${app.name}");
         log.info("==>value :{}",value);
     }

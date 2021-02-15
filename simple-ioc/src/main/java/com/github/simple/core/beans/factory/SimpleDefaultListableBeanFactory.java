@@ -8,6 +8,9 @@ import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
 import com.github.simple.core.beans.factory.support.SimpleBeanDefinitionRegistry;
 import com.github.simple.core.context.SimpleApplicationEvent;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
+import com.github.simple.core.env.SimpleEnvironment;
+import com.github.simple.core.env.SimpleMutablePropertySources;
+import com.github.simple.core.env.SimpleStandardEnvironment;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.resource.SimplePropertySource;
 import com.github.simple.core.utils.*;
@@ -18,7 +21,10 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static com.github.simple.core.utils.ReflectUtils.isValue;
 
 /**
  * @author: JianLei
@@ -36,12 +42,24 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     /**
      * simpleFactoryBean cache
      */
-    private final Map<String, SimpleFactoryBean> factoryBeanCache = new ConcurrentHashMap<>(256);
+    private final Map<String, SimpleFactoryBean<?>> factoryBeanCache = new ConcurrentHashMap<>(256);
 
     private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(256);
 
     private final List<SimpleStringValueResolver> simpleStringValueResolvers = new ArrayList<>(32);
 
+
+    /**
+     * 获取环境信息
+     *
+     * @return {@link Object }
+     * @author jianlei.shi
+     * @date 2021-02-14 22:09:44
+     */
+    @Override
+    public SimpleEnvironment getEnvironment() {
+        return (SimpleEnvironment) resolvableDependencies.get(SimpleStandardEnvironment.class);
+    }
 
     public SimpleDefaultListableBeanFactory() {
 
@@ -55,7 +73,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     }
 
     @Override
-    public String resolveEmbeddedValue(String value) {
+    public String resolveEmbeddedValue(String value) throws Throwable {
         return (String) resolveStringValue(null, value);
     }
 
@@ -153,7 +171,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     public void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors) {
         for (SimpleBeanPostProcessor sortedPostProcessor : sortedPostProcessors) {
             if (sortedPostProcessor instanceof SimpleBeanFactoryAware) {
-                SimpleBeanFactoryAware beanFactory= (SimpleBeanFactoryAware) sortedPostProcessor;
+                SimpleBeanFactoryAware beanFactory = (SimpleBeanFactoryAware) sortedPostProcessor;
                 beanFactory.setBeanFactory(this);
             }
         }
@@ -186,23 +204,41 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
             log.debug("====>>>>@SimpleValue set value begin<<<<<======");
         }
         boolean flag = false;
-        List<SimplePropertySource> resource1 = this.getResource();
-        if (!(resource1.get(0).getValue() instanceof Properties)) {
-            flag = true;
-        }
-        if (type != null && placeHolder == null) {
-            String key = com.github.simple.core.utils.StringUtils.parsePlaceholder(type);
-            Object value = findValue(resource1, key, flag);
-            if (value == null) {
-                throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
-            }
-            return TypeConvertUtils.convert(type.getType(), (String) value);
-        }
-        if (placeHolder != null) {
-            String key = com.github.simple.core.utils.StringUtils.resolvePlaceholder(placeHolder);
-            return findValue(resource1, key, flag);
+        SimpleStandardEnvironment environment = (SimpleStandardEnvironment) this.getEnvironment();
+        SimpleMutablePropertySources propertySources = environment.getPropertySources();
+        List<SimplePropertySource<?>> simplePropertySources = propertySources.getSimplePropertySources();
+        AtomicInteger ai = new AtomicInteger(0);
+            if (CollectionUtil.isNotEmpty(simplePropertySources)) {
+                for (SimplePropertySource<?> propertySource : simplePropertySources) {
+                    if (!(propertySource.getValue() instanceof Properties)) {
+                        flag = true;
+                    }
+                    if (type != null && placeHolder == null) {
+                        String key = com.github.simple.core.utils.StringUtils.parsePlaceholder(type);
+                        Object value = findValue(propertySource, key, flag);
+                        ai.getAndIncrement();
+                        if (value == null && ai.get() == simplePropertySources.size()) {
+                            throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
+                        }
+                        if (value != null) {
+                            return TypeConvertUtils.convert(type.getType(), (String) value);
+                        }
+                    }
+                    //现在用不到
+                    if (placeHolder != null) {
+                        ai.getAndIncrement();
+                        String key = com.github.simple.core.utils.StringUtils.resolvePlaceholder(placeHolder);
+                        final Object value = findValue(propertySource, key, flag);
+                        if (value == null && ai.get() == simplePropertySources.size()) {
+                            throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
+                        }
+                        if (value != null) {
+                            return value;
+                        }
 
-        }
+                    }
+                }
+            }
         return null;
     }
 
@@ -216,13 +252,14 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
      */
     @Override
     public Object resolveDependency(Field type, String beanName) throws Throwable {
-        if (resolvableDependencies.containsKey(type.getType())) {
-            return resolvableDependencies.get(type.getType());
-        }
         log.info("==> 解析字段name:{},字段类型:{}", beanName, type.getType());
         //接口
-        if (ReflectUtils.resolveValueDependency(type)) {
+        if (isValue(type)) {
             return resolveStringValue(type, null);
+        }
+        //#1 修复非spring bean String类型注入错误
+        if (resolvableDependencies.containsKey(type.getType())) {
+            return resolvableDependencies.get(type.getType());
         }
         //String Integer 类型自动注入
 
@@ -243,11 +280,11 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     private <T> Object findValue(T resource, String key, boolean isYaml) {
         if (!isYaml) {
-            List<SimplePropertySource<Properties>> propertySourceList = (List<SimplePropertySource<Properties>>) resource;
-            return propertySourceList.get(0).getValue().get(key);
+            SimplePropertySource<Properties> propertySource = (SimplePropertySource<Properties>) resource;
+            return propertySource.getValue().get(key);
         }
-        List<SimplePropertySource<Map<String, Object>>> propertySourceList = (List<SimplePropertySource<Map<String, Object>>>) resource;
-        return YamlUtils.getPropertyBySource(key, propertySourceList.get(0));
+        SimplePropertySource<Map<String, Object>> propertySource = (SimplePropertySource<Map<String, Object>>) resource;
+        return YamlUtils.getPropertyBySource(key, propertySource);
     }
 
 
@@ -299,4 +336,6 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
     public String[] getBeanDefinitionNames() {
         return beanDefinitionNames.toArray(new String[0]);
     }
+
+
 }

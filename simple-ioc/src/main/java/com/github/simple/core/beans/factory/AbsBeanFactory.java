@@ -1,5 +1,6 @@
 package com.github.simple.core.beans.factory;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.*;
 import com.github.simple.core.beans.factory.support.SimpleBeanFactorySupport;
 import com.github.simple.core.config.SimpleConfigBean;
@@ -7,6 +8,8 @@ import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.context.SimpleListenerMulticasterPostProcessor;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.enums.SimpleIOCEnum;
+import com.github.simple.core.env.SimpleEnvironmentPostProcessor;
+import com.github.simple.core.env.SimpleMutablePropertySources;
 import com.github.simple.core.exception.SimpleBeanCreateException;
 import com.github.simple.core.exception.SimpleBeanDefinitionNotFoundException;
 import com.github.simple.core.exception.SimpleClassNotFoundException;
@@ -36,7 +39,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      */
     protected final Map<String, SimpleRootBeanDefinition> beanDefinitions = new ConcurrentHashMap<>(128);
 
-    protected final List<String> beanDefinitionNames=new ArrayList<>();
+    protected final List<String> beanDefinitionNames = new ArrayList<>();
 
     /**
      * bean后置处理器
@@ -44,13 +47,12 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     protected final List<SimpleBeanPostProcessor> simplePostProcessors = new ArrayList<>(128);
 
 
-    protected final List<SimpleBeanFactoryPostProcessor> beanFactoryPostProcessors=new ArrayList<>(128);
+    protected final List<SimpleBeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>(128);
 
     @Override
     public <T> T getBean(Class<?> clazz) throws Throwable {
         return getBean(ClassUtils.toLowerBeanName(clazz.getSimpleName()));
     }
-
 
 
     /**
@@ -162,7 +164,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     public void doRegistryBeanDefinition(Set<Class<?>> classSet) {
         SimpleRootBeanDefinition simpleRootBeanDefinitionSupport = buildRootBeanDefinition(SimpleBeanFactorySupport.class);
 //        addBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
-        this.registerBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
+        this.registerBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(), simpleRootBeanDefinitionSupport);
+        SimpleRootBeanDefinition mps = buildRootBeanDefinition(SimpleMutablePropertySources.class);
+        this.registerBeanDefinition(SimpleMutablePropertySources.SIMPLE_MUTABLE_PROPERTY_SOURCES_BEAN_NAME, mps);
         registryPostProcessor();
         classSet.forEach(mbd -> {
             try {
@@ -264,16 +268,14 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      **/
     private void registryPostProcessor() {
         SimpleRootBeanDefinition autowiredBeanDefinition = buildRootBeanDefinition(SimpleAutowiredAnnotationBeanPostProcessor.class);
-        this.registerBeanDefinition(autowiredBeanDefinition.getBeanName(),autowiredBeanDefinition);
+        this.registerBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
 //        addBeanDefinition(autowiredBeanDefinition.getBeanName(), autowiredBeanDefinition);
         SimpleRootBeanDefinition listenerMulticasterBeanDefinition = buildRootBeanDefinition(SimpleListenerMulticasterPostProcessor.class);
 //        addBeanDefinition(listenerMulticasterBeanDefinition.getBeanName(), listenerMulticasterBeanDefinition);
-        this.registerBeanDefinition(listenerMulticasterBeanDefinition.getBeanName(), listenerMulticasterBeanDefinition);
-
+        this.registerBeanDefinition(SimpleListenerMulticasterPostProcessor.SIMPLE_LISTENER_MULTICASTER_BEAN_NAME, listenerMulticasterBeanDefinition);
 
 
     }
-
 
 
     /**
@@ -284,6 +286,16 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * @date 4:29 下午 2020/12/17
      **/
     protected abstract void processInjectionBasedOnCurrentContext(List<SimpleBeanPostProcessor> sortedPostProcessors);
+
+
+    public void doInvokerEnvPostProcessors(List<SimpleEnvironmentPostProcessor> environmentPostProcessors) {
+        SimpleDefaultListableBeanFactory beanFactory= (SimpleDefaultListableBeanFactory) this;
+        if (CollectionUtil.isNotEmpty(environmentPostProcessors)) {
+            for (SimpleEnvironmentPostProcessor processor : environmentPostProcessors) {
+                    processor.postProcessEnvironment(beanFactory.getEnvironment());
+            }
+        }
+    }
 
     public void sortPostProcessors(List<SimpleBeanPostProcessor> nonOrderPostprocessors, List<SimpleBeanPostProcessor> sortedPostProcessors) {
         Map<Integer, SimpleBeanPostProcessor> markPostProcessorMap = new LinkedHashMap<>();

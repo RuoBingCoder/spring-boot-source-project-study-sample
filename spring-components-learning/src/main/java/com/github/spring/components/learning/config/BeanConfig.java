@@ -75,7 +75,7 @@ public class BeanConfig {
      * @return {@link ConfigBeanB}
      * 
      * 
-     * @see Test 演示了原理
+     * @see com.github.spring.components.learning.cglib.test.Test 演示了原理
      */
     @Bean
     @Conditional(SimpleCondition.class)

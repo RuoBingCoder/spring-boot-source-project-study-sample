@@ -1,5 +1,6 @@
 package com.github.enable;
 
+import com.github.enable.annotation.SimpleImportSelect;
 import com.github.enable.annotation.SimpleScanner;
 import com.github.enable.config.ConfigProperties;
 import com.github.enable.service.HelloService;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -28,6 +30,7 @@ import javax.annotation.Resource;
 @EnableScheduling
 @Slf4j
 @EnableConfigurationProperties
+@Import(SimpleImportSelect.class)
 public class EnableAutoConfigBootApplication implements CommandLineRunner, ApplicationRunner, ApplicationListener<ContextRefreshedEvent> {
 
     @Resource

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class LogAspect {
 
-    @Pointcut("execution(* com.sjl.bean.life.cycle.controller.*.*(..))")
+    @Pointcut("execution(* com.github.spring.core.controller.*.*(..))")
     public void pointcut() {
     }
 

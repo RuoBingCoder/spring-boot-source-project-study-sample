@@ -1,4 +1,4 @@
-package com.github.spring.core.bean;
+package com.github.spring.core.extension.point;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @description:
  */
 @Component
-public class BeanPostProcessorImpl implements BeanPostProcessor, Ordered, ApplicationContextAware {
+public class BeanPostProcessorSample implements BeanPostProcessor, Ordered, ApplicationContextAware {
     private ApplicationContext applicationContext;
 
     @Override

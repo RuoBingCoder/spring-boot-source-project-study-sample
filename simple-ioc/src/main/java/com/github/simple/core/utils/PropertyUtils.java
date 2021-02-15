@@ -3,6 +3,7 @@ package com.github.simple.core.utils;
 import com.github.simple.core.exception.SimplePropertiesLoadException;
 import com.github.simple.core.resource.SimpleResource;
 
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -12,16 +13,29 @@ import java.util.Properties;
  */
 
 public class PropertyUtils {
-
+    private static final Properties props = new Properties();
 
     public static Properties load(SimpleResource resource) {
         try {
-            Properties props = new Properties();
             props.load(resource.getInputStream());
             return props;
         } catch (Exception e) {
-                throw new SimplePropertiesLoadException("Properties load exception"+e.getMessage());
+            throw new SimplePropertiesLoadException("Properties load exception" + e.getMessage());
         }
 
+    }
+
+    public static void store(OutputStream os, String commentMsg) throws IOException {
+        props.store(os, commentMsg);
+
+    }
+
+    public static void main(String[] args) throws IOException {
+       //将Properties文件内容写入磁盘 dubbo
+        File file = new File("/Users/shijianlei/IdeaProjects/learning-spring-sample/simple-ioc/src/main/resources/store.properties");
+        FileOutputStream fos = new FileOutputStream(file);
+        props.setProperty("name.server","127.0.0.1");
+        PropertyUtils.store(fos, "test store");
+        props.forEach((key, value) -> System.out.println(key + "->" + value));
     }
 }

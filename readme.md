@@ -35,6 +35,8 @@ Spring 循环依赖,本项目主要是用来调试测试循环依赖的
 ## 14、spring-components-sample 
 spring `自定义事务注解实现声明式事务`,用来理解Spring事务处理,本项目可能很简单,但是主要是学习Spring的处理事务思想
 
+**com.github.spring.components.learning.cglib.test.Test 类演示了spring在处理配置Bean ,单例利用代理处理**
+
 ## 15、zk-framework-sample
 zookeeper的学习
 

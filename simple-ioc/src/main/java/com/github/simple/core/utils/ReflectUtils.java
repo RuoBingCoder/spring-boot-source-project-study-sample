@@ -105,8 +105,9 @@ public class ReflectUtils {
         throw new SimpleIOCBaseException("包路径不能为空!");
     }
 
-    public static boolean resolveValueDependency(Member member) {
+    public static boolean isValue(Member member) {
         Field field = (Field) member;
+        //rpc ->nacos
         if (!field.isAnnotationPresent(SimpleValue.class)) {
             return false;
         }

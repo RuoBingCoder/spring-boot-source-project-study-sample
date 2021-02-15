@@ -19,6 +19,7 @@ import java.util.Map;
  */
 @Slf4j
 public class SimpleListenerMulticasterPostProcessor implements SimpleBeanPostProcessor, SimpleApplicationContextAware {
+    public static final String SIMPLE_LISTENER_MULTICASTER_BEAN_NAME="simpleListenerMulticaster";
     private SimpleApplicationContext simpleApplicationContext;
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) {

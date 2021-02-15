@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.github.simple.core.resource.SimplePropertySource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Slf4j
 public class YamlUtils extends Yaml {
 
     private static final String DEFAULT_YAML_FILE_NAME = "application.yaml";
@@ -94,8 +96,31 @@ public class YamlUtils extends Yaml {
             return handleOriginData(key,temp);
 
         }
-        YAML_PROPERTY_CACHE.put(key, propertySource.getValue().get(key));
-        return buildResType(propertySource.getValue().get(key));
+        return null;
+
+    }
+
+    /**
+     * 得到属性 yaml
+     *
+     * @param key            关键
+     * @param propertySource 财产来源
+     * @return {@link String }
+     * @author jianlei.shi
+     * @date 2021-02-14 23:15:47
+     */
+    public static String getProperty(String key, Map<String, Object> propertySource) {
+        if (CollectionUtil.isNotEmpty(propertySource)) {
+            Object result = YAML_PROPERTY_CACHE.get(key);
+            if (ObjectUtil.isNotNull(result)) {
+                log.info("======>>>cache get data!");
+                return buildResType(YAML_PROPERTY_CACHE.get(key));
+            }
+            return handleOriginData(key,propertySource);
+
+        }
+        return null;
+
     }
 
     /**
@@ -114,11 +139,15 @@ public class YamlUtils extends Yaml {
             if (o1 instanceof Map) {
                 temp = (Map<String, Object>) o1;
             } else {
+                if (o1==null){
+                    return null;
+                }
                 YAML_PROPERTY_CACHE.put(key, o1);
                 res = buildResType(o1);
 
             }
         }
+        YAML_PROPERTY_CACHE.put(key,res);
         return res;
 
     }

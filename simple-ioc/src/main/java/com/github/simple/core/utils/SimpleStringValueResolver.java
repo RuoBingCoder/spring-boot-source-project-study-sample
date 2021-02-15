@@ -8,5 +8,5 @@ package com.github.simple.core.utils;
 @FunctionalInterface
 public interface SimpleStringValueResolver {
 
-    String resolveStringValue(String strVal);
+    String resolveStringValue(String strVal) throws Throwable;
 }

@@ -46,7 +46,7 @@ public class JavassistCompiler extends AbstractCompiler{
         // process implemented interfaces
         matcher = IMPLEMENTS_PATTERN.matcher(source);
         if (matcher.find()) {
-            String[] ifaces = matcher.group(1).trim().split("\\,");
+            String[] ifaces = matcher.group(1).trim().split(",");
             Arrays.stream(ifaces).forEach(i -> builder.addInterface(i.trim()));
         }
 

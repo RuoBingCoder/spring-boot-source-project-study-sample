@@ -17,4 +17,14 @@ import lombok.NoArgsConstructor;
 public class Hello {
     private String msg;
 
+    public static void main(String[] args) {
+        Hello hello_1 = new Hello("a");
+        Hello hello_2 = hello_1;
+        System.out.println(hello_1 == hello_1);
+        hello_2.setMsg("b");
+
+        System.out.println("hello_1: " + hello_1);
+        System.out.println("hello_2: " + hello_2);
+    }
+
 }

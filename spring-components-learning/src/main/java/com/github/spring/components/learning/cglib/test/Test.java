@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 public class Test {
 
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
         Object cglibProxy = MyProxyFactory.getProxy().createCGLIBProxy(ConfigMethodTest.class);
         Method method2 = ConfigMethodTest.class.getMethod("method2");
         Object invoke = method2.invoke(cglibProxy);
