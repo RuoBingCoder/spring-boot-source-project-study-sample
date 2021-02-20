@@ -18,6 +18,7 @@ import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.env.SimpleEnvironmentPostProcessor;
 import com.github.simple.core.env.SimpleMutablePropertySources;
 import com.github.simple.core.env.SimpleStandardEnvironment;
+import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.resource.SimpleClassPathResource;
 import com.github.simple.core.resource.SimplePropertiesPropertySourceLoader;
 import com.github.simple.core.resource.SimplePropertySource;
@@ -67,7 +68,7 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
     }
 
     @Override
-    public void refresh() throws Throwable {
+    public void refresh() {
         SimpleConfigBeanFactory beanFactory = obtainFreshBeanFactory();
         prepareBeanFactory(beanFactory);
         preparePropertiesSource(beanFactory);
@@ -79,9 +80,10 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
             initApplicationEventMulticaster();
             finishBeanInstance(beanFactory);
             finishRefresh();
-        } catch (Exception e) {
-            log.error("ioc create exception", e);
+        } catch (Throwable te) {
+            log.error("ioc create exception", te);
             destroyBeans(beanFactory);
+            throw new SimpleIOCBaseException("ioc create exception");
         }
 
     }
@@ -175,26 +177,31 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
 
     }
 
-    private void preparePropertiesSource(SimpleConfigBeanFactory beanFactory) throws Throwable {
-        SimpleDefaultListableBeanFactory defaultListableBeanFactory = (SimpleDefaultListableBeanFactory) beanFactory;
-        SimpleClassPathResource source = new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
-        final SimpleMutablePropertySources mps = beanFactory.getBean(SimpleMutablePropertySources.class);
-        // yaml
-        if (source.fileAttribute()) {
-            SimpleYamlPropertySourceLoader loader = new SimpleYamlPropertySourceLoader();
-            List<SimplePropertySource<Map<String, Object>>> propertySourceList = loader.load(source.getFilename(), source);
-            mps.addLast(propertySourceList.get(0));
+    private void preparePropertiesSource(SimpleConfigBeanFactory beanFactory) {
+        try {
+            SimpleDefaultListableBeanFactory defaultListableBeanFactory = (SimpleDefaultListableBeanFactory) beanFactory;
+            SimpleClassPathResource source = new SimpleClassPathResource(SimpleIOCConstant.DEFAULT_SOURCE_NAME);
+            final SimpleMutablePropertySources mps = beanFactory.getBean(SimpleMutablePropertySources.class);
+            // yaml
+            if (source.fileAttribute()) {
+                SimpleYamlPropertySourceLoader loader = new SimpleYamlPropertySourceLoader();
+                List<SimplePropertySource<Map<String, Object>>> propertySourceList = loader.load(source.getFilename(), source);
+                mps.addLast(propertySourceList.get(0));
 //            defaultListableBeanFactory.addPropertySource(propertySourceList);
-        } else {
-            // properties
-            SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
-            List<SimplePropertySource<Properties>> psp = loader.load(source.getFilename(), source);
-            mps.addLast(psp.get(0));
+            } else {
+                // properties
+                SimplePropertiesPropertySourceLoader loader = new SimplePropertiesPropertySourceLoader();
+                List<SimplePropertySource<Properties>> psp = loader.load(source.getFilename(), source);
+                mps.addLast(psp.get(0));
 
 //            defaultListableBeanFactory.addPropertySource(simplePropertiesPropertySourceLoader);
-        }
-        defaultListableBeanFactory.addEmbeddedValueResolver(new SimpleEmbeddedValueResolver(defaultListableBeanFactory));
+            }
+            defaultListableBeanFactory.addEmbeddedValueResolver(new SimpleEmbeddedValueResolver(defaultListableBeanFactory));
 
+        } catch (Throwable e) {
+            log.error("preparePropertiesSource error msg:  "+e.getMessage());
+            throw new SimpleIOCBaseException("preparePropertiesSource error msg");
+        }
     }
 
 

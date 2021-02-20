@@ -8,17 +8,17 @@ import java.util.List;
  * @description: ConfigSimpleMethod
  */
 
-public abstract class ConfigSimpleMethod {
+public abstract class AbsConfigMethodWrapper {
     protected List<SimpleMethodMetadata> methodMetadata;
 
     protected Class<?> configClazz;
 
-    protected ConfigSimpleMethod(List<SimpleMethodMetadata> methodMetadata, Class<?> configClazz) {
+    protected AbsConfigMethodWrapper(List<SimpleMethodMetadata> methodMetadata, Class<?> configClazz) {
         this.methodMetadata = methodMetadata;
         this.configClazz = configClazz;
     }
 
-    protected ConfigSimpleMethod() {
+    protected AbsConfigMethodWrapper() {
     }
 
     public List<SimpleMethodMetadata> getMethodMetadata() {

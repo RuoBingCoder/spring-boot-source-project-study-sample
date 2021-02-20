@@ -71,13 +71,19 @@ os:
 #xxl-job 配置
 xxl:
   job:
-#    accessToken: ''
+    #    accessToken: ''
     admin:
       addresses: http://127.0.0.1:8080/xxl-job-admin
     executor:
-#      address: ''
+      #      address: ''
       appname: xxl-job-executor-sample
       ip: 127.0.0.1
       logpath: /Users/shijianlei/logs/applogs/xxl-job/jobhandler
       logretentiondays: 30
       port: 9999
+#监控启用所有断点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

@@ -8,6 +8,7 @@ import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.context.SimpleListenerMulticasterPostProcessor;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
 import com.github.simple.core.enums.SimpleIOCEnum;
+import com.github.simple.core.env.SimpleEnvironment;
 import com.github.simple.core.env.SimpleEnvironmentPostProcessor;
 import com.github.simple.core.env.SimpleMutablePropertySources;
 import com.github.simple.core.exception.SimpleBeanCreateException;
@@ -16,6 +17,7 @@ import com.github.simple.core.exception.SimpleClassNotFoundException;
 import com.github.simple.core.exception.SimpleClassTypeException;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
+import com.github.simple.core.utils.SimpleStringValueResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,6 +56,9 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
         return getBean(ClassUtils.toLowerBeanName(clazz.getSimpleName()));
     }
 
+    protected abstract SimpleEnvironment getEnvironment() ;
+
+    protected abstract SimpleStringValueResolver getStringValueResolver() ;
 
     /**
      * 获取bean

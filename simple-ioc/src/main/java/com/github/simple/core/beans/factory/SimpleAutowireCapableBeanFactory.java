@@ -11,7 +11,6 @@ import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.core.context.aware.SimpleApplicationContextAware;
 import com.github.simple.core.context.aware.SimpleEmbeddedValueResolverAware;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
-import com.github.simple.core.env.SimpleEnvironment;
 import com.github.simple.core.env.aware.SimpleEnvironmentAware;
 import com.github.simple.core.exception.SimpleIOCBaseException;
 import com.github.simple.core.init.SimpleInitializingBean;
@@ -35,15 +34,13 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     protected List<SimplePropertySource<Properties>> simplePropertiesPropertySourceLoader;
     protected List<SimplePropertySource<Map<String, Object>>> simpleYamlPropertySourceLoader;
-    protected SimpleApplicationContext applicationContext;
-
     /**
      * 增加资源配置文件
      *
      * @param source 源
+     * @Deprecated since 添加了env支持
      */
     @Override
-    @Deprecated
     public <T> void addPropertySource(T source) {
         List<SimplePropertySource> list = (List<SimplePropertySource>) source;
         if (!(list.get(0).getValue() instanceof Properties)) {
@@ -52,6 +49,8 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         }
         this.simplePropertiesPropertySourceLoader = (List<SimplePropertySource<Properties>>) source;
     }
+
+    protected SimpleApplicationContext applicationContext;
 
 
     /**
@@ -66,28 +65,30 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     /**
      * 完成bean实例
-     *
-     * @throws Throwable throwable
      */
-    public void finishBeanInstance() throws Throwable {
-        List<String> beanNames = this.beanDefinitionNames;
-        for (String beanName : beanNames) {
-            if (isFactoryBean(beanName)) {
-                getBean(beanName);
-            }
-        }
-        for (String beanName : beanNames) {
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("-->getBean beanName is:{}", beanName);
+    public void finishBeanInstance() {
+        try {
+            List<String> beanNames = this.beanDefinitionNames;
+            for (String beanName : beanNames) {
+                if (isFactoryBean(beanName)) {
+                    getBean(beanName);
                 }
-                this.getBean(beanName);
-            } catch (Exception e) {
-                log.error("getBean exception!", e);
-                throw new SimpleIOCBaseException("finishBeanInstance getBean exception! beanName is :[" + beanName + "]" + e.getMessage());
             }
+            for (String beanName : beanNames) {
+                try {
+                    if (log.isDebugEnabled()) {
+                        log.debug("-->getBean beanName is:{}", beanName);
+                    }
+                    this.getBean(beanName);
+                } catch (Exception e) {
+                    log.error("getBean exception!", e);
+                    throw new SimpleIOCBaseException("finishBeanInstance getBean exception! beanName is :[" + beanName + "]" + e.getMessage());
+                }
+            }
+        } catch (Throwable e) {
+            log.error("finishBeanInstance error msg:  " + e.getMessage());
+            throw new SimpleIOCBaseException("finishBeanInstance error msg");
         }
-
 
     }
 
@@ -251,25 +252,23 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
         }
     }
 
-    private void invokerAware(String beanName, Object instance) throws Throwable {
-        if (instance instanceof SimpleBeanFactoryAware) {
-            SimpleBeanFactoryAware simpleBeanFactoryAware = (SimpleBeanFactoryAware) instance;
+    private void invokerAware(String beanName, Object bean) throws Throwable {
+        if (bean instanceof SimpleBeanFactoryAware) {
+            SimpleBeanFactoryAware simpleBeanFactoryAware = (SimpleBeanFactoryAware) bean;
             simpleBeanFactoryAware.setBeanFactory(this);
 
         }
-        if (instance instanceof SimpleEmbeddedValueResolverAware) {
-            SimpleEmbeddedValueResolverAware evr = (SimpleEmbeddedValueResolverAware) instance;
-            SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) this;
-            evr.setEmbeddedValueResolver(beanFactory.getStringValueResolver());
+        if (bean instanceof SimpleEmbeddedValueResolverAware) {
+            SimpleEmbeddedValueResolverAware evr = (SimpleEmbeddedValueResolverAware) bean;
+            evr.setEmbeddedValueResolver(this.getStringValueResolver());
         }
-        if (instance instanceof SimpleApplicationContextAware) {
-            SimpleApplicationContextAware simpleApplicationContext = (SimpleApplicationContextAware) instance;
+        if (bean instanceof SimpleApplicationContextAware) {
+            SimpleApplicationContextAware simpleApplicationContext = (SimpleApplicationContextAware) bean;
             simpleApplicationContext.setApplicationContext(this.applicationContext);
         }
-        if (instance instanceof SimpleEnvironmentAware){
-            SimpleEnvironmentAware simpleEnvAware= (SimpleEnvironmentAware) instance;
-            SimpleDefaultListableBeanFactory beanFactory = (SimpleDefaultListableBeanFactory) this;
-            simpleEnvAware.setEnv((SimpleEnvironment) beanFactory.getEnvironment());
+        if (bean instanceof SimpleEnvironmentAware) {
+            SimpleEnvironmentAware simpleEnvAware = (SimpleEnvironmentAware) bean;
+            simpleEnvAware.setEnv(this.getEnvironment());
         }
     }
 

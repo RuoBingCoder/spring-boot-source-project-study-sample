@@ -15,37 +15,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TypeConvertUtils {
 
-    public static <T> T convert(Class<T> type, String value) {
+    public static <T> Object convert(Class<T> type, String value) {
         if (value == null || "".equals(value)) {
             throw new SimpleTypeConvertException("value is null");
 
         }
         if (type.equals(Integer.class)) {
-            Integer res;
+            int res;
             try {
-                res = Integer.valueOf(value);
+                res = Integer.parseInt(value);
             } catch (Exception e) {
                 log.error("["+value + "]is not convert Integer",e);
                 throw new SimpleTypeConvertException("["+value + "] is not convert Integer");
 
             }
 
-            return (T) res;
+            return res;
         }
         if (type.equals(String.class)) {
-            return (T) value;
+            return value;
         }
         if (type.equals(Long.class)) {
-            Long res;
+            long res;
             try {
-                res = Long.valueOf(value);
+                res = Long.parseLong(value);
             } catch (Exception e) {
                 log.error("["+value + "]is not convert Long",e);
                 throw new SimpleTypeConvertException("["+value + "]  is not convert Long");
 
             }
 
-            return (T) res;
+            return  res;
         }
         return null;
 

@@ -1,7 +1,5 @@
 package com.github.simple.core.beans.factory;
 
-import com.github.simple.core.env.SimpleEnvironment;
-
 import java.lang.reflect.Field;
 import java.util.Map;
 
@@ -38,7 +36,5 @@ public interface SimpleListableBeanFactory extends SimpleBeanFactory, SimpleSing
         return null;
     }
 
-    default SimpleEnvironment getEnvironment(){
-        return null;
-    }
+
 }

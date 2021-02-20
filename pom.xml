@@ -23,7 +23,7 @@
         <module>custom-spring-boot-starter-sample</module>
         <module>rocketmq-producers-spring-boot-sample</module>
         <module>rocketmq-consumer-spring-boot-sample</module>
-        <module>spring-boot-common</module>
+        <module>common</module>
         <module>custom-spring-xml-spring-boot-sample</module>
         <module>custom-aop-spring-boot-sample</module>
         <module>easy-tomcat-netty</module>
@@ -80,6 +80,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>

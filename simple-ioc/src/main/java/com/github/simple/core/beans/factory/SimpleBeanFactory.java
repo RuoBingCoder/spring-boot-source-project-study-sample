@@ -29,4 +29,7 @@ public interface SimpleBeanFactory{
 
     Object resolveDependency(Field type, String beanName) throws Throwable;
 
+
+
+
 }

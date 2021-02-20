@@ -8,7 +8,7 @@ import java.util.List;
  * @description: SimpleBeanMethod
  */
 
-public class SimpleMethodBean extends ConfigSimpleMethod{
+public class SimpleMethodBean extends AbsConfigMethodWrapper {
 
 
     public SimpleMethodBean(List<SimpleMethodMetadata> methodMetadata, Class<?> configClazz) {

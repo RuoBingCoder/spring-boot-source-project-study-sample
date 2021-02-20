@@ -7,3 +7,9 @@ nacos:
 spring:
   application:
     name: spring-boot-nacos-sample
+
+app:
+  name: Wechat
+
+http:
+  url: http://127.0.0.1:9988

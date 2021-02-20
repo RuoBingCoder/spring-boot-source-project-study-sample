@@ -17,7 +17,7 @@ public interface SimpleConfigApplicationContext extends SimpleConfigBeanFactory 
     SimpleBeanFactory getBeanFactory();
 
 
-    void refresh() throws Throwable;
+    void refresh();
 
     void addApplicationListener(SimpleApplicationListener<?> listener);
 

@@ -65,6 +65,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
     }
 
+    @Override
     public SimpleStringValueResolver getStringValueResolver() {
         if (CollectionUtil.isNotEmpty(simpleStringValueResolvers)) {
             return simpleStringValueResolvers.get(0);

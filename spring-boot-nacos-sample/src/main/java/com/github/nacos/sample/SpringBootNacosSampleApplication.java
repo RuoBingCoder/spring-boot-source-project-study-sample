@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @NacosPropertySource(dataId = "spring-boot-nacos-sample",autoRefreshed = true)
+//@Import(SpringUtils.class)
 public class SpringBootNacosSampleApplication {
 
     public static void main(String[] args) {

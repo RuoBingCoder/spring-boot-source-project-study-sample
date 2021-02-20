@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>com.github</groupId>
-            <artifactId>spring-boot-common</artifactId>
+            <artifactId>common</artifactId>
             <version>${common.version}</version>
         </dependency>
         <!--<dependency>

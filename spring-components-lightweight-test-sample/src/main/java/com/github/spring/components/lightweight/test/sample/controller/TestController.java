@@ -1,8 +1,11 @@
 package com.github.spring.components.lightweight.test.sample.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.spring.components.lightweight.test.sample.job.Task;
 import com.github.spring.components.lightweight.test.sample.job.TaskWrapper;
 import com.github.spring.components.lightweight.test.sample.pojo.Order;
+import com.github.spring.components.lightweight.test.sample.service.BizService;
+import common.request.CRequestParam;
 import http.ModelResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,10 @@ public class TestController {
 
     @Autowired
     private TaskWrapper tw;
+
+
+    @Autowired
+    private BizService bizService;
 
     @PostMapping("/export")
     public void export(@RequestParam("name") String name, HttpServletResponse resp) throws IOException {
@@ -67,5 +74,24 @@ public class TestController {
             return result;
         }
         return ModelResult.error("添加订单失败");
+    }
+
+    @GetMapping("/getAppName")
+    @ResponseBody
+    public ModelResult<String> getAppName(@RequestParam String param) {
+//        log.info("开始获取appName");
+        final ModelResult<String> result = bizService.getAppName();
+//        log.info("获取appName结束");
+        return result;
+    }
+
+    @PostMapping("/map")
+    @ResponseBody
+    public ModelResult<String> map(@RequestBody CRequestParam params) {
+        log.info("map params is:{}", JSONObject.toJSONString(params == null ? "hello" : params));
+        ModelResult<String> result = new ModelResult<>();
+        assert params != null;
+        result.setData(params.toString());
+        return result;
     }
 }

@@ -36,7 +36,7 @@ public interface SimpleConfigBeanFactory extends SimpleBeanFactory, SimpleApplic
         return null;
     }
 
-
+    @Deprecated
     default <T> void addPropertySource(T source) {
         return;
     }

@@ -37,6 +37,9 @@ import java.util.stream.Collectors;
  * </p>
  *
  *  @see ConfigurationClassPostProcessor#enhanceConfigurationClasses 加了此注解 {@link Configuration} 会被代理
+ *  总体流程 先找出Aspect的所有通知点->再找出符合当前bean的拦截器->在创建代理->封装拦截器链
+ * @see org.springframework.aop.framework.JdkDynamicAopProxy
+ * @see org.springframework.aop.framework.CglibAopProxy
  */
 @Aspect
 @Slf4j

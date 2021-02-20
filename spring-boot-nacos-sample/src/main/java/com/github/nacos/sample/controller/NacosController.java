@@ -5,12 +5,10 @@ import com.alibaba.nacos.client.config.impl.CacheData;
 import com.alibaba.nacos.client.config.impl.ClientWorker;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
 import http.ModelResult;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Properties;
@@ -48,8 +46,10 @@ public class NacosController {
      * @see ClientWorker#checkConfigInfo() //长轮询配置中心信息
      */
     @NacosValue("${simple.name}")
-            
     String userName;
+
+    @Value("${app.name}")
+    String appName;
 
 //    @NacosValue("${user.age}")
 //    int age;
@@ -59,6 +59,13 @@ public class NacosController {
     public ModelResult<String> getName() {
         ModelResult<String> result=new ModelResult<>();
         result.setData(userName+"->");
+        return result;
+    }
+    @GetMapping("/getAppName")
+    @ResponseBody
+    public ModelResult<String> getAppName(){
+        ModelResult<String> result=new ModelResult<>();
+        result.setData(appName+"->");
         return result;
     }
 

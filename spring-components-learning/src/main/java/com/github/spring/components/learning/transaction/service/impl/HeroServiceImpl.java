@@ -30,7 +30,7 @@ public class HeroServiceImpl implements HeroService {
      * @see org.springframework.aop.framework.DefaultAdvisorChainFactory#getInterceptorsAndDynamicInterceptionAdvice(Advised, Method, Class)
      * @see org.springframework.transaction.interceptor.TransactionAttributeSourcePointcut#matches(Method, Class)
      * @see org.springframework.transaction.interceptor.AbstractFallbackTransactionAttributeSource#getTransactionAttribute(Method, Class)
-     * @see org.springframework.transaction.interceptor.AbstractFallbackTransactionAttributeSource#computeTransactionAttribute(Method, Class)
+     * @see org.springframework.transaction.interceptor.AbstractFallbackTransactionAttributeSource#computeTransactionAttribute(Method, Class) //method 非 public 直接返回null
      * @see org.springframework.transaction.annotation.AnnotationTransactionAttributeSource#findTransactionAttribute(Method)  //find @Transactional注解获取属性
      * 最后 	this.attributeCache.put(cacheKey, txAttr);
      * 调用方法时会从attributeCache 获取没有则走普通方法
