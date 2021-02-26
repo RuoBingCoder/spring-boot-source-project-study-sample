@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface SimpleValue {
 
-    String value() default "";
+    String value();
 }

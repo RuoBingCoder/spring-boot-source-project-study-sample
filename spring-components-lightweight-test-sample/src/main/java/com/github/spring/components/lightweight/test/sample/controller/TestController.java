@@ -3,6 +3,7 @@ package com.github.spring.components.lightweight.test.sample.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.spring.components.lightweight.test.sample.job.Task;
 import com.github.spring.components.lightweight.test.sample.job.TaskWrapper;
+import com.github.spring.components.lightweight.test.sample.params.OrderRequestParam;
 import com.github.spring.components.lightweight.test.sample.pojo.Order;
 import com.github.spring.components.lightweight.test.sample.service.BizService;
 import common.request.CRequestParam;
@@ -85,13 +86,36 @@ public class TestController {
         return result;
     }
 
-    @PostMapping("/map")
+    @PostMapping("/getConfigs")
     @ResponseBody
-    public ModelResult<String> map(@RequestBody CRequestParam params) {
+    public ModelResult<String> getConfigs(@RequestBody CRequestParam params) {
         log.info("map params is:{}", JSONObject.toJSONString(params == null ? "hello" : params));
         ModelResult<String> result = new ModelResult<>();
         assert params != null;
         result.setData(params.toString());
         return result;
     }
+
+    @PostMapping("/insert")
+    @ResponseBody
+    public ModelResult<String> insert(@RequestBody CRequestParam params) {
+//        log.info("map params is:{}", JSONObject.toJSONString(params == null ? "hello" : params));
+        ModelResult<String> result = new ModelResult<>();
+        assert params != null;
+        result.setData(params.toString());
+        return result;
+    }
+    @PostMapping("/queryOrder")
+    @ResponseBody
+    public ModelResult<String> queryOrder(@RequestBody OrderRequestParam params) {
+//        log.info("map params is:{}", JSONObject.toJSONString(params == null ? "hello" : params));
+        ModelResult<String> result = new ModelResult<>();
+        assert params != null;
+        result.setData(params.toString());
+        return result;
+    }
+
+
+
+
 }

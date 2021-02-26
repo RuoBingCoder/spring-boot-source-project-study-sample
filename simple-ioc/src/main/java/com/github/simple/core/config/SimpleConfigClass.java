@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @description: SimpleConfigBean
  */
 
-public class SimpleConfigBean extends SimpleConfigBeanMetadata implements SimpleBeanFactoryAware {
+public class SimpleConfigClass extends SimpleConfigBeanMetadata implements SimpleBeanFactoryAware {
     private SimpleBeanFactory beanFactory;
 
     public Object invoker(String name) throws Throwable {

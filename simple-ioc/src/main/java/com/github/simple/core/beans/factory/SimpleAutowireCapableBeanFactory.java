@@ -6,7 +6,7 @@ import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.annotation.SimpleInstantiationAwareBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
 import com.github.simple.core.beans.aware.SimpleBeanFactoryAware;
-import com.github.simple.core.config.SimpleConfigBean;
+import com.github.simple.core.config.SimpleConfigClass;
 import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.core.context.aware.SimpleApplicationContextAware;
 import com.github.simple.core.context.aware.SimpleEmbeddedValueResolverAware;
@@ -306,10 +306,10 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
 
     private Object handlerIsConfigBean(SimpleRootBeanDefinition mbd) {
         try {
-            if (mbd.getBeanClass().equals(SimpleConfigBean.class)) {
+            if (mbd.getBeanClass().equals(SimpleConfigClass.class)) {
                 return null;
             }
-            SimpleConfigBean configBean = getBean(SimpleConfigBean.class);
+            SimpleConfigClass configBean = getBean(SimpleConfigClass.class);
             if (configBean == null) {
                 throw new SimpleIOCBaseException("get config bean exception!");
             }

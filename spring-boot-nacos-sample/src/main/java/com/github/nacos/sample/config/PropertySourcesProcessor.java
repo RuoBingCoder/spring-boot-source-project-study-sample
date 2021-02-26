@@ -1,11 +1,13 @@
 package com.github.nacos.sample.config;
 
 import com.github.nacos.sample.config.factory.ConfigPropertySourceFactory;
-import com.github.nacos.sample.config.listener.AutoUpdateConfigChangeListener;
 import com.github.nacos.sample.config.service.ConfigService;
 import com.github.nacos.sample.config.source.ConfigPropertySource;
+import com.github.nacos.sample.support.ThreadPoolValuePostProcessor;
+import com.github.nacos.sample.support.SpringValuePostProcessor;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import common.constants.Constants;
 import common.constants.PropertySourcesConstants;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -27,7 +29,7 @@ import java.util.List;
  * @description PropertySourcesProcessor
  */
 @Component
-@DependsOn("utils.SpringUtils")
+@DependsOn(Constants.SPRING_UTILS_BEAN_NAME)
 public class PropertySourcesProcessor implements BeanFactoryPostProcessor, EnvironmentAware, PriorityOrdered {
     private static final Multimap<Integer, String> NAMESPACE_NAMES = LinkedHashMultimap.create();
 
@@ -51,18 +53,20 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        initializePropertySources();
+        initializePropertySources(beanFactory);
         initializeAutoUpdatePropertiesFeature(beanFactory);
     }
 
     private void initializeAutoUpdatePropertiesFeature(ConfigurableListableBeanFactory beanFactory) {
-        AutoUpdateConfigChangeListener autoUpdateConfigChangeListener = new AutoUpdateConfigChangeListener(
-                environment, beanFactory);
+       /* AutoUpdateConfigChangeListener autoUpdateConfigChangeListener = new AutoUpdateConfigChangeListener(
+                environment, beanFactory);*/
+//        AutoUpdateThreadPoolConfigChangeListener utl=new AutoUpdateThreadPoolConfigChangeListener(beanFactory,environment);
 
         List<ConfigPropertySource> configPropertySources = configPropertySourceFactory.getAllConfigPropertySources();
         for (ConfigPropertySource configPropertySource : configPropertySources) {
             //添加热更新监听器
-            configPropertySource.addChangeListener(autoUpdateConfigChangeListener);
+            configPropertySource.addChangeListener(beanFactory.getBean(SpringValuePostProcessor.class));
+            configPropertySource.addChangeListener(beanFactory.getBean(ThreadPoolValuePostProcessor.class));
         }
         if (config != null && config instanceof DefaultConfig) {
             DefaultConfig defaultConfig = (DefaultConfig) config;
@@ -70,7 +74,7 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
         }
     }
 
-    private void initializePropertySources() {
+    private void initializePropertySources(ConfigurableListableBeanFactory beanFactory) {
 
         if (environment.getPropertySources().contains(PropertySourcesConstants.SIMPLE_PROPERTY_SOURCE_NAME)) {
             //already initialized
@@ -80,9 +84,9 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
 
         //sort by order asc
 
-        Config cfig = ConfigService.getConfig(null);
+        Config cfig = ConfigService.getConfig(beanFactory,null);
         this.setConfig(cfig);
-        composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource("simple-config", config));
+        composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource("alpha-config", config));
 
 
         environment.getPropertySources().addFirst(composite);

@@ -63,15 +63,21 @@ public class HttpUtils implements EnvironmentAware, InitializingBean {
         if (Objects.isNull(rp)) {
             throw new RuntimeException("RequestParam param is not null");
         }
-        checkUrl();
+        checkUrl(rp);
         final String param = rp.getParam();
         final String source = rp.getSource();
+        if (url == null) {
+            url = rp.getBaseUrl();
+        }
         return rp.getIsPost() ? url + source : url + source + param;
 
 
     }
 
-    private static void checkUrl() {
+    private static void checkUrl(RequestParam rp) {
+        if (rp.getBaseUrl() != null) {
+            return;
+        }
         if (url == null || "".equals(url)) {
             throw new CommonException("Please check if the url is configured");
         }
@@ -89,7 +95,7 @@ public class HttpUtils implements EnvironmentAware, InitializingBean {
     public static String doPost(RequestParam rq) {
         try {
             for (int i = 0; i < 3; i++) {
-              String res= HttpRequest.post(getUrl(rq)).header(Header.CONTENT_TYPE, HttpEnum.CONTENT_TYPE_JSON.getType()).body(toString(getBody(rq))).execute().body();
+                String res = HttpRequest.post(getUrl(rq)).header(Header.CONTENT_TYPE, HttpEnum.CONTENT_TYPE_JSON.getType()).body(toString(getBody(rq))).execute().body();
                 if (isNull(res)) {
                     continue;
                 }

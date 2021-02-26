@@ -1,7 +1,7 @@
 package com.spring.main;
 
 import common.TaskWrapper;
-import utils.ThreadPoolUtils;
+import helper.ThreadPoolHelper;
 
 /**
  * @author jianlei.shi
@@ -12,9 +12,9 @@ import utils.ThreadPoolUtils;
 public class ThreadPoolTest {
 
     public static void poolRun() {
-
+        ThreadPoolHelper threadPoolHelper=new ThreadPoolHelper();
         for (int i = 0; i < 20; i++) {
-            ThreadPoolUtils.execute(() -> {
+            threadPoolHelper.execute(() -> {
                 try {
 
                     Thread.sleep(4000);

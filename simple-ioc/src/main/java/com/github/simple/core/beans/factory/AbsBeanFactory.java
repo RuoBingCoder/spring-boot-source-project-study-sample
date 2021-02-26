@@ -3,7 +3,7 @@ package com.github.simple.core.beans.factory;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.simple.core.annotation.*;
 import com.github.simple.core.beans.factory.support.SimpleBeanFactorySupport;
-import com.github.simple.core.config.SimpleConfigBean;
+import com.github.simple.core.config.SimpleConfigClass;
 import com.github.simple.core.constant.SimpleIOCConstant;
 import com.github.simple.core.context.SimpleListenerMulticasterPostProcessor;
 import com.github.simple.core.definition.SimpleRootBeanDefinition;
@@ -50,6 +50,8 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
 
     protected final List<SimpleBeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>(128);
+
+    protected final Object LOCK=new Object();
 
     @Override
     public <T> T getBean(Class<?> clazz) throws Throwable {
@@ -192,12 +194,14 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
      * @date 5:20 下午 2020/12/17
      **/
     private void configBeanRegistry(Class<?> bdClazz) throws Throwable {
-        if (ReflectUtils.matchAnnotationComponent(bdClazz, SimpleConfig.class)) {
-            checkType(bdClazz, null);
-            SimpleRootBeanDefinition configBeanDefinition = buildRootBeanDefinition(bdClazz);
-            registerBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
+        synchronized (LOCK) {
+            if (ReflectUtils.matchAnnotationComponent(bdClazz, SimpleConfig.class)) {
+                checkType(bdClazz, null);
+                SimpleRootBeanDefinition configBeanDefinition = buildRootBeanDefinition(bdClazz);
+                registerBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
 //            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
-            doParseAndRegistryConfigBean(bdClazz);
+                doParseAndRegistryConfigBean(bdClazz);
+            }
         }
     }
 
@@ -212,7 +216,7 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
 
     private void doParseAndRegistryConfigBean(Class<?> bdClazz) throws Throwable {
         Map<Method, SimpleBean> methodAndAnnotation = ReflectUtils.getMethodAndAnnotation(bdClazz, SimpleBean.class);
-        SimpleRootBeanDefinition configMbd = buildRootBeanDefinition(SimpleConfigBean.class);
+        SimpleRootBeanDefinition configMbd = buildRootBeanDefinition(SimpleConfigClass.class);
         if (!beanDefinitions.containsKey(configMbd.getBeanName())) {
 //            addBeanDefinition(configMbd.getBeanName(), configMbd);
             registerBeanDefinition(configMbd.getBeanName(), configMbd);
@@ -227,13 +231,15 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
             }
 //            addBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
             registerBeanDefinition(configBeanDefinition.getBeanName(), configBeanDefinition);
-            SimpleConfigBean simpleBean = getBean(ClassUtils.toLowerBeanName(SimpleConfigBean.class.getSimpleName()));
-            if (simpleBean != null) {
-                if (!simpleBean.matchConfigClass(bdClazz)) {
+            SimpleConfigClass configClass = getBean(ClassUtils.toLowerBeanName(SimpleConfigClass.class.getSimpleName()));
+            if (configClass != null) {
+                //保证ConfigClass单一性
+                if (!configClass.matchConfigClass(bdClazz)) {
                     SimpleMethodBean method = new SimpleMethodBean(createMethodMeta(entry.getKey()), bdClazz);
-                    simpleBean.setBeanMethods(method);
+                    configClass.setBeanMethods(method);
                 } else {
-                    SimpleMethodBean beanMethod = simpleBean.getBeanMethodByConfig(bdClazz);
+                    //说明ConfigClass已经创建
+                    SimpleMethodBean beanMethod = configClass.getBeanMethodByConfig(bdClazz);
                     beanMethod.getMethodMetadata().add(new SimpleMethodMeta(entry.getKey().getName(), entry.getKey()));
 
                 }

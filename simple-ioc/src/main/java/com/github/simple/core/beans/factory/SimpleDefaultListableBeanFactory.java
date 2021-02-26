@@ -1,6 +1,7 @@
 package com.github.simple.core.beans.factory;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.lang.Assert;
 import com.github.simple.core.annotation.SimpleBeanFactoryPostProcessor;
 import com.github.simple.core.annotation.SimpleBeanPostProcessor;
 import com.github.simple.core.beans.SimpleFactoryBean;
@@ -202,44 +203,46 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
      */
     public Object resolveStringValue(Field type, String placeHolder) {
         if (log.isDebugEnabled()) {
-            log.debug("====>>>>@SimpleValue set value begin<<<<<======");
+            Assert.notNull(type, "field type cannot be null");
+            Assert.notNull(placeHolder, "placeHolder type cannot be null");
+            log.debug("====>>>>@SimpleValue set value begin param:{} ,{}<<<<<======", type.getName(), placeHolder);
         }
         boolean flag = false;
         SimpleStandardEnvironment environment = (SimpleStandardEnvironment) this.getEnvironment();
         SimpleMutablePropertySources propertySources = environment.getPropertySources();
         List<SimplePropertySource<?>> simplePropertySources = propertySources.getSimplePropertySources();
         AtomicInteger ai = new AtomicInteger(0);
-            if (CollectionUtil.isNotEmpty(simplePropertySources)) {
-                for (SimplePropertySource<?> propertySource : simplePropertySources) {
-                    if (!(propertySource.getValue() instanceof Properties)) {
-                        flag = true;
+        if (CollectionUtil.isNotEmpty(simplePropertySources)) {
+            for (SimplePropertySource<?> propertySource : simplePropertySources) {
+                if (!(propertySource.getValue() instanceof Properties)) {
+                    flag = true;
+                }
+                if (type != null && placeHolder == null) {
+                    String key = com.github.simple.core.utils.StringUtils.parsePlaceholder(type);
+                    Object value = findValue(propertySource, key, flag);
+                    ai.getAndIncrement();
+                    if (value == null && ai.get() == simplePropertySources.size()) {
+                        throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
                     }
-                    if (type != null && placeHolder == null) {
-                        String key = com.github.simple.core.utils.StringUtils.parsePlaceholder(type);
-                        Object value = findValue(propertySource, key, flag);
-                        ai.getAndIncrement();
-                        if (value == null && ai.get() == simplePropertySources.size()) {
-                            throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
-                        }
-                        if (value != null) {
-                            return TypeConvertUtils.convert(type.getType(), (String) value);
-                        }
-                    }
-                    //现在用不到
-                    if (placeHolder != null) {
-                        ai.getAndIncrement();
-                        String key = com.github.simple.core.utils.StringUtils.resolvePlaceholder(placeHolder);
-                        final Object value = findValue(propertySource, key, flag);
-                        if (value == null && ai.get() == simplePropertySources.size()) {
-                            throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
-                        }
-                        if (value != null) {
-                            return value;
-                        }
-
+                    if (value != null) {
+                        return TypeConvertUtils.convert(type.getType(), (String) value);
                     }
                 }
+                //现在用不到
+                if (placeHolder != null) {
+                    ai.getAndIncrement();
+                    String key = com.github.simple.core.utils.StringUtils.resolvePlaceholder(placeHolder);
+                    final Object value = findValue(propertySource, key, flag);
+                    if (value == null && ai.get() == simplePropertySources.size()) {
+                        throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");
+                    }
+                    if (value != null) {
+                        return value;
+                    }
+
+                }
             }
+        }
         return null;
     }
 
@@ -252,15 +255,15 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
      * @throws Throwable
      */
     @Override
-    public Object resolveDependency(Field type, String beanName) throws Throwable {
-        log.info("==> 解析字段name:{},字段类型:{}", beanName, type.getType());
+    public Object resolveDependency(Field field, String beanName) throws Throwable {
+        log.info("==> 解析字段name:{},字段类型:{}", beanName, field.getType());
         //接口
-        if (isValue(type)) {
-            return resolveStringValue(type, null);
+        if (isValue(field)) {
+            return resolveStringValue(field, null);
         }
         //#1 修复非spring bean String类型注入错误
-        if (resolvableDependencies.containsKey(type.getType())) {
-            return resolvableDependencies.get(type.getType());
+        if (resolvableDependencies.containsKey(field.getType())) {
+            return resolvableDependencies.get(field.getType());
         }
         //String Integer 类型自动注入
 

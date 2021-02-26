@@ -1,10 +1,12 @@
-package utils;
+package helper;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import common.TaskFunction;
+import common.constants.Constants;
 import enums.ThreadTypeEnum;
 import exception.CommonException;
 import lombok.extern.slf4j.Slf4j;
+import utils.RejectHandler;
 
 import java.util.concurrent.*;
 
@@ -59,10 +61,30 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  * }
  * }
  * </code>
+ * @description: 推荐使用{@code SpringUtils } getBean 如果依赖注入的话确保bean生命周期时机对应的上,避免空指针异常
  */
 @Slf4j
-public class ThreadPoolUtils {
-    public static String format = "common-pool-thread-%s";
+public class ThreadPoolHelper {
+
+
+    private Integer corePoolSize;
+    private Integer maxPoolSize;
+    private Long keepAliveTime;
+    private Long initialDelay;
+    private Long period;
+    private Long delay;
+
+    public ThreadPoolHelper(Integer corePoolSize, Integer maxPoolSize, Long keepAliveTime, Long initialDelay, Long period, Long delay) {
+        this.corePoolSize = corePoolSize;
+        this.maxPoolSize = maxPoolSize;
+        this.keepAliveTime = keepAliveTime;
+        this.initialDelay = initialDelay;
+        this.period = period;
+        this.delay = delay;
+    }
+
+    public ThreadPoolHelper() {
+    }
 
     /**
      * 得到默认的执行器
@@ -71,7 +93,7 @@ public class ThreadPoolUtils {
      * @author jianlei.shi
      * @date 2021-02-20 15:51:20
      */
-    public static ThreadPoolExecutor getDefaultExecutor() {
+    public ThreadPoolExecutor getDefaultExecutor() {
         return getExecutor(ORDINARY, true);
     }
 
@@ -84,13 +106,14 @@ public class ThreadPoolUtils {
      * @date 2021-02-02 11:40:28
      * @see ThreadTypeEnum
      */
-    public static ThreadPoolExecutor getExecutor(ThreadTypeEnum type, boolean isDaemon) {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 8, 20, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), getThreadFactory(isDaemon), new RejectHandler());
+    public ThreadPoolExecutor getExecutor(ThreadTypeEnum type, boolean isDaemon) {
+        checkValue();
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), getThreadFactory(isDaemon), new RejectHandler());
         switch (type) {
             case SCHEDULED:
-                return new ScheduledThreadPoolExecutor(4, getThreadFactory(isDaemon), new RejectHandler());
+                return new ScheduledThreadPoolExecutor(corePoolSize, getThreadFactory(isDaemon), new RejectHandler());
             case CACHE:
-                return new ThreadPoolExecutor(1, 3, 2, TimeUnit.SECONDS, new SynchronousQueue<>(), getThreadFactory(isDaemon), new RejectHandler());
+                return new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS, new SynchronousQueue<>(), getThreadFactory(isDaemon), new RejectHandler());
             default:
                 return threadPoolExecutor;
 //               Executors.newCachedThreadPool()
@@ -99,7 +122,23 @@ public class ThreadPoolUtils {
 
     }
 
-    private static ThreadFactory getThreadFactory(boolean isDaemon) {
+    private void checkValue() {
+        if (corePoolSize == null || maxPoolSize == null || keepAliveTime == null || initialDelay == null || period == null || delay == null) {
+            setDefaultValue();
+        }
+    }
+
+    private void setDefaultValue() {
+        corePoolSize = Constants.DEFAULT_CORE_POOL_SIZE;
+        maxPoolSize = Constants.DEFAULT_MAX_POOL_SIZE;
+        keepAliveTime = Constants.DEFAULT_KEEP_ALIVE_TIME;
+        initialDelay = Constants.DEFAULT_INITIAL_DELAY;
+        period = Constants.DEFAULT_PERIOD;
+        delay = Constants.DEFAULT_DELAY;
+    }
+
+    private ThreadFactory getThreadFactory(boolean isDaemon) {
+        String format = "common-pool-thread-%s";
         return new ThreadFactoryBuilder().setDaemon(isDaemon).setNameFormat(format).build();
     }
 
@@ -143,7 +182,7 @@ public class ThreadPoolUtils {
      * }
      * </code>
      */
-    public static ThreadPoolExecutor execute(TaskFunction function) {
+    public ThreadPoolExecutor execute(TaskFunction function) {
         ThreadPoolExecutor executor = null;
         try {
             executor = getExecutor(ORDINARY, function.getTaskWrapper().isDaemon());
@@ -195,7 +234,7 @@ public class ThreadPoolUtils {
      * @author jianlei.shi
      * @date 2021-02-02 11:40:20
      */
-    public static <T> T submit(TaskFunction function) {
+    public <T> T submit(TaskFunction function) {
         ThreadPoolExecutor executor = null;
         try {
             executor = getExecutor(ORDINARY, function.getTaskWrapper().isDaemon());
@@ -214,7 +253,7 @@ public class ThreadPoolUtils {
 
     }
 
-    public static <T> T submit(Runnable task) {
+    public <T> T submit(Runnable task) {
         ThreadPoolExecutor executor = null;
         try {
             executor = getExecutor(CACHE, true);
@@ -243,7 +282,7 @@ public class ThreadPoolUtils {
      * @date 2021-02-02 11:40:09
      * @see ScheduledThreadPoolExecutor.ScheduledFutureTask#run()
      */
-    public static void executeTaskAtFixedRate(Runnable task) {
+    public void executeTaskAtFixedRate(Runnable task) {
         ScheduledThreadPoolExecutor executor = null;
         try {
             executor = (ScheduledThreadPoolExecutor) getExecutor(ThreadTypeEnum.SCHEDULED, false);
@@ -306,7 +345,7 @@ public class ThreadPoolUtils {
              *
              * 378168581486402
              */
-            executor.scheduleAtFixedRate(task, 2, 4, TimeUnit.SECONDS);
+            executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.SECONDS);
             Thread.sleep(2000);
             log.info("schedule thread active count: {}", executor.getActiveCount()); //用于监控
             if (executor.getMaximumPoolSize() < executor.getActiveCount()) {
@@ -330,12 +369,12 @@ public class ThreadPoolUtils {
      * @date 2021-02-02 11:40:09
      * @see ScheduledThreadPoolExecutor.ScheduledFutureTask#run()
      */
-    public static void executeTaskWithFixedDelay(Runnable task) {
+    public void executeTaskWithFixedDelay(Runnable task) {
         ScheduledThreadPoolExecutor executor = null;
         try {
             executor = (ScheduledThreadPoolExecutor) getExecutor(ThreadTypeEnum.SCHEDULED, false);
             //受执行任务的时间影响 比如 任务 12:00  执行 12:12 执行完 那么下一次执行时间就是12:12+delay 执行
-            executor.scheduleWithFixedDelay(task, 2, 4, TimeUnit.SECONDS);
+            executor.scheduleWithFixedDelay(task, initialDelay, delay, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error("executeSchedule error", e);
             assert executor != null;
@@ -447,11 +486,11 @@ public class ThreadPoolUtils {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
 //       executeTaskAtFixedRate(()-> System.out.println("time is: "+System.currentTimeMillis()/1000));
-        executeTaskAtFixedRate(() -> {
+        /*executeTaskAtFixedRate(() -> {
             System.out.println("Start time is: " + System.currentTimeMillis() / 1000);
 
 //            System.out.println("End time is: " + System.currentTimeMillis() / 1000);
-        });
+        });*/
        /* executeTaskWithFixedDelay(()-> {
                     try {
                         Thread.sleep(1000);

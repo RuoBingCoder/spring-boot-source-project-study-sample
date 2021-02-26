@@ -1,0 +1,33 @@
+{
+  "properties": [
+    {
+      "name": "simple.thread.pool.corePoolSize",
+      "type": "java.lang.Integer",
+      "description": "thread pool corePoolSize."
+  },
+    {
+      "name": "simple.thread.pool.maxPoolSize",
+      "type": "java.lang.Integer",
+      "description": "thread pool maxPoolSize."
+    },
+    {
+      "name": "simple.thread.pool.keepAliveTime",
+      "type": "java.lang.Long",
+      "description": "thread pool keepAliveTime."
+    },
+    {
+      "name": "simple.thread.pool.initialDelay",
+      "type": "java.lang.Long",
+      "description": "thread pool initialDelay."
+    },
+    {
+      "name": "simple.thread.pool.period",
+      "type": "java.lang.Long",
+      "description": "thread pool period."
+    },
+    {
+      "name": "simple.thread.pool.delay",
+      "type": "java.lang.Long",
+      "description": "thread pool delay."
+    }
+] }

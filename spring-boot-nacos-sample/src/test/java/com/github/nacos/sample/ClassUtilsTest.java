@@ -1,6 +1,6 @@
 package com.github.nacos.sample;
 
-import com.alibaba.spring.util.ClassUtils;
+import helper.ThreadPoolHelper;
 
 /**
  * @author jianlei.shi
@@ -10,7 +10,13 @@ import com.alibaba.spring.util.ClassUtils;
 
 public class ClassUtilsTest {
 
-    public static void main(String[] args) {
-        ClassUtils.resolveGenericType(ClassUtilsTest.class);
+    public static void main(String[] args) throws ClassNotFoundException {
+        final ClassLoader classLoader = ClassUtilsTest.class.getClassLoader();
+        final ClassLoader classLoader1 = Thread.currentThread().getContextClassLoader();
+        final ClassLoader classLoader2 = Thread.currentThread().getClass().getClassLoader();
+
+        final Class<?> aClass = classLoader1.loadClass(ThreadPoolHelper.class.getName());
+        System.out.println(aClass.getName());
+//        ClassUtils.resolveGenericType(ClassUtilsTest.class);
     }
 }

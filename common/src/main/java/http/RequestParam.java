@@ -12,6 +12,8 @@ import java.util.Map;
 @Data
 public class RequestParam {
 
+    private String baseUrl;
+
     private String param;
 
     private Class<?> type;
