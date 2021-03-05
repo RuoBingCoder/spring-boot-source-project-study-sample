@@ -7,6 +7,7 @@ import com.github.simple.core.context.SimpleApplicationContext;
 import com.github.simple.demo.service.*;
 import com.github.simple.demo.service.aop.LogService;
 import com.github.simple.demo.test.MockEvent;
+import com.github.simple.spi.EsHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +74,8 @@ public class StartIocApplication {
 
         LogService logService=applicationContext.getBean(LogService.class);
         logger.info("==> aop logService output:{}",logService.testLog());
+        final EsHolder esHolder = applicationContext.getBean(EsHolder.class);
+        logger.info("==>es holder toString :{}",esHolder);
 
     }
 }

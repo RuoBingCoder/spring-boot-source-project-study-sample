@@ -1,6 +1,7 @@
 package com.github.spring.components.learning;
 
 import com.github.spring.components.learning.lighthttp.annotation.LightHttpScan;
+import common.annotation.EnableAutoConfigThreadPool;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,6 +15,7 @@ import org.springframework.retry.annotation.EnableRetry;
 @Order
 @EnableRetry
 @LightHttpScan(basesPackages = "com.github.spring.components.learning.lighthttp.service")
+@EnableAutoConfigThreadPool
 public class SpringComponentsLearningApplication {
 
     public static void main(String[] args) {

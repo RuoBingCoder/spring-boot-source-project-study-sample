@@ -39,6 +39,7 @@ public abstract class SimpleAutowireCapableBeanFactory extends AbsBeanFactory {
      *
      * @param source 源
      * @Deprecated since 添加了env支持
+     * @see com.github.simple.core.env.SimpleMutablePropertySources
      */
     @Override
     public <T> void addPropertySource(T source) {

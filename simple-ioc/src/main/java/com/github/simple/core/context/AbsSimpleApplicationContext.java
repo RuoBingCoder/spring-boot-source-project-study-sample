@@ -177,6 +177,14 @@ public abstract class AbsSimpleApplicationContext implements SimpleConfigApplica
 
     }
 
+    /**
+     * 准备source
+     *
+     * @param beanFactory bean工厂
+     * @return
+     * @author jianlei.shi
+     * @date 2021-03-05 14:59:19
+     */
     private void preparePropertiesSource(SimpleConfigBeanFactory beanFactory) {
         try {
             SimpleDefaultListableBeanFactory defaultListableBeanFactory = (SimpleDefaultListableBeanFactory) beanFactory;

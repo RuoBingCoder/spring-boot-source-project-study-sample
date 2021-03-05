@@ -15,6 +15,7 @@ import com.github.simple.core.exception.SimpleBeanCreateException;
 import com.github.simple.core.exception.SimpleBeanDefinitionNotFoundException;
 import com.github.simple.core.exception.SimpleClassNotFoundException;
 import com.github.simple.core.exception.SimpleClassTypeException;
+import com.github.simple.core.spi.SimpleFactoryLoader;
 import com.github.simple.core.utils.ClassUtils;
 import com.github.simple.core.utils.ReflectUtils;
 import com.github.simple.core.utils.SimpleStringValueResolver;
@@ -169,16 +170,26 @@ public abstract class AbsBeanFactory extends SimpleDefaultSingletonBeanRegistry 
     }
 
     public void doRegistryBeanDefinition(Set<Class<?>> classSet) {
+         SimpleFactoryLoader loader = new SimpleFactoryLoader();
+         //SPI
+         Set<Class<?>> classSet1 = loader.loadClasses();
+         Set<Class<?>> allClasses=new HashSet<>();
+        if (CollectionUtil.isNotEmpty(classSet1)){
+            allClasses.addAll(classSet);
+            allClasses.addAll(classSet1);
+            classSet1=null; //GC
+            classSet=null;
+        }
         SimpleRootBeanDefinition simpleRootBeanDefinitionSupport = buildRootBeanDefinition(SimpleBeanFactorySupport.class);
 //        addBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(),simpleRootBeanDefinitionSupport);
         this.registerBeanDefinition(simpleRootBeanDefinitionSupport.getBeanName(), simpleRootBeanDefinitionSupport);
         SimpleRootBeanDefinition mps = buildRootBeanDefinition(SimpleMutablePropertySources.class);
         this.registerBeanDefinition(SimpleMutablePropertySources.SIMPLE_MUTABLE_PROPERTY_SOURCES_BEAN_NAME, mps);
         registryPostProcessor();
-        classSet.forEach(mbd -> {
+        allClasses.forEach(c -> {
             try {
-                configBeanRegistry(mbd);
-                generalRegistry(mbd);
+                configBeanRegistry(c);
+                generalRegistry(c);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }

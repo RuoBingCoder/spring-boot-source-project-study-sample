@@ -1,0 +1,1 @@
+com.github.simple.ioc.autoconfigure.EnableAutoConfiguration=com.github.spring.components.learning.pojo.ConfigBeanB,com.github.spring.components.learning.pojo.ConfigBeanA,com.github.spring.components.learning.pojo.Hello

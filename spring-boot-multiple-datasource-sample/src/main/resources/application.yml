@@ -1,0 +1,22 @@
+server:
+  port: 8085
+spring:
+  datasource:
+    master:
+      driverClassName: com.mysql.jdbc.Driver
+      password: 199631
+      #        type: com.alibaba.druid.pool.DruidDataSource
+      url: jdbc:mysql://39.108.137.115:3306/database0?characterEncoding=utf-8
+      username: root
+      mapperLocations: /m_mappers/*.xml
+
+    slave:
+      driverClassName: com.mysql.jdbc.Driver
+      password: 199631
+      #        type: com.alibaba.druid.pool.DruidDataSource
+      url: jdbc:mysql://39.108.137.115:3306/database1?characterEncoding=utf-8
+      username: root
+      mapperLocations: /s_mappers/*.xml
+logging:
+  level:
+    com.github.multiple.datasource.sample.dao: debug

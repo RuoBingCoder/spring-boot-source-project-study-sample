@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.multiple.datasource.sample.dao.slave.SUserMapper">
+  <resultMap id="BaseResultMap" type="com.github.multiple.datasource.sample.domain.User">
+    <!--@mbg.generated-->
+    <!--@Table `user`-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    `id`, `city`, `name`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from `user`
+    where `id` = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from `user`
+    where `id` = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.github.multiple.datasource.sample.domain.User">
+    <!--@mbg.generated-->
+    insert into `user` (`id`, `city`, `name`
+      )
+    values (#{id,jdbcType=BIGINT}, #{city,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.github.multiple.datasource.sample.domain.User">
+    <!--@mbg.generated-->
+    insert into `user`
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        `id`,
+      </if>
+      <if test="city != null and city != ''">
+        `city`,
+      </if>
+      <if test="name != null and name != ''">
+        `name`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="city != null and city != ''">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null and name != ''">
+        #{name,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.github.multiple.datasource.sample.domain.User">
+    <!--@mbg.generated-->
+    update `user`
+    <set>
+      <if test="city != null and city != ''">
+        `city` = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null and name != ''">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where `id` = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.github.multiple.datasource.sample.domain.User">
+    <!--@mbg.generated-->
+    update `user`
+    set `city` = #{city,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR}
+    where `id` = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

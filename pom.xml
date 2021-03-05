@@ -38,6 +38,8 @@
         <module>spring-components-learning</module>
         <module>spring-components-lightweight-test-sample</module>
         <module>spring-boot-nacos-sample</module>
+        <module>spring-boot-sharding-sample</module>
+        <module>spring-boot-multiple-datasource-sample</module>
         <!--        <module>simple-dubbo</module>-->
     </modules>
     <dependencies>
@@ -87,7 +89,15 @@
         </dependency>
     </dependencies>
     <dependencyManagement>
+
         <dependencies>
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>libraries-bom</artifactId>
+                <version>18.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

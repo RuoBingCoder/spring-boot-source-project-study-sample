@@ -18,6 +18,8 @@ public class LightHttpHolder<T> {
 
     private T t;
 
+    private String methodName;
+
     private Object[] args;
 
     private ThreadPoolExecutor executor;

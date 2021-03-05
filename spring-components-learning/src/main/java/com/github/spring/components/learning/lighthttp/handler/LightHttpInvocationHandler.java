@@ -40,7 +40,7 @@ public class LightHttpInvocationHandler extends AbstractLightHttpInvocation {
      * @date 2021-02-26 11:53:43
      */
     @Override
-    public Object asyncInvoker(LightHttpHolder lightHttpHolder) {
+    public <T> Object asyncInvoker(LightHttpHolder<T> lightHttpHolder) {
         ThreadPoolExecutor executor = null;
         try {
             if (lightHttpHolder.getT() instanceof UrlWrapper) {
@@ -59,7 +59,7 @@ public class LightHttpInvocationHandler extends AbstractLightHttpInvocation {
                     final String rowRes = future.get();
                     return strToReturnType(rowRes, returnType);
                 } else {
-                    throw new LightHttpException("方法中没有找到请求注解,请添加注解: @Post 或者 @Get!");
+                    throw new LightHttpException("方法中没有找到请求注解,请添加注解: @Post 或者 @Get! method name:【 " + lightHttpHolder.getMethodName() + " 】args: 【" + JSONObject.toJSONString(args) + "】");
                 }
             }
         } catch (Exception e) {
@@ -68,12 +68,17 @@ public class LightHttpInvocationHandler extends AbstractLightHttpInvocation {
             executor.shutdown();
             throw new LightHttpException("Rpc invoke error!");
         }
-       return null;
+        return null;
     }
 
     private Object strToReturnType(String rowRes, Class<?> returnType) {
         try {
-            log.info("开始将返回结果转换为return结果类型 row :{}", rowRes);
+            if (log.isTraceEnabled()) {
+                log.trace("开始将返回结果转换为return结果类型 source :{}", rowRes);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("开始将返回结果转换为return结果类型 source :{}", rowRes);
+            }
             final Object result = JSONObject.parseObject(rowRes, returnType);
             log.info("转化为return type success");
             return result;

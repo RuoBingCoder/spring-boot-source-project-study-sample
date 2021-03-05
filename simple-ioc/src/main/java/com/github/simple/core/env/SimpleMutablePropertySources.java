@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author jianlei.shi
  * @date 2021/2/14 9:10 下午
- * @description SimpleMutablePropertySources
+ * @description 配置信息source工厂
  */
 
 public class SimpleMutablePropertySources implements SimplePropertySources {

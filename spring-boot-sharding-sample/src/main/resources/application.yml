@@ -1,0 +1,60 @@
+mybatis:
+  config-location: classpath:mybatis-config.xml
+server:
+  port: 8084
+spring:
+  shardingsphere:
+
+    datasource:
+      ds0:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: 199631
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://39.108.137.115:3306/database0?characterEncoding=utf-8
+        username: root
+      ds1:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: 199631
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://39.108.137.115:3306/database1?characterEncoding=utf-8
+        username: root
+      names: ds0,ds1
+    sharding:
+
+      default-database-strategy: #分片规则
+        inline:
+          algorithm-expression: ds$->{id % 2}
+          sharding-column: id
+      tables:
+        loudong:
+          actual-data-nodes: ds1.loudong
+        user:
+          actual-data-nodes: ds$->{0..1}.user_$->{0..2}
+          key-generator:
+            column: id
+            type: SNOWFLAKE
+          table-strategy:
+            inline:
+              algorithm-expression: user_$->{id % 3}
+              sharding-column: id
+      jdbc: #打印日志
+        config:
+          props:
+            sql:
+              show: true
+#      sharding:
+#        default-database-strategy:
+#          inline:
+#            algorithm-expression: ds$->{id % 2}
+#            sharding-column: id
+#        tables:
+#          user:
+#            actual-data-nodes: ds$->{0..1}.user_$->{0..2}
+#            key-generator:
+#              column: id
+#              type: SNOWFLAKE
+#            table-strategy:
+#              inline:
+#                algorithm-expression: user_$->{id % 3}
+#                sharding-column: id
+

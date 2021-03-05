@@ -92,3 +92,14 @@ management:
 sight:
   base:
     url: http://127.0.0.1:9988/
+
+
+simple:
+  thread:
+    pool:
+      corePoolSize: 4
+      maxPoolSize: 8
+      keepAliveTime: 2
+      initialDelay: 2
+      period: 2
+      delay: 2

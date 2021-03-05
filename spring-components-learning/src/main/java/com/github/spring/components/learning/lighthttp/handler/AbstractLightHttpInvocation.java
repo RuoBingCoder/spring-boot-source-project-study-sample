@@ -7,6 +7,7 @@ import com.github.spring.components.learning.lighthttp.annotation.Post;
 import com.github.spring.components.learning.lighthttp.store.LightHttpStore;
 import common.constants.Constants;
 import helper.PlaceholderHelper;
+import helper.ThreadPoolHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -35,7 +35,7 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
 
     private final ConfigurableBeanFactory beanFactory;
     private final Map<Method, UrlWrapper> METHOD_CACHE = new ConcurrentHashMap<>();
-    private final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private  ThreadPoolExecutor executor;
     private final Lock LOCK = new ReentrantLock();
     private volatile boolean isStop = false;
     protected final Class<?> interfaces;
@@ -44,8 +44,14 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
     protected AbstractLightHttpInvocation(ConfigurableBeanFactory beanFactory, Class<?> interfaces) {
         this.beanFactory = beanFactory;
         this.interfaces = interfaces;
+        this.executor = getThreadPool(beanFactory);
         processAddStore(executor, beanFactory);
 
+    }
+
+    private ThreadPoolExecutor getThreadPool(ConfigurableBeanFactory beanFactory) {
+        final ThreadPoolHelper poolHelper = beanFactory.getBean(ThreadPoolHelper.class);
+        return poolHelper.getDefaultExecutor();
     }
 
     @Override
@@ -110,7 +116,7 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
     }
 
     private LightHttpHolder<UrlWrapper> getHolder(Method method, UrlWrapper urlWrapper, Object[] args, ThreadPoolExecutor executor) {
-        return new LightHttpHolder<>(urlWrapper, args, executor, method.getReturnType());
+        return new LightHttpHolder<>(urlWrapper, method.getName(),args, executor, method.getReturnType());
     }
 
 
