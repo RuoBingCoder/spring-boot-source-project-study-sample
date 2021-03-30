@@ -27,6 +27,8 @@ public class NettyClient {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     ChannelPipeline pipeline = socketChannel.pipeline();
+                  /*  pipeline.addLast(new StringDecoder());
+                    pipeline.addLast(new StringEncoder());*/
                     pipeline.addLast(new ClientMessageChannelHandler());
                 }
             });
@@ -34,7 +36,7 @@ public class NettyClient {
             future.sync();
             future.channel().closeFuture().sync();
         } finally {
-            group.shutdownGracefully();
+//            group.shutdownGracefully();
         }
 
     }

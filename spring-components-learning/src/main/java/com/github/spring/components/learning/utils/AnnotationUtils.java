@@ -2,7 +2,7 @@ package com.github.spring.components.learning.utils;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.github.spring.components.learning.exception.MapperException;
-import com.github.spring.components.learning.mybatis.annoation.Table;
+import com.github.spring.components.learning.enhancemybatis.annoation.Table;
 import lombok.extern.slf4j.Slf4j;
 
 /**

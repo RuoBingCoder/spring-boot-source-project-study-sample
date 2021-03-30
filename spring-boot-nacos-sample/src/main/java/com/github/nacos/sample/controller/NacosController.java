@@ -4,11 +4,14 @@ import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.alibaba.nacos.client.config.impl.CacheData;
 import com.alibaba.nacos.client.config.impl.ClientWorker;
 import com.alibaba.nacos.spring.context.event.config.NacosConfigReceivedEvent;
-import http.ModelResult;
+import com.github.http.ModelResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 import java.util.Properties;

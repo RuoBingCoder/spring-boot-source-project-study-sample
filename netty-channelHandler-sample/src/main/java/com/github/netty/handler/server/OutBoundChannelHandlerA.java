@@ -16,6 +16,6 @@ public class OutBoundChannelHandlerA extends ChannelOutboundHandlerAdapter {
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         System.out.println("OutBoundChannelHandlerA.write");
         //执行下一个OutBoundChannelHandler
-        ctx.write(msg, promise);
+        ctx.writeAndFlush(msg);
     }
 }

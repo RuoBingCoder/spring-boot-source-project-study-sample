@@ -1,7 +1,7 @@
 package com.github.spring.components.learning;
 
 import com.github.spring.components.learning.lighthttp.annotation.LightHttpScan;
-import common.annotation.EnableAutoConfigThreadPool;
+import com.github.common.annotation.EnableAutoConfigThreadPool;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

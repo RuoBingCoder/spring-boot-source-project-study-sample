@@ -1,6 +1,6 @@
 package com.github.spring.components.learning.lighthttp.support;
 
-import exception.CommonException;
+import com.github.exception.CommonException;
 import org.springframework.beans.factory.FactoryBean;
 
 /**

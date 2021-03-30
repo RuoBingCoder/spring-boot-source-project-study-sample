@@ -1,8 +1,8 @@
 package com.github.multiple.datasource.sample.controller;
 
+import com.github.http.ModelResult;
 import com.github.multiple.datasource.sample.domain.User;
 import com.github.multiple.datasource.sample.service.UserService;
-import http.ModelResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

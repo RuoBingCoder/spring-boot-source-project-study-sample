@@ -1,6 +1,6 @@
 package com.github.spring.components.learning.transaction.pojo;
 
-import com.github.spring.components.learning.mybatis.annoation.Table;
+import com.github.spring.components.learning.enhancemybatis.annoation.Table;
 import lombok.*;
 
 @Getter

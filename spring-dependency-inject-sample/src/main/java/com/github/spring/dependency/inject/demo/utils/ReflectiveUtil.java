@@ -1,6 +1,7 @@
 package com.github.spring.dependency.inject.demo.utils;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.github.helper.PlaceholderHelper;
 import com.github.spring.dependency.inject.demo.annotation.CustomAsync;
 import com.github.spring.dependency.inject.demo.annotation.CustomAutowired;
 import com.github.spring.dependency.inject.demo.annotation.CustomValue;
@@ -8,6 +9,7 @@ import com.github.spring.dependency.inject.demo.bean.MyAsyncHolder;
 import com.github.spring.dependency.inject.demo.proxy.ProxyFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
@@ -32,8 +34,9 @@ import java.util.Map;
 @Component
 public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware {
 
-    public static final String VALUE_PREFIX = "${";
-    public static final String VALUE_SUFFIX = "}";
+
+    public static final String PLACEHOLDER_PREFIX = "${";
+    public static final String PLACEHOLDER_SUFFIX = "}";
     private static ApplicationContext applicationContext;
     private static Environment environment;
 
@@ -54,12 +57,12 @@ public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware
         Annotation annotation = field.getAnnotation(clazz);
         if (annotation instanceof CustomValue) {
             CustomValue myValue = (CustomValue) annotation;
-            String value = resolvePlaceHolder(myValue);
-            String property = env.getProperty(value);
+            String value = resolvePlaceHolderValue(myValue);
+           /* String property = env.getProperty(value);
             if (StringUtils.isEmpty(property)) {
                 throw new RuntimeException("property value [" + value + "] is null");
-            }
-            setFieldValue(bean, property, field);
+            }*/
+            setFieldValue(bean, value, field);
         } else if (annotation instanceof CustomAutowired) {
             MyAsyncHolder myAsyncHolder = new MyAsyncHolder();
             Object obj = context.getBean(field.getType());
@@ -97,21 +100,26 @@ public class ReflectiveUtil implements ApplicationContextAware, EnvironmentAware
         }
     }
 
-    private static String resolvePlaceHolder(CustomValue myValue) {
+    private static String resolvePlaceHolderValue(CustomValue myValue) {
         String value = myValue.value();
-        int startInterceptionIndex = value.indexOf(VALUE_PREFIX);
-        int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
+        PlaceholderHelper helper = applicationContext.getBean(PlaceholderHelper.class);
+        final String var = (String) helper.resolvePropertyValue((ConfigurableBeanFactory) applicationContext.getAutowireCapableBeanFactory(), null, value);
+        if (StringUtils.isNotBlank(var)){
+            return var;
+        }
+       /* int startInterceptionIndex = value.indexOf(PLACEHOLDER_PREFIX);
+        int endInterceptionIndex = value.indexOf(PLACEHOLDER_SUFFIX);
         String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);
         if (StringUtils.isNotBlank(v)) {
             return v;
-        }
-        throw new RuntimeException(VALUE_PREFIX + value + VALUE_SUFFIX + "is null!");
+        }*/
+        throw new RuntimeException(PLACEHOLDER_PREFIX + value + PLACEHOLDER_SUFFIX + "is null!");
     }
 
     public static void main(String[] args) {
         String value = "${app.name}";
         int startInterceptionIndex = 0;
-        int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
+        int endInterceptionIndex = value.indexOf(PLACEHOLDER_SUFFIX);
         String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);
         System.out.println(v);
     }

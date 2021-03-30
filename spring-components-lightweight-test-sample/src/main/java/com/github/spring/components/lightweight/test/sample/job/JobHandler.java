@@ -1,12 +1,11 @@
 package com.github.spring.components.lightweight.test.sample.job;
 
 import com.alibaba.fastjson.JSONObject;
-import enums.ThreadTypeEnum;
+import com.github.helper.ThreadPoolHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import helper.ThreadPoolHelper;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +27,7 @@ public class JobHandler implements InitializingBean {
 
     public void handle(Integer time) {
         lock.lock();
-        ScheduledThreadPoolExecutor stp = (ScheduledThreadPoolExecutor) threadPoolHelper.getExecutor(ThreadTypeEnum.SCHEDULED, true);
+        ScheduledThreadPoolExecutor stp = (ScheduledThreadPoolExecutor) threadPoolHelper.getExecutor(enums.ThreadTypeEnum.SCHEDULED, true);
         log.info("----------------开始定时任务执行task---------------");
         try {
             doExeTask(stp);

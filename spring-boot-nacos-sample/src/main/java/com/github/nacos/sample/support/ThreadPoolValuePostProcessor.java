@@ -1,8 +1,8 @@
 package com.github.nacos.sample.support;
 
+import com.github.helper.ThreadPoolHelper;
 import com.github.nacos.sample.config.SpringValue;
 import com.github.nacos.sample.config.listener.AutoUpdateConfigChangeListener;
-import helper.ThreadPoolHelper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

@@ -35,7 +35,7 @@
         </dependency>
         <dependency>
             <groupId>com.github</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>common-share</artifactId>
             <version>${common.version}</version>
         </dependency>
         <!--<dependency>

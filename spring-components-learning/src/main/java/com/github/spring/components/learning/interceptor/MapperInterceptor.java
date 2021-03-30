@@ -1,9 +1,9 @@
 package com.github.spring.components.learning.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.mybatis.constant.MapperConstant;
 import com.github.spring.components.learning.exception.MapperException;
 import lombok.extern.slf4j.Slf4j;
-import mybatis.constant.MapperConstant;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;

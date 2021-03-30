@@ -56,7 +56,9 @@ public class EasyDispatcherServlet extends AbsEasyServlet {
       EasyHandlerAdaptor easyHandlerAdaptor = handlerAdaptorMap.get(handler);
       if (easyHandlerAdaptor != null) {
         EasyHttpResponse handle = easyHandlerAdaptor.handle(request, response, handler);
-        response.write(handle.toString());
+        if (handle != null) {
+          response.write(handle.toString());
+        }
       }
 
     } catch (Exception e) {

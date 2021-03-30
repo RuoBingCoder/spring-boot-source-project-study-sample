@@ -1,11 +1,11 @@
 package com.github.spring.components.lightweight.test.sample;
 
 import com.alibaba.fastjson.JSONObject;
-import config.ThreadPoolPropertiesConfig;
+import com.github.config.ThreadPoolPropertiesConfig;
+import com.github.utils.AnnotationUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import utils.AnnotationUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

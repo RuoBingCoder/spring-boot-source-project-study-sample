@@ -1,6 +1,6 @@
 package com.github.spring.components.learning.transaction.service.impl;
 
-import com.github.spring.components.learning.mybatis.common.wrapper.QueryWrapper;
+import com.github.spring.components.learning.enhancemybatis.common.wrapper.QueryWrapper;
 import com.github.spring.components.learning.transaction.dao.HeroMapper;
 import com.github.spring.components.learning.transaction.pojo.HeroDo;
 import com.github.spring.components.learning.transaction.service.HeroService;

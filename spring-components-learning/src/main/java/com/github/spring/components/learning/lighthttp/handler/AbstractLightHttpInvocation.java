@@ -1,20 +1,20 @@
 package com.github.spring.components.learning.lighthttp.handler;
 
+import com.github.common.constants.Constants;
+import com.github.helper.PlaceholderHelper;
+import com.github.helper.ThreadPoolHelper;
 import com.github.spring.components.learning.exception.LightHttpException;
 import com.github.spring.components.learning.lighthttp.annotation.Get;
 import com.github.spring.components.learning.lighthttp.annotation.LightHttpClient;
 import com.github.spring.components.learning.lighthttp.annotation.Post;
 import com.github.spring.components.learning.lighthttp.store.LightHttpStore;
-import common.constants.Constants;
-import helper.PlaceholderHelper;
-import helper.ThreadPoolHelper;
+import com.github.utils.AnnotationUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import utils.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -97,10 +97,10 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
 
         } else {
             Method[] methods = new Method[]{method};
-            final Map annotations = AnnotationUtils.findAnnotationMethod(methods, new Class[]{Get.class, Post.class});
+            final Map atMetadata =  AnnotationUtils.findAnnotationMethod(methods, new Class[]{Get.class, Post.class});
             LOCK.lock();
             try {
-                addCache(base_url, annotations);
+                addCache(base_url, atMetadata);
                 final UrlWrapper urlWrapper = METHOD_CACHE.get(method);
                 return asyncInvoker(getHolder(method, urlWrapper, args, executor));
             } catch (Exception e) {

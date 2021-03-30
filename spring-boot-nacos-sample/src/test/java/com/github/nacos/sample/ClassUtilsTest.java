@@ -1,6 +1,7 @@
 package com.github.nacos.sample;
 
-import helper.ThreadPoolHelper;
+
+import com.github.helper.ThreadPoolHelper;
 
 /**
  * @author jianlei.shi

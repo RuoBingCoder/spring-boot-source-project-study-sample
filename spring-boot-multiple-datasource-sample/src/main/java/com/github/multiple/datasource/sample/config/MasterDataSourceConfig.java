@@ -1,7 +1,7 @@
 package com.github.multiple.datasource.sample.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import common.constants.Constants;
+import com.github.common.constants.Constants;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;

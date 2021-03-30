@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author: JianLei
  * @date: 2020/11/20 上午11:17
@@ -14,7 +16,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Hello {
+public class Hello implements Serializable {
+    private static final long serialVersionUID = 489229453892426751L;
     private String msg;
 
     public static void main(String[] args) {

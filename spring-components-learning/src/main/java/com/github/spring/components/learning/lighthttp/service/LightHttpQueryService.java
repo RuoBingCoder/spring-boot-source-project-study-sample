@@ -2,7 +2,7 @@ package com.github.spring.components.learning.lighthttp.service;
 
 import com.github.spring.components.learning.lighthttp.annotation.Post;
 import com.github.spring.components.learning.lighthttp.annotation.LightHttpClient;
-import common.request.CRequestParam;
+import com.github.common.request.CRequestParam;
 
 /**
  * @author jianlei.shi

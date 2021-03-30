@@ -1,7 +1,7 @@
 package com.github.spring.components.learning.transaction.dao;
 
 
-import com.github.spring.components.learning.mybatis.common.mapper.SimpleBaseMapper;
+import com.github.spring.components.learning.enhancemybatis.common.mapper.SimpleBaseMapper;
 import com.github.spring.components.learning.transaction.pojo.HeroDo;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.mapping.BoundSql;
@@ -34,6 +34,31 @@ import javax.sql.DataSource;
  *
  * 创建一级缓存
  * @see org.apache.ibatis.executor.CachingExecutor#createCacheKey(MappedStatement, Object, RowBounds, BoundSql)
+ * 在上文中提到的一级缓存中，其最大的共享范围就是一个SqlSession内部，如果多个SqlSession之间需要共享缓存，则需要使用到二级缓存。开启二级缓存后，会使用CachingExecutor装饰Executor，
+ * 进入一级缓存的查询流程前，先在CachingExecutor进行二级缓存的查询，
+ * <code>
+ *     public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
+ *         Cache cache = ms.getCache();
+ *         if (cache != null) {
+ *             this.flushCacheIfRequired(ms);
+ *             if (ms.isUseCache() && resultHandler == null) {
+ *                 this.ensureNoOutParams(ms, boundSql);
+ *
+ *                 List<E> list = (List)this.tcm.getObject(cache, key); //二级缓存中获取没有命中则委托调用BaseExecutor.query()查询数据
+ *                 if (list == null) {
+ *                     list = this.delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+ *                     this.tcm.putObject(cache, key, list);
+ *                 }
+ *
+ *                 return list;
+ *             }
+ *         }
+ *
+ *         return this.delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+ *     }
+ * </code>
+ * 一二级缓存
+ * @see JdGoodsMapperTest
  */
 public interface HeroMapper extends SimpleBaseMapper<HeroDo> {
 //    int insert(Hero record);

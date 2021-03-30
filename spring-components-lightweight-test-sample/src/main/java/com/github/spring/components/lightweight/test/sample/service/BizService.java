@@ -1,6 +1,7 @@
 package com.github.spring.components.lightweight.test.sample.service;
 
-import http.ModelResult;
+
+import com.github.http.ModelResult;
 
 /**
  * @author jianlei.shi

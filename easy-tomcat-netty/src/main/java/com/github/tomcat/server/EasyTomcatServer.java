@@ -3,11 +3,9 @@ package com.github.tomcat.server;
 import cn.hutool.core.lang.Assert;
 import com.github.tomcat.core.handle.EasyServerHandler;
 import com.github.tomcat.core.utils.PropertiesUtil;
+import io.netty.bootstrap.AbstractBootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -19,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author: JianLei
  * @date: 2020/10/1 6:58 下午
  * @description: EasyTomcat
+ * @see DelimiterBasedFrameDecoder 解决拆包粘包 即编码器
+ *
  */
 @Slf4j
 public class EasyTomcatServer {
@@ -54,14 +54,45 @@ public class EasyTomcatServer {
 
   public void start() {
     EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    /**
+     * <code>
+     *       static {
+     *         DEFAULT_EVENT_LOOP_THREADS = Math.max(1, SystemPropertyUtil.getInt(
+     *                 "io.netty.eventLoopThreads", NettyRuntime.availableProcessors() * 2));
+     *
+     *         if (logger.isDebugEnabled()) {
+     *             logger.debug("-Dio.netty.eventLoopThreads: {}", DEFAULT_EVENT_LOOP_THREADS);
+     *         }
+     *     }
+     * </code>
+     * @see register
+     */
     EventLoopGroup workGroup = new NioEventLoopGroup(); // 默认cpu核心数的2倍
 
     try {
+      /**
+       * @see AbstractBootstrap#initAndRegister()
+       * @see io.netty.channel.embedded.EmbeddedEventLoop#register(Channel)
+       * @see io.netty.channel.AbstractChannel#register0
+       * 双端链表
+       * <code>
+       *     final ChannelFuture initAndRegister() {
+       *        //...
+       *         ChannelFuture regFuture = config().group().register(channel); 注册#initChannel()方法
+       *         if (regFuture.cause() != null) {
+       *             if (channel.isRegistered()) {
+       *                 channel.close();
+       *             } else {
+       *                 channel.unsafe().closeForcibly();
+       *             }
+       *         }
+       * </code>
+       */
       ServerBootstrap serverBootstrap = new ServerBootstrap();
       serverBootstrap
           .group(bossGroup, workGroup) // 设置两个线程组
-          .channel(NioServerSocketChannel.class)
-          .option(ChannelOption.SO_BACKLOG, 128) // 设置队列连接数
+          .channel(NioServerSocketChannel.class) //实力话的是DefaultChannelPipeline
+          .option(ChannelOption.SO_BACKLOG, 128) // 设置队列连接数.
           .childOption(ChannelOption.SO_KEEPALIVE, true) // 设置保持连接活动状态
           .childHandler(
               new ChannelInitializer<SocketChannel>() {
@@ -79,6 +110,7 @@ public class EasyTomcatServer {
                       .addLast(new EasyServerHandler());
                 }
               });
+
       Integer port = PropertiesUtil.getPort();
       Assert.notNull(port,"server port is null");
       ChannelFuture future = serverBootstrap.bind(port).sync();

@@ -2,13 +2,17 @@ package com.github.spring.components.learning.transaction.pojo;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @ToString
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class JdGoods {
+public class JdGoods implements Serializable {
+
+    private static final long serialVersionUID = 6306292528740356862L;
     /**
     * 主键
     */

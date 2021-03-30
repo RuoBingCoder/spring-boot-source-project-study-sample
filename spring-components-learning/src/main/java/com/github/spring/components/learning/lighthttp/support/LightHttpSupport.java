@@ -1,12 +1,12 @@
 package com.github.spring.components.learning.lighthttp.support;
 
 import com.github.spring.components.learning.lighthttp.handler.LightHttpInvocationHandler;
+import com.github.utils.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import utils.ProxyFactory;
 
 /**
  * @author jianlei.shi

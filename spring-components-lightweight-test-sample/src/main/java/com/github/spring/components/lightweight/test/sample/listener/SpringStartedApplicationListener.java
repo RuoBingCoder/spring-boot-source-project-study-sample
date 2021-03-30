@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
  * @date 2021/2/16 1:57 下午
  * @description SpringstartedApplicationListener
  * @since spring-boot 2.0 支持
+ * 2
  */
 @Component
 @Slf4j

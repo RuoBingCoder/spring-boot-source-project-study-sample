@@ -1,20 +1,19 @@
 package com.github.nacos.sample.config;
 
+import com.github.common.constants.Constants;
+import com.github.exception.CommonException;
+import com.github.helper.ThreadPoolHelper;
+import com.github.http.RequestParam;
 import com.github.nacos.sample.config.event.ConfigChangeEvent;
 import com.github.nacos.sample.config.listener.ConfigChangeListener;
+import com.github.utils.HttpUtils;
+import com.github.utils.PropertiesUtils;
+import com.github.utils.SpringUtils;
 import com.google.common.collect.Lists;
-import common.constants.Constants;
-import enums.ThreadTypeEnum;
-import exception.CommonException;
-import helper.ThreadPoolHelper;
-import http.RequestParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import utils.HttpUtils;
-import utils.PropertiesUtils;
-import utils.SpringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +102,7 @@ public class DefaultConfig implements Config, InitializingBean {
         if (threadPoolHelper == null) {
             throw new CommonException("threadPoolHelper is null!");
         }
-        executor = (ScheduledThreadPoolExecutor) threadPoolHelper.getExecutor(ThreadTypeEnum.SCHEDULED, true);
+        executor = (ScheduledThreadPoolExecutor) threadPoolHelper.getExecutor(enums.ThreadTypeEnum.SCHEDULED, true);
         startMonitor(executor);
         AtomicInteger count = new AtomicInteger();
         //发送http请求定时轮询

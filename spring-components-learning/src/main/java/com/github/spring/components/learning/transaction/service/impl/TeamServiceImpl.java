@@ -1,7 +1,7 @@
 package com.github.spring.components.learning.transaction.service.impl;
 
 
-import com.github.spring.components.learning.mybatis.common.wrapper.QueryWrapper;
+import com.github.spring.components.learning.enhancemybatis.common.wrapper.QueryWrapper;
 import com.github.spring.components.learning.transaction.dao.TeamMapper;
 import com.github.spring.components.learning.transaction.pojo.TeamDo;
 import com.github.spring.components.learning.transaction.service.TeamService;

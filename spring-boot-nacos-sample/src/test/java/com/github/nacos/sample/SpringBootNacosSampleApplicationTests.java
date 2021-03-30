@@ -1,11 +1,11 @@
 package com.github.nacos.sample;
 
 import com.alibaba.fastjson.JSONObject;
-import http.RequestParam;
+import com.github.http.RequestParam;
+import com.github.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import utils.HttpUtils;
 
 import java.util.HashMap;
 import java.util.Map;

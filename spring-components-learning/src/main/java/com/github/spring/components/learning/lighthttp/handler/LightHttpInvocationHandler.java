@@ -1,14 +1,14 @@
 package com.github.spring.components.learning.lighthttp.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.common.constants.Constants;
+import com.github.http.RequestParam;
 import com.github.spring.components.learning.exception.LightHttpException;
 import com.github.spring.components.learning.exception.LightHttpTypeConvertException;
-import common.constants.Constants;
-import http.RequestParam;
+import com.github.utils.ClassUtils;
+import com.github.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import utils.ClassUtils;
-import utils.HttpUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

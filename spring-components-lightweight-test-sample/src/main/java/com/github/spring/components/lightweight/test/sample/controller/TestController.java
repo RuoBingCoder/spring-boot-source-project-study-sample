@@ -1,13 +1,13 @@
 package com.github.spring.components.lightweight.test.sample.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.common.request.CRequestParam;
+import com.github.http.ModelResult;
 import com.github.spring.components.lightweight.test.sample.job.Task;
 import com.github.spring.components.lightweight.test.sample.job.TaskWrapper;
 import com.github.spring.components.lightweight.test.sample.params.OrderRequestParam;
 import com.github.spring.components.lightweight.test.sample.pojo.Order;
 import com.github.spring.components.lightweight.test.sample.service.BizService;
-import common.request.CRequestParam;
-import http.ModelResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

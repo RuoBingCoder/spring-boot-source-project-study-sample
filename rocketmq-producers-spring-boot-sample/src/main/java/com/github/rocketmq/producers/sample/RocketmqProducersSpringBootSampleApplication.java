@@ -1,5 +1,6 @@
 package com.github.rocketmq.producers.sample;
 
+import com.github.pojo.Greeting;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -11,7 +12,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.core.MessagePostProcessor;
 import org.springframework.messaging.support.MessageBuilder;
-import pojo.Greeting;
 
 import java.time.Instant;
 @RequiredArgsConstructor

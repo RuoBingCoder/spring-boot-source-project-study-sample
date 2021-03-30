@@ -1,0 +1,11 @@
+dubbo:
+    protocol:
+        name: dubbo
+        port: 12345
+    registry:
+        address: zookeeper://127.0.0.1:2181
+    scan:
+        base-packages: com.github.dubbo.provider
+spring:
+    application:
+        name: dubbo-auto-configuration-provider-demo

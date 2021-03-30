@@ -1,4 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=utils.SpringUtils,\
-  helper.PlaceholderHelper,\
-  utils.HttpUtils,\
-  config.ThreadPoolConfig

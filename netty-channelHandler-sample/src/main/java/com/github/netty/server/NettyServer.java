@@ -18,9 +18,9 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 
 public class NettyServer {
-    public static final Integer SERVER_PORT=8089;
+    public static final Integer SERVER_PORT = 8089;
 
-    public static void init(int port){
+    public static void init(int port) {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workGroup = new NioEventLoopGroup(); // 默认cpu核心数的2倍
 
@@ -37,21 +37,27 @@ public class NettyServer {
 
                                 @Override
                                 protected void initChannel(SocketChannel socketChannel) throws Exception {
+
                                     socketChannel
                                             .pipeline()
                                             // Http 编码器
+                                           /* .addLast(new StringDecoder())
+                                            .addLast(new StringEncoder())*/
                                             // http 解码器
                                             // 处理InBound请求
                                             .addLast(new InBoundChannelHandlerA())
                                             .addLast(new InBoundChannelHandlerB())
-                                            .addLast(new OutBoundChannelHandlerA())
                                             .addLast(new InBoundChannelHandlerC())
-                                            //Out
+                                    //Out
+                                    /**
+                                     * @see DefaultChannelPipeline#channelRead
+                                    /*  */
+                                            .addLast(new OutBoundChannelHandlerA())
                                             .addLast(new OutBoundChannelHandlerB())
                                             .addLast(new OutBoundChannelHandlerC());
                                 }
                             });
-            Assert.notNull(port,"server port is null");
+            Assert.notNull(port, "server port is null");
             ChannelFuture future = serverBootstrap.bind(port).sync();
             future.channel().closeFuture().sync();
         } catch (Exception e) {
@@ -59,7 +65,7 @@ public class NettyServer {
 
         } finally {
 
-            bossGroup.shutdownGracefully(); // 优雅的关闭
+//            bossGroup.shutdownGracefully(); // 优雅的关闭
         }
 
 

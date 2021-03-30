@@ -1,7 +1,7 @@
 package com.github.spring.components.lightweight.test.sample;
 
 import com.github.spring.components.lightweight.test.sample.service.ServiceBean;
-import common.annotation.EnableAutoConfigThreadPool;
+import com.github.common.annotation.EnableAutoConfigThreadPool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

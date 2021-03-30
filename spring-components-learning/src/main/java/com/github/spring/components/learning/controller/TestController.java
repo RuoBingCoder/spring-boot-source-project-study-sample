@@ -1,10 +1,13 @@
 package com.github.spring.components.learning.controller;
 
+import com.github.common.request.CRequestParam;
+import com.github.http.ModelResult;
 import com.github.spring.components.learning.lighthttp.service.LightHttpOperateService;
 import com.github.spring.components.learning.lighthttp.service.LightHttpQueryService;
 import com.github.spring.components.learning.params.OrderRequestParam;
-import common.request.CRequestParam;
-import http.ModelResult;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +21,8 @@ import java.io.IOException;
  * @date 2021/1/29 2:33 下午
  * @description TestController
  */
-@Controller
+@Api(tags = "测试控制器")
+        @Controller
 @RequestMapping("/test")
 @Slf4j
 public class TestController {
@@ -39,8 +43,9 @@ public class TestController {
      * @date 2021-01-29 16:10:39
      * // @Aspect 注解 在拦截方法要过滤掉HttpServletResponse
      */
+    @ApiOperation(value = "出口", notes = "")
     @PostMapping("/export")
-    public void export(@RequestParam("name") String name, HttpServletResponse response) throws IOException {
+    public void export(@ApiParam(value = "名字", required = true, example = "")@RequestParam("name") String name, @ApiParam(value = "响应", required = true, example = "")HttpServletResponse response) throws IOException {
         System.out.println("iiiiiiiiiiiiiiiii");
         log.info("export param is:{}", name);
 //        response.getOutputStream().write("export success".getBytes());
@@ -98,7 +103,8 @@ public class TestController {
         return result;
     }
 
-    @GetMapping("/queryOrder")
+    @ApiOperation(value = "查询订购", notes = "")
+            @GetMapping("/queryOrder")
     @ResponseBody
     public ModelResult<String> queryOrder() {
         ModelResult<String> result = new ModelResult<String>();

@@ -1,8 +1,11 @@
 package com.github.netty.handler.server;
 
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
+import io.netty.util.CharsetUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,15 +26,16 @@ public class OutBoundChannelHandlerB extends ChannelOutboundHandlerAdapter {
 
     /**
      * 和write 关联
+     *
      * @param ctx
      * @throws Exception
      */
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-
+//触发OutBoundChannelHandler 操作 AbstractChannel
         ctx.executor().schedule(() -> {
-            ctx.channel().write("say hello");
-        },3, TimeUnit.SECONDS);
+            ctx.channel().write(Unpooled.copiedBuffer( "########服务器说 hello client ########", CharsetUtil.UTF_8)).addListeners(ChannelFutureListener.CLOSE_ON_FAILURE);
+        }, 0, TimeUnit.SECONDS);
         super.handlerAdded(ctx);
     }
 }

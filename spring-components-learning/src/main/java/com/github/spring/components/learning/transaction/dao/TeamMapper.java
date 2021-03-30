@@ -1,7 +1,7 @@
 package com.github.spring.components.learning.transaction.dao;
 
 
-import com.github.spring.components.learning.mybatis.common.mapper.SimpleBaseMapper;
+import com.github.spring.components.learning.enhancemybatis.common.mapper.SimpleBaseMapper;
 import com.github.spring.components.learning.transaction.pojo.TeamDo;
 
 public interface TeamMapper extends SimpleBaseMapper<TeamDo> {

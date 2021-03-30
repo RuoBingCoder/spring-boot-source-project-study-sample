@@ -23,7 +23,7 @@
         <module>custom-spring-boot-starter-sample</module>
         <module>rocketmq-producers-spring-boot-sample</module>
         <module>rocketmq-consumer-spring-boot-sample</module>
-        <module>common</module>
+        <module>common-share</module>
         <module>custom-spring-xml-spring-boot-sample</module>
         <module>custom-aop-spring-boot-sample</module>
         <module>easy-tomcat-netty</module>
@@ -33,14 +33,15 @@
         <module>spring-boot-es-sample</module>
         <module>spring-circular-dependency</module>
         <module>spring-dependency-inject-sample</module>
-        <module>simple-ioc</module>
+        <module>simple-spring</module>
         <module>spring-security-sample</module>
         <module>spring-components-learning</module>
         <module>spring-components-lightweight-test-sample</module>
         <module>spring-boot-nacos-sample</module>
         <module>spring-boot-sharding-sample</module>
         <module>spring-boot-multiple-datasource-sample</module>
-        <!--        <module>simple-dubbo</module>-->
+        <module>dubbo-spring-boot-sample</module>
+        <module>rb-chat</module>
     </modules>
     <dependencies>
         <dependency>
@@ -87,6 +88,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+        </dependency>
+
     </dependencies>
     <dependencyManagement>
 
@@ -102,6 +108,11 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.12</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-core</artifactId>
+                <version>1.5.19</version>
             </dependency>
             <dependency>
                 <groupId>cn.hutool</groupId>
