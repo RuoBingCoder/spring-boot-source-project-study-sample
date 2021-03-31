@@ -1,11 +1,6 @@
 package com.github.spring.components.learning;
 
-import com.github.spring.components.learning.compile.support.JavassistCompiler;
-import org.apache.commons.io.IOUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.lang.reflect.Method;
+import com.github.spring.components.learning.lighthttp.annotation.Post;
 
 /**
  * @author jianlei.shi
@@ -14,7 +9,8 @@ import java.lang.reflect.Method;
  */
 
 public class HelloWord {
-    
+
+    @Post(resource = "output")
     public String output(String param){
         if (param==null){
             throw new IllegalArgumentException("param is not null");
@@ -22,7 +18,7 @@ public class HelloWord {
         return "test:->"+param;
     }
 
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
         File file=new File("/Users/shijianlei/IdeaProjects/learning-spring-sample/spring-components-learning/src/main/resources/Hello.txt");
         FileInputStream fileInputStream = new FileInputStream(file);
         final String hello = IOUtils.toString(fileInputStream);
@@ -33,5 +29,5 @@ public class HelloWord {
         final Object result = method.invoke(o, "张三");
         System.out.println("result->"+result);
 
-    }
+    }*/
 }

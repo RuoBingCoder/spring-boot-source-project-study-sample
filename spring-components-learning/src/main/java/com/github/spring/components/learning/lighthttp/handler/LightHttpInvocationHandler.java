@@ -5,8 +5,8 @@ import com.github.common.constants.Constants;
 import com.github.http.RequestParam;
 import com.github.spring.components.learning.exception.LightHttpException;
 import com.github.spring.components.learning.exception.LightHttpTypeConvertException;
-import com.github.utils.ClassUtils;
 import com.github.utils.HttpUtils;
+import com.github.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
@@ -95,7 +95,7 @@ public class LightHttpInvocationHandler extends AbstractLightHttpInvocation {
         try {
             if (args.length >= 1) {
                 for (Object arg : args) {
-                    final Field[] fields = ClassUtils.getFields(arg.getClass());
+                    final Field[] fields = ReflectUtils.getFields(arg.getClass());
                     for (Field field : fields) {
                         field.setAccessible(true);
                         body.put(field.getName(), field.get(arg));

@@ -97,7 +97,7 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
 
         } else {
             Method[] methods = new Method[]{method};
-            final Map atMetadata =  AnnotationUtils.findAnnotationMethod(methods, new Class[]{Get.class, Post.class});
+            final Map atMetadata =  AnnotationUtils.mergeAttributes(methods, new Class[]{Get.class, Post.class});
             LOCK.lock();
             try {
                 addCache(base_url, atMetadata);

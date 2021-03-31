@@ -16,8 +16,6 @@ import sun.misc.ProxyGenerator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -46,7 +44,7 @@ public class ClassUtils {
      * @author jianlei.shi
      * @date 2021-02-23 17:09:06
      */
-    public static void generateProxyClassFile(Class clazz, String proxyName, String clazzPath) {
+    public static void generateProxyClassFile(Class<?> clazz, String proxyName, String clazzPath) {
 
         //根据类信息和提供的代理类名称，生成字节码
         byte[] classFile = ProxyGenerator.generateProxyClass(proxyName, clazz.getInterfaces());
@@ -71,14 +69,6 @@ public class ClassUtils {
         }
     }
 
-
-    public static Method[] getMethods(Class<?> clazz) {
-        return clazz.getDeclaredMethods();
-    }
-
-    public static Field[] getFields(Class<?> clazz) {
-        return clazz.getDeclaredFields();
-    }
 
 
     /**
@@ -105,7 +95,6 @@ public class ClassUtils {
                         ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
                         sbd.setResource(resource);
                         sbd.setSource(resource);
-                        return candidates;
                     } catch (IOException e) {
                         logger.error("scanCandidateComponents error", e);
                         throw new CommonException("scanCandidateComponents error :【" + e.getMessage() + " 】");
@@ -115,8 +104,10 @@ public class ClassUtils {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            throw new CommonException("scanCandidateComponents exception:"+e.getMessage());
         }
-        return null;
+        return candidates;
+
     }
 
     private static ResourcePatternResolver getResourcePatternResolver() {

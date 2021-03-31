@@ -1,9 +1,12 @@
 package com.github.spring.components.learning;
 
-import com.github.spring.components.learning.lighthttp.annotation.LightHttpClient;
-import com.github.spring.components.learning.lighthttp.service.LightHttpOperateService;
+import com.alibaba.fastjson.JSONObject;
 import com.github.utils.AnnotationUtils;
-import org.springframework.core.annotation.AnnotationAttributes;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author jianlei.shi
@@ -12,10 +15,19 @@ import org.springframework.core.annotation.AnnotationAttributes;
  */
 
 public class UtilTest {
+
+    public static void methodAnnotationTest(){
+        final Map<Method, Set<Annotation>> methodAnnotation = AnnotationUtils.getAllMethodAnnotation(HelloWord.class);
+        methodAnnotation.forEach((key, value) -> {
+            System.out.println("key->"+key.getName()+"---value->"+ JSONObject.toJSONString(value));
+
+        });
+    }
     public static void main(String[] args) {
-        final LightHttpClient annotation = LightHttpOperateService.class.getAnnotation(LightHttpClient.class);
-        final AnnotationAttributes attributes = AnnotationUtils.getAnnotationAttributes(annotation);
-        final String baseUrl = attributes.getString("baseUrl");
-        System.out.println(baseUrl);
+//        final LightHttpClient annotation = LightHttpOperateService.class.getAnnotation(LightHttpClient.class);
+//        final AnnotationAttributes attributes = AnnotationUtils.getAnnotationAttributes(annotation);
+//        final String baseUrl = attributes.getString("baseUrl");
+//        System.out.println(baseUrl);
+        methodAnnotationTest();
     }
 }
