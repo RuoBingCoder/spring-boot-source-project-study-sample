@@ -1,7 +1,6 @@
 package com.github.utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 /**
  * @author jianlei.shi
@@ -15,10 +14,18 @@ public class ReflectUtils {
         try {
             if (object instanceof Field) {
                 Field field = (Field) object;
-                field.setAccessible(true);
+                if ((!Modifier.isPublic(field.getModifiers()) ||
+                        !Modifier.isPublic(field.getDeclaringClass().getModifiers()) ||
+                        Modifier.isFinal(field.getModifiers())) && !field.isAccessible()) {
+                    field.setAccessible(true);
+                }
             } else if (object instanceof Method) {
                 Method method = (Method) object;
-                method.setAccessible(true);
+                if ((!Modifier.isPublic(method.getModifiers()) ||
+                        !Modifier.isPublic(method.getDeclaringClass().getModifiers()) ||
+                        Modifier.isFinal(method.getModifiers())) && !method.isAccessible()) {
+                    method.setAccessible(true);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,5 +46,25 @@ public class ReflectUtils {
         return "toString".equals(method.getName()) || "equals".equals(method.getName()) || "hashCode".equals(method.getName());
     }
 
+    /**
+     * 得到通用的单一类型
+     *
+     * @param source 源
+     * @return {@link T}
+     */
+    public static <T> T getGenericSingleType(Class<?> source) {
+        final Type[] genericInterfaces = source.getGenericInterfaces();
+        if (genericInterfaces.length > 0) {
+            final Type genericInterface = genericInterfaces[0];
+            if (genericInterface instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
+                final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
+                return (T) actualTypeArguments[0];
+            }
+        }
+        return null;
+
+
+    }
 }

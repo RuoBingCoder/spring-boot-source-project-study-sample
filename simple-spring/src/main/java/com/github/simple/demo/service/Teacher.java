@@ -2,6 +2,9 @@ package com.github.simple.demo.service;
 
 import com.github.simple.core.annotation.SimpleAutowired;
 import com.github.simple.core.annotation.SimpleService;
+import com.github.simple.core.annotation.SimpleValue;
+import com.github.simple.core.init.SimpleInitializingBean;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author: JianLei
@@ -9,7 +12,8 @@ import com.github.simple.core.annotation.SimpleService;
  * @description: Teacher
  */
 @SimpleService
-public class Teacher {
+@Slf4j
+public class Teacher implements SimpleInitializingBean {
 
     private String name;
 
@@ -23,11 +27,17 @@ public class Teacher {
     @SimpleAutowired
     private Student student;
 
+    @SimpleValue("word")
+    private String hello;
+
     public void getTeacher(String name){
-        System.out.println("==> getTeacher name:"+name+"->student info: "+student.info());
+        System.out.println("==> getTeacher name:"+name+"->student info: "+student.info()+"hello->"+hello);
     }
 
 
+    @Override
+    public void afterPropertiesSet() {
+        log.info("==>🪐🪐🪐🪐🪐🪐🪐🪐🪐🪐🪐🪐🪐student info:{} hello:{} ",student.info(),hello);
 
-
+    }
 }

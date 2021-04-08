@@ -40,7 +40,7 @@ public class LightHttpInvocationHandler extends AbstractLightHttpInvocation {
      * @date 2021-02-26 11:53:43
      */
     @Override
-    public <T> Object asyncInvoker(LightHttpHolder<T> lightHttpHolder) {
+    public <T> Object asyncInvoke(LightHttpHolder<T> lightHttpHolder) {
         ThreadPoolExecutor executor = null;
         try {
             if (lightHttpHolder.getT() instanceof UrlWrapper) {

@@ -14,10 +14,19 @@ public class StringUtils {
 
     public static String parsePlaceholder(Field field){
         String placeholder = ReflectUtils.parseValue(field);
-        return resolvePlaceholder(placeholder);
+        return resolveHasPlaceholder(placeholder);
 
     }
-    public static String resolvePlaceholder(String value) {
+    public static String resolveNonPlaceholder(Field field){
+        return ReflectUtils.parseValue(field);
+    }
+
+    public static boolean isIndexOf(Field field){
+        String placeholder = ReflectUtils.parseValue(field);
+        int startInterceptionIndex = placeholder.indexOf(VALUE_PREFIX);
+        return startInterceptionIndex != -1;
+    }
+    public static String resolveHasPlaceholder(String value) {
         int startInterceptionIndex = value.indexOf(VALUE_PREFIX);
         int endInterceptionIndex = value.indexOf(VALUE_SUFFIX);
         String v = value.substring(startInterceptionIndex + 2, endInterceptionIndex);

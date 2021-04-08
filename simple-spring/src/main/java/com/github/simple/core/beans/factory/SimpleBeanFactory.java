@@ -23,7 +23,7 @@ public interface SimpleBeanFactory{
     }
 
 
-    default <T> List<T> getBeanForType(Class<?> clazz,Class<?> type) throws Throwable {
+    default <T> List<T> getBeanForType(Class<?> clazz,Class<T> type) throws Throwable {
         return null;
     }
 

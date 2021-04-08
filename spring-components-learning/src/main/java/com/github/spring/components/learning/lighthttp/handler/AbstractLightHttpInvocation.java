@@ -59,10 +59,9 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
         if (log.isTraceEnabled()) {
             log.trace("interfaces name:{} method name:{}", interfaces.getName(), method.getName());
         }
-        final Annotation metaData = AnnotationUtils.getAnnotationMetaData(interfaces, LightHttpClient.class);
-        if (metaData instanceof LightHttpClient) {
-            LightHttpClient lightHttpClient = (LightHttpClient) metaData;
-            final String baseUrl = lightHttpClient.baseUrl();
+        final LightHttpClient metaData = AnnotationUtils.getAnnotationMetaData(interfaces, LightHttpClient.class);
+        if (metaData != null) {
+            final String baseUrl = metaData.baseUrl();
             return doInvoke(baseUrl, method, args);
         }
         return new Object();
@@ -89,7 +88,7 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
         if (METHOD_CACHE.get(method) != null) {
             final UrlWrapper urlWrapper = METHOD_CACHE.get(method);
             try {
-                return asyncInvoker(getHolder(method, urlWrapper, args, executor));
+                return asyncInvoke(getHolder(method, urlWrapper, args, executor));
             } catch (Exception e) {
                 log.error("doInvoke http error", e);
                 throw new LightHttpException("doInvoke http error msg:【 " + e.getMessage() + " 】");
@@ -102,7 +101,7 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
             try {
                 addCache(base_url, atMetadata);
                 final UrlWrapper urlWrapper = METHOD_CACHE.get(method);
-                return asyncInvoker(getHolder(method, urlWrapper, args, executor));
+                return asyncInvoke(getHolder(method, urlWrapper, args, executor));
             } catch (Exception e) {
                 log.error("doInvoke http error", e);
                 METHOD_CACHE.clear();
@@ -147,7 +146,7 @@ public abstract class AbstractLightHttpInvocation implements InvocationHandler {
         return null;
     }
 
-    protected abstract <T> Object asyncInvoker(LightHttpHolder<T> lightHttpHolder);
+    protected abstract <T> Object asyncInvoke(LightHttpHolder<T> lightHttpHolder);
 
 
     @Data

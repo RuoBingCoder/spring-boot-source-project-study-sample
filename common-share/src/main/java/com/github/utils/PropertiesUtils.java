@@ -47,7 +47,7 @@ public class PropertiesUtils {
             Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
             Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
             return resultGetMethod.invoke(bindResultObject);
-        } catch (Exception var10) {
+        } catch (Exception ex) {
             throw new RuntimeException("getBinderProperties error");
         }
     }

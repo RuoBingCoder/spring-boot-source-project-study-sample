@@ -4,18 +4,18 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ClassUtil;
 import com.github.spring.components.learning.SpringComponentsLearningApplication;
-import com.github.spring.components.learning.exception.MapperException;
-import com.github.spring.components.learning.interceptor.MapperInterceptor;
 import com.github.spring.components.learning.enhancemybatis.common.constant.SqlMethodEnums;
 import com.github.spring.components.learning.enhancemybatis.common.constant.SqlTagConstant;
 import com.github.spring.components.learning.enhancemybatis.common.mapper.SimpleBaseMapper;
 import com.github.spring.components.learning.enhancemybatis.common.wrapper.MapperMethodWrapper;
+import com.github.spring.components.learning.exception.MapperException;
+import com.github.spring.components.learning.interceptor.MapperInterceptor;
 import com.github.spring.components.learning.transaction.pojo.HeroDo;
 import com.github.spring.components.learning.utils.AnnotationUtils;
 import com.github.spring.components.learning.utils.ClassUtils;
 import com.github.spring.components.learning.utils.SpringUtil;
 import com.github.spring.components.learning.utils.StringUtils;
-import com.github.utils.CommonReflectUtil;
+import com.github.utils.ReflectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.MapperBuilderAssistant;
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
@@ -351,7 +351,7 @@ public class SimpleMapperRegistry implements InitializingBean, EnvironmentAware 
             for (Class<?> inf : scanPackage) {
                 if (SimpleBaseMapper.class.isAssignableFrom(inf)) {
                     methodWrappers = new ArrayList<>();
-                    final Object typeArguments = CommonReflectUtil.getGenericSingleType(inf);
+                    final Object typeArguments = ReflectUtils.getGenericSingleType(inf);
                     doBuildMethodWrapper(methodWrappers,typeArguments);
                     commonMethodMap.put(inf, methodWrappers);
                 }

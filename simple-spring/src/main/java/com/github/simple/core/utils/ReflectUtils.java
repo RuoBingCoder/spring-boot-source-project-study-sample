@@ -19,15 +19,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static cn.hutool.core.util.ReflectUtil.getMethods;
-
 /**
  * @author: JianLei
  * @date: 2020/12/12 2:10 下午
  * @description: IOCReflectionUtils
  */
 
-public class ReflectUtils {
+public class ReflectUtils extends com.github.utils.ReflectUtils {
 
     public static void makeAccessible(Field field) {
         if ((!Modifier.isPublic(field.getModifiers()) ||
@@ -141,19 +139,6 @@ public class ReflectUtils {
         return null;
     }
 
-    public static <T> T getGenericSingleType(Class<?> source){
-        final Type[] genericInterfaces = source.getGenericInterfaces();
-        if (genericInterfaces.length>0){
-            final Type genericInterface = genericInterfaces[0];
-            if (genericInterface instanceof ParameterizedType){
-                ParameterizedType parameterizedType= (ParameterizedType) genericInterface;
-                final Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-                return (T) actualTypeArguments[0];
-            }
-        }
-        return null;
-    }
 
     public static Boolean isAssignableFrom(Class<?> clazz, Class<?> type) {
         return type.isAssignableFrom(clazz);

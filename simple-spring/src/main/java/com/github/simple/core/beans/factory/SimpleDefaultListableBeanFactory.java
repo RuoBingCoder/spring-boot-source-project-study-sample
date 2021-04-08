@@ -186,7 +186,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
 
 
     @Override
-    public <T> List<T> getBeanForType(Class<?> clazz, Class<?> type) {
+    public <T> List<T> getBeanForType(Class<?> clazz, Class<T> type) {
         List<Object> factoryObjects = getBeans().values().stream().filter(o -> type.isAssignableFrom(o.getClass())).collect(Collectors.toList());
         if (!CollectionUtil.isEmpty(factoryObjects)) {
             return (List<T>) factoryObjects;
@@ -218,6 +218,9 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
                     flag = true;
                 }
                 if (type != null && placeHolder == null) {
+                    if (!com.github.simple.core.utils.StringUtils.isIndexOf(type)) {
+                        return com.github.simple.core.utils.StringUtils.resolveNonPlaceholder(type);
+                    }
                     String key = com.github.simple.core.utils.StringUtils.parsePlaceholder(type);
                     Object value = findValue(propertySource, key, flag);
                     ai.getAndIncrement();
@@ -231,7 +234,7 @@ public class SimpleDefaultListableBeanFactory extends SimpleAutowireCapableBeanF
                 //现在用不到
                 if (placeHolder != null) {
                     ai.getAndIncrement();
-                    String key = com.github.simple.core.utils.StringUtils.resolvePlaceholder(placeHolder);
+                    String key = com.github.simple.core.utils.StringUtils.resolveHasPlaceholder(placeHolder);
                     final Object value = findValue(propertySource, key, flag);
                     if (value == null && ai.get() == simplePropertySources.size()) {
                         throw new SimpleIOCBaseException("no such field placeholder->${" + key + "}");

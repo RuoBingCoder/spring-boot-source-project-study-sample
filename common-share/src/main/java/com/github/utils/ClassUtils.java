@@ -121,7 +121,7 @@ public class ClassUtils {
         return org.springframework.util.ClassUtils.convertClassNameToResourcePath(environment.resolveRequiredPlaceholders(basePackage));
     }
 
-    public static final MetadataReaderFactory getMetadataReaderFactory() {
+    public static MetadataReaderFactory getMetadataReaderFactory() {
         if (ClassUtils.metadataReaderFactory == null) {
             ClassUtils.metadataReaderFactory = new CachingMetadataReaderFactory();
         }
